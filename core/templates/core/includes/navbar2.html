@@ -1,0 +1,65 @@
+<style>
+    .main-nav {
+        background-color: var(--nav-bg);
+        padding: 0.8rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+    .nav-brand { font-size: 1.5rem; font-weight: bold; color: #4361ee; text-decoration: none; }
+    .nav-links a { text-decoration: none; color: var(--text); margin-left: 20px; transition: 0.3s; }
+    .nav-links a:hover { color: #4361ee; }
+    .user-section { display: flex; align-items: center; gap: 15px; }
+    .badge { background: #4361ee; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
+</style>
+
+{% load i18n %}
+
+<nav class="main-nav">
+    <a href="{% url 'core:home' %}" class="nav-brand">LogoSpace</a>
+
+    <div class="nav-links">
+        <a href="{% url 'core:home' %}">{% trans "Home" %}</a>
+        <a href="#">{% trans "Services" %}</a>
+    </div>
+
+    <div class="user-section">
+        <div class="language-switcher">
+            <form action="{% url 'set_language' %}" method="post">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.get_full_path }}">
+
+                <select name="language" onchange="this.form.submit()">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% get_available_languages as LANGUAGES %}
+                    {% for lang in LANGUAGES %}
+                        <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                            {{ lang.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        {% if user.is_authenticated %}
+            <span class="badge">{% trans "Online" %}</span>
+            <span>{{ user.username }}</span>
+            <button id="theme-toggler" onclick="handleThemeToggle()"  class="btn-toggle">🌓</button>
+            <form action="{% url 'accounts:logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:#e74c3c; cursor:pointer;">
+                    {% trans "Logout" %}
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn-login">{% trans "Login" %}</a>
+            <a href="{% url 'accounts:signup' %}" style="margin-right: 10px; background: #4361ee; color: white; padding: 5px 15px; border-radius: 5px; text-decoration: none;">
+                {% trans "Register Now" %}
+            </a>
+        {% endif %}
+    </div>
+</nav>

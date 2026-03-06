@@ -1,0 +1,163 @@
+
+
+<!--<!DOCTYPE html>-->
+<!--{% load static %}-->
+<!--{% load i18n %}-->
+<!--{% get_current_language as LANGUAGE_CODE %}-->
+
+<!--<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">-->
+<!--    <head>-->
+
+<!--       {% load static tailwind_tags %}-->
+<!--        {% tailwind_css %}-->
+
+<!--        <meta charset="UTF-8">-->
+<!--        <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+
+<!--        <title>{% block title %}مشروعي{% endblock %}</title>-->
+
+<!--        <link rel="stylesheet" href="{% static 'css/base.css' %}">-->
+<!--        <link rel="stylesheet" href="{% static 'css/style.css' %}">-->
+<!--        {% if LANGUAGE_CODE == 'ar' %}-->
+<!--            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">-->
+<!--        {% else %}-->
+<!--            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
+<!--        {% endif %}-->
+
+
+
+<!--        <style>-->
+<!--            :root { &#45;&#45;bg: #f0f2f5; &#45;&#45;text: #1c1e21; &#45;&#45;nav-bg: #ffffff; }-->
+<!--            .dark-theme { &#45;&#45;bg: #18191a; &#45;&#45;text: #e4e6eb; &#45;&#45;nav-bg: #242526; }-->
+<!--            body {-->
+<!--                background-color: var(&#45;&#45;bg);-->
+<!--                color: var(&#45;&#45;text);-->
+<!--                margin: 0;-->
+<!--                font-family: 'Segoe UI', system-ui, -apple-system;-->
+<!--                transition: background 0.3s ease;-->
+<!--            }-->
+<!--            .container { min-height: 80vh; padding: 40px 20px; max-width: 1100px; margin: auto; }-->
+<!--            .btn-toggle { cursor: pointer; border: none; background: none; font-size: 1.4rem; transition: transform 0.2s; }-->
+<!--            .btn-toggle:hover { transform: scale(1.2); }-->
+<!--        </style>-->
+
+<!--    </head>-->
+<!--    <body class="{% if user.is_authenticated and user.is_dark_mode %}dark-theme{% endif %}  dark:bg-slate-900 dark:text-white transition-colors duration-300">-->
+
+<!--        {% include 'core/includes/navbar.html' %}-->
+<!--        <button onclick="toggleDarkMode()" class="p-2 border rounded m-4">-->
+<!--            تبديل الوضع-->
+<!--        </button>-->
+<!--        <div class="container">-->
+<!--            {% block content %}-->
+<!--            {% endblock %}-->
+<!--        </div>-->
+
+<!--        {% include 'core/includes/footer.html' %}-->
+
+<!--        <script>-->
+
+<!--          function toggleDarkMode() {-->
+
+<!--                // 1. تبديل كلاس dark في وسم html-->
+<!--                document.documentElement.classList.toggle('dark');-->
+
+<!--                // 2. التحقق من وجود الكلاس بعد التبديل وتخزينه في متغير-->
+<!--                const isDark = document.documentElement.classList.contains('dark');-->
+
+<!--                // 3. تحديث سمة data-theme الخاصة بـ DaisyUI-->
+<!--                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');-->
+
+<!--                // 4. حفظ التفضيل في المتصفح للمرة القادمة-->
+<!--                localStorage.setItem('theme', isDark ? 'dark' : 'light');-->
+
+<!--                handleThemeToggle();-->
+
+<!--            }-->
+
+<!--            // تطبيق الوضع المحفوظ عند تحميل الصفحة (تأكد من وضع هذا الكود في أعلى الملف أو داخلDOMContentLoaded)-->
+<!--            (function applySavedTheme() {-->
+<!--                const savedTheme = localStorage.getItem('theme');-->
+<!--                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;-->
+
+<!--                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {-->
+<!--                    document.documentElement.classList.add('dark');-->
+<!--                    document.documentElement.setAttribute('data-theme', 'dark');-->
+<!--                } else {-->
+<!--                    document.documentElement.classList.remove('dark');-->
+<!--                    document.documentElement.setAttribute('data-theme', 'light');-->
+<!--                }-->
+
+<!--            })();-->
+
+<!--            // 1. دالة لتطبيق الثيم على الـ HTML و الـ Body-->
+<!--            function applyTheme(theme) {-->
+<!--                // 1. المهم لـ Tailwind: إضافة كلاس dark لوسم الـ html (وليس الـ body)-->
+<!--                if (theme === 'dark') {-->
+<!--                    document.documentElement.classList.add('dark');-->
+<!--                } else {-->
+<!--                    document.documentElement.classList.remove('dark');-->
+<!--                }-->
+
+<!--                // 2. المهم لنظامك القديم (الـ Attribute والـ Body class)-->
+<!--                document.documentElement.setAttribute('data-theme', theme);-->
+
+<!--                if (theme === 'dark') {-->
+<!--                    document.body.classList.add('dark-theme');-->
+<!--                } else {-->
+<!--                    document.body.classList.remove('dark-theme');-->
+<!--                }-->
+<!--            }-->
+
+
+<!--            // 2. دالة التبديل (Toggle)-->
+<!--            function handleThemeToggle() {-->
+
+
+<!--                const currentTheme = document.documentElement.getAttribute('data-theme');-->
+<!--                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';-->
+
+<!--                // تطبيق التغيير بصرياً فوراً (Optimistic UI)-->
+<!--                applyTheme(newTheme);-->
+<!--                localStorage.setItem('theme', newTheme);-->
+
+<!--                // إرسال التغيير للسيرفر للحفظ-->
+<!--                fetch('{% url "core:toggle_theme" %}', {-->
+<!--                    method: 'POST',-->
+<!--                    headers: {-->
+<!--                        'X-CSRFToken': '{{ csrf_token }}',-->
+<!--                        'Content-Type': 'application/json'-->
+<!--                    },-->
+<!--                    body: JSON.stringify({ 'theme': newTheme })-->
+<!--                })-->
+<!--                .then(res => res.json())-->
+<!--                .catch(err => console.error("Server sync failed:", err));-->
+
+<!--            }-->
+
+<!--               // 3. التنفيذ عند تحميل الصفحة-->
+<!--            const _savedTheme = localStorage.getItem('theme');-->
+<!--            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';-->
+
+<!--            // إذا وجد ثيم محفوظ نستخدمه، وإلا نتبع النظام-->
+<!--            const initialTheme = _savedTheme || systemTheme;-->
+<!--            applyTheme(initialTheme);-->
+
+<!--            // 4. ربط الزر-->
+<!--            const toggler = document.getElementById('theme-toggler');-->
+<!--            if (toggler) {-->
+<!--                toggler.onclick = handleThemeToggle;-->
+<!--            }-->
+
+<!--            // 5. مراقبة تغيير إعدادات الجهاز (إذا لم يكن المستخدم قد اختار يدوياً)-->
+<!--            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {-->
+<!--                if (!localStorage.getItem('theme')) {-->
+<!--                    applyTheme(e.matches ? 'dark' : 'light');-->
+<!--                }-->
+<!--            });-->
+
+
+
+<!--        </script>-->
+<!--    </body>-->
+<!--</html>-->

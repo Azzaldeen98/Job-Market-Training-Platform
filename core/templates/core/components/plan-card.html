@@ -1,0 +1,33 @@
+
+<div class="bg-surface  card w-full max-w-sm bg-base-100 shadow-xl border border-base-200 transition-all duration-300 hover:scale-[1.02]">
+  <div class="card-body p-8">
+
+    {% if is_popular %}
+    <span class="badge  badge-sm badge-warning font-bold self-start mb-2">
+        {% trans "Most popular" %}
+    </span>
+    {% endif %}
+
+    <div class="flex justify-between items-baseline gap-4 {% if LANGUAGE_BIDI %}flex-row-reverse{% endif %}">
+      <h2 class="text-2xl text-content-muted  font-extrabold">{{ title }}</h2>
+      <span class="text-xl text-content font-medium">{{ price }}</span>
+    </div>
+
+    <ul class="mt-8 flex flex-col gap-4 text-sm">
+      {% for feature, enabled in features %}
+      <li class="flex items-start gap-3 {% if not enabled %}opacity-40{% endif %} {% if LANGUAGE_BIDI %}flex-row-reverse text-right{% endif %}">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="size-5 shrink-0 {% if enabled %}text-success{% else %}text-base-content/50{% endif %}"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span class="{% if not enabled %}line-through{% endif %}">{{ feature }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <div class="card-actions mt-10">
+      <button class="btn btn-primary btn-block shadow-lg">{{ button_text }}</button>
+    </div>
+  </div>
+</div>

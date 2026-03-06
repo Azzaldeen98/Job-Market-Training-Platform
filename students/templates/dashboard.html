@@ -1,0 +1,628 @@
+
+<!--<body class="bg-base text-gray-800 font-sans antialiased">-->
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="lg:hidden bg-surface border-b border-stroke-soft px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
+            <i data-lucide="zap" class="w-5 h-5 btn-text"></i>
+        </div>
+        <span class="font-bold text-lg text-content">SkillMatch</span>
+    </div>
+    <button id="mobile-menu-btn" class="p-2 hover:bg-field-base rounded-lg transition-colors">
+        <i data-lucide="menu" class="w-6 h-6 text-content-muted"></i>
+    </button>
+</div>
+
+<div class="flex min-h-screen bg-base">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-surface border-r border-stroke-soft transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:inset-auto lg:h-screen overflow-y-auto">
+        <div class="p-6 border-b border-stroke-soft">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center shadow-lg shadow-brand/20">
+                    <i data-lucide="zap" class="w-6 h-6 btn-text"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl text-content">SkillMatch</h1>
+                    <p class="text-xs text-content-muted font-medium">Pro Platform</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="p-4 space-y-1">
+            <a href="#" class="nav-item active  flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 bg-brand text-white">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                Dashboard
+            </a>
+            <a href="#" class="nav-item  flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                <i data-lucide="briefcase" class="w-5 h-5"></i>
+                Opportunities
+                <span class="ml-auto bg-brand/10 text-brand text-xs font-bold px-2 py-1 rounded-full">12</span>
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                <i data-lucide="file-check" class="w-5 h-5"></i>
+                Applications
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                <i data-lucide="award" class="w-5 h-5"></i>
+                Certificates
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                <i data-lucide="user" class="w-5 h-5"></i>
+                Profile
+            </a>
+        </nav>
+
+        <div class="p-4 mt-auto">
+            <div class="bg-brand rounded-2xl p-4 btn-text">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold">Pro Tips</p>
+                        <p class="text-xs opacity-80">Complete your profile</p>
+                    </div>
+                </div>
+                <div class="w-full bg-white/20 rounded-full h-2 mb-2">
+                    <div class="bg-white h-2 rounded-full" style="width: 85%"></div>
+                </div>
+                <p class="text-xs opacity-80">85% Complete</p>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 lg:ml-0 overflow-x-hidden">
+        <header class="bg-surface border-b border-stroke-soft px-6 py-4 sticky top-0 z-30 lg:top-0">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex-1 max-w-xl">
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-content-muted"></i>
+                        <input type="text" placeholder="Search opportunities..."
+                            class="w-full pl-10 pr-4 py-2.5 bg-field-surface border border-stroke-soft rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all text-content">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button class="relative p-2 text-content-muted hover:bg-field-base rounded-xl transition-colors">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+                    </button>
+                    <div class="flex items-center gap-3 pl-3 border-l border-stroke-soft">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-semibold text-content">Alex Chen</p>
+                            <p class="text-xs text-content-muted">Computer Science '24</p>
+                        </div>
+                        <img src="https://ui-avatars.com/api/?name=Alex+Chen&background=4F46E5&color=fff" alt="Profile" class="w-10 h-10 rounded-full object-cover border-2 border-stroke-soft">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-6 max-w-7xl mx-auto space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-content">Welcome back, Alex! 👋</h2>
+                    <p class="text-content-muted mt-1">You have <span class="font-semibold text-brand">3 new matches</span></p>
+                </div>
+                <button onclick="openUploadModal()" class="inline-flex items-center gap-2 px-5 py-2.5 bg-brand hover:opacity-90 text-white font-medium rounded-xl transition-all shadow-lg shadow-brand/20 transform hover:-translate-y-0.5">
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                    Upload Certificate
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="stat-card bg-base-card p-5 rounded-2xl border border-stroke-soft shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-field-base rounded-xl flex items-center justify-center">
+                            <i data-lucide="target" class="w-6 h-6 text-brand"></i>
+                        </div>
+                        <span class="text-xs font-medium text-brand bg-brand/10 px-2 py-1 rounded-full">+12%</span>
+                    </div>
+                    <p class="text-2xl font-bold text-content">94%</p>
+                    <p class="text-sm text-content-muted">Avg. Match Score</p>
+                </div>
+
+                <div class="stat-card bg-base-card p-5 rounded-2xl border border-stroke-soft shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-field-base rounded-xl flex items-center justify-center">
+                            <i data-lucide="send" class="w-6 h-6 text-brand"></i>
+                        </div>
+                        <span class="text-xs font-medium text-content-muted bg-field-base px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <p class="text-2xl font-bold text-content">7</p>
+                    <p class="text-sm text-content-muted">Applications</p>
+                </div>
+
+                <div class="stat-card bg-base-card p-5 rounded-2xl border border-stroke-soft shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-field-base rounded-xl flex items-center justify-center">
+                            <i data-lucide="bookmark" class="w-6 h-6 text-brand"></i>
+                        </div>
+                        <span class="text-xs font-medium text-brand bg-brand/10 px-2 py-1 rounded-full">New</span>
+                    </div>
+                    <p class="text-2xl font-bold text-content">12</p>
+                    <p class="text-sm text-content-muted">Saved Opportunities</p>
+                </div>
+
+                <div class="stat-card bg-base-card p-5 rounded-2xl border border-stroke-soft shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-field-base rounded-xl flex items-center justify-center">
+                            <i data-lucide="check-circle" class="w-6 h-6 text-brand"></i>
+                        </div>
+                        <span class="text-xs font-medium text-brand bg-brand/10 px-2 py-1 rounded-full">Verified</span>
+                    </div>
+                    <p class="text-2xl font-bold text-content">4</p>
+                    <p class="text-sm text-content-muted">Certificates</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                 <!-- Left Column -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-surface rounded-2xl border border-stroke-soft shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-content">Your Skills Matrix</h3>
+                                <p class="text-sm text-content-muted mt-0.5">Technical competencies</p>
+                            </div>
+                            <button onclick="toggleSkillEdit()" class="text-sm font-medium text-brand hover:opacity-80 flex items-center gap-1">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Add Skill
+                            </button>
+                        </div>
+
+                        <div id="skills-container" class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-field-base text-content rounded-lg text-sm border border-stroke-soft">Python</span>
+                            <span class="px-3 py-1 bg-field-base text-content rounded-lg text-sm border border-stroke-soft">Django</span>
+                        </div>
+                     <div id="skill-input-area" class="hidden mb-4">
+                            <div class="flex gap-2">
+                                <input type="text" id="new-skill-input" placeholder="e.g., React Native, AWS, Python..."
+                                    class="flex-1 px-4 py-2  border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <button onclick="addSkill()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-stroke-soft">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-content-muted">Profile Strength</span>
+                                <span class="font-semibold text-content">85%</span>
+                            </div>
+                            <div class="mt-2 w-full bg-field-base rounded-full h-2">
+                                <div class="bg-brand h-2 rounded-full transition-all duration-500" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface rounded-2xl border border-stroke-soft shadow-sm p-6 text-content">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold ">Top Matched Opportunities</h3>
+                                <p class="text-sm  mt-0.5">Ranked by compatibility with your skills</p>
+                            </div>
+                           <div class="flex gap-2">
+                                <button class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors">All</button>
+                                <button class="px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg">High Match</button>
+                            </div>
+                        </div>
+                       <div id="opportunities-list" class="space-y-4">
+                            <!-- Opportunities injected by JS -->
+                        </div>
+                           <button class="w-full mt-6 py-3 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-xl transition-all border border-dashed border-indigo-200 hover:border-indigo-300">
+                                View All 24 Opportunities
+                            </button>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="space-y-6">
+                            <!-- Recent Certificates -->
+                        <div class="bg-surface rounded-2xl border border-stroke shadow-sm p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-content-muted">Certificates</h3>
+                                <button onclick="openUploadModal()" class="p-2 hover:bg-surface-card rounded-lg transition-colors">
+                                    <i data-lucide="plus" class="w-4 h-4 text-content"></i>
+                                </button>
+                            </div>
+
+                            <div id="certificates-list" class="space-y-3">
+                                <!-- Certificates injected by JS  -->
+                            </div>
+                        </div>
+
+                       <!-- Application Status -->
+                    <div class="bg-surface-card rounded-2xl border border-stroke-soft shadow-sm p-6">
+                        <h3 class="text-lg font-bold text-content mb-4">Application Status</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-2 h-2 mt-2 rounded-full bg-brand"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-content">Frontend @ TechCorp</p>
+                                    <p class="text-xs text-content-muted">Interview tomorrow</p>
+                                </div>
+                                <span class="text-xs font-medium text-brand bg-brand/10 px-2 py-1 rounded">Pending</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                    <div class="w-2 h-2 mt-2 rounded-full bg-green-400"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-slate-900">Full Stack Engineer @ StartupX</p>
+                                        <p class="text-xs text-slate-500 mt-0.5">Technical test passed • 2 days ago</p>
+                                    </div>
+                                    <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">Advanced</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-2 h-2 mt-2 rounded-full bg-slate-300"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-slate-900">React Developer @ AgencyPro</p>
+                                        <p class="text-xs text-slate-500 mt-0.5">Application viewed • 3 days ago</p>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-600 bg-slate-100 px-2 py-1 rounded">Reviewing</span>
+                                </div>
+                        </div>
+
+                    </div>
+
+                    <div class="bg-brand rounded-2xl shadow-lg p-6 text-white">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                                <i data-lucide="trending-up" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="font-bold">Recommendations</h3>
+                        </div>
+                        <p class="text-sm opacity-90 mb-4">Add these skills to increase matches</p>
+
+                        <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-xs font-medium cursor-pointer hover:bg-white/30 transition-colors">TypeScript</span>
+                                <span class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-xs font-medium cursor-pointer hover:bg-white/30 transition-colors">Docker</span>
+                                <span class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-xs font-medium cursor-pointer hover:bg-white/30 transition-colors">GraphQL</span>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+  <!-- Upload Modal -->
+<div id="upload-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-content/50 backdrop-blur-sm" onclick="closeUploadModal()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="bg-surface-card rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-content">Upload Certificate</h3>
+                <button onclick="closeUploadModal()" class="p-2 hover:bg-field-base rounded-lg transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-content-muted"></i>
+                </button>
+            </div>
+            <!-- upload file -->
+            <div class="border-2 border-dashed bg-surface border-stroke-soft rounded-xl p-8 text-center hover:border-indigo-400 hover:bg-field-base transition-all cursor-pointer mb-4"
+            onclick="document.getElementById('file-input').click()">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i data-lucide="upload-cloud" class="w-8 h-8 text-indigo-600"></i>
+                    </div>
+                    <p class="text-sm font-medium text-brand mb-1">Click to upload or drag and drop</p>
+                    <p class="text-xs text-brand text-content">PDF, PNG, JPG up to 10MB</p>
+                    <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg" onchange="handleFileSelect(this)">
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-content mb-1">Certificate Title</label>
+                    <input type="text" placeholder="e.g., AWS Solutions Architect" class="w-full px-4 py-2 bg-slate-50 border border-stroke-soft rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-content mb-1">Issuing Organization</label>
+                    <input type="text" placeholder="e.g., Amazon Web Services" class="w-full px-4 py-2 bg-slate-50 border bborder-stroke-soft rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeUploadModal()" class="flex-1 px-4 py-2.5 border border-stroke-soft text-content font-medium rounded-xl hover:bg-field-base transition-colors">Cancel</button>
+                <button class="flex-1 px-4 py-2.5 bg-brand text-white font-medium rounded-xl hover:opacity-90 transition-colors">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Chart Script -->
+    <script>
+  // Initialize Lucide icons
+lucide.createIcons();
+
+// Data
+const userSkills = [
+    { name: 'React', level: 'expert', category: 'frontend' },
+    { name: 'TypeScript', level: 'advanced', category: 'language' },
+    { name: 'Node.js', level: 'advanced', category: 'backend' },
+    { name: 'Python', level: 'intermediate', category: 'language' },
+    { name: 'AWS', level: 'intermediate', category: 'cloud' },
+    { name: 'Docker', level: 'beginner', category: 'devops' },
+    { name: 'GraphQL', level: 'intermediate', category: 'backend' },
+    { name: 'Tailwind CSS', level: 'expert', category: 'frontend' }
+];
+
+const opportunities = [
+    {
+        id: 1,
+        company: 'TechCorp Global',
+        logo: 'http://static.photos/technology/200x200/1',
+        title: 'Senior Frontend Developer',
+        location: 'Remote • San Francisco',
+        matchScore: 96,
+        salary: '$120k - $150k',
+        requiredSkills: ['React', 'TypeScript', 'GraphQL', 'Tailwind CSS'],
+        description: 'Join our core product team building next-gen analytics dashboard',
+        posted: '2 days ago',
+        color: 'green'
+    },
+    {
+        id: 2,
+        company: 'StartupX',
+        logo: 'http://static.photos/technology/200x200/2',
+        title: 'Full Stack Engineer',
+        location: 'Hybrid • New York',
+        matchScore: 88,
+        salary: '$100k - $130k',
+        requiredSkills: ['React', 'Node.js', 'Python', 'AWS'],
+        description: 'Fast-growing fintech startup looking for versatile developers',
+        posted: '1 day ago',
+        color: 'blue'
+    },
+    {
+        id: 3,
+        company: 'CloudSystems',
+        logo: 'http://static.photos/technology/200x200/3',
+        title: 'React Native Developer',
+        location: 'Remote • Austin',
+        matchScore: 82,
+        salary: '$90k - $120k',
+        requiredSkills: ['React', 'TypeScript', 'Docker'],
+        description: 'Build mobile banking applications for Fortune 500 clients',
+        posted: '3 days ago',
+        color: 'indigo'
+    },
+    {
+        id: 4,
+        company: 'DataFlow Inc',
+        logo: 'http://static.photos/technology/200x200/4',
+        title: 'Backend Developer',
+        location: 'On-site • Seattle',
+        matchScore: 75,
+        salary: '$110k - $140k',
+        requiredSkills: ['Node.js', 'Python', 'AWS', 'Docker'],
+        description: 'Scalable backend systems for real-time data processing',
+        posted: '5 days ago',
+        color: 'amber'
+    }
+];
+
+const certificates = [
+    {
+        id: 1,
+        title: 'AWS Certified Solutions Architect',
+        issuer: 'Amazon Web Services',
+        date: 'Jan 2024',
+        status: 'verified',
+        image: 'http://static.photos/technology/320x240/10'
+    },
+    {
+        id: 2,
+        title: 'React Advanced Patterns',
+        issuer: 'Meta Engineering',
+        date: 'Dec 2023',
+        status: 'verified',
+        image: 'http://static.photos/technology/320x240/11'
+    },
+    {
+        id: 3,
+        title: 'Python for Data Science',
+        issuer: 'Coursera',
+        date: 'Nov 2023',
+        status: 'pending',
+        image: 'http://static.photos/technology/320x240/12'
+    }
+];
+
+// Render Functions
+function renderSkills() {
+    const container = document.getElementById('skills-container');
+    container.innerHTML = userSkills.map(skill => `
+        <span class="skill-tag inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition-colors cursor-default group">
+            ${skill.name}
+            <button onclick="removeSkill('${skill.name}')" class="opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500">
+                <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+        </span>
+    `).join('');
+    lucide.createIcons();
+}
+
+function renderOpportunities() {
+
+    const container = document.getElementById('opportunities-list');
+    container.innerHTML = opportunities.map(opp => {
+        const scoreColor = opp.matchScore >= 90 ? 'text-emerald-600 bg-emerald-50' :
+                          opp.matchScore >= 80 ? 'text-blue-600 bg-blue-50' :
+                          'text-amber-600 bg-amber-50';
+
+        const scoreBorder = opp.matchScore >= 90 ? 'border-emerald-200' :
+                           opp.matchScore >= 80 ? 'border-blue-200' :
+                           'border-amber-200';
+
+        return `
+        <div class="opportunity-card bg-surface-card rounded-xl p-4 border border-stroke hover:shadow-md cursor-pointer group">
+            <div class="flex items-start gap-4">
+                <img src="${opp.logo}" alt="${opp.company}" class="w-12 h-12 rounded-lg object-cover border border-stroke-soft">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h4 class="font-semibold text-content group-hover:text-indigo-600 transition-colors">${opp.title}</h4>
+                            <p class="text-sm text-content-muted">${opp.company} • ${opp.location}</p>
+                        </div>
+                        <div class="match-score-circle bg-surface-card flex-shrink-0 w-12 h-12 ${scoreColor} ${scoreBorder} border-2 rounded-full flex flex-col items-center justify-center">
+                            <span class="text-xs font-bold">${opp.matchScore}%</span>
+                            <span class="text-[10px] font-medium">Match</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 flex flex-wrap gap-1.5">
+                        ${opp.requiredSkills.map(skill => {
+                            const hasSkill = userSkills.some(us => us.name === skill);
+                            return `<span class="px-2 py-0.5 text-xs rounded-md font-medium ${hasSkill ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-600'}">${skill}</span>`;
+                        }).join('')}
+                    </div>
+
+                    <div class="mt-3 flex items-center justify-between">
+                        <div class="text-sm text-content-muted">
+                            <span class="font-medium text-content">${opp.salary}</span> • ${opp.posted}
+                        </div>
+                        <button onclick="applyToJob(${opp.id})" class="px-4 py-1.5 bg-white border border-slate-200 text-content-muted text-sm font-medium rounded-lg hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all shadow-sm">
+                            Apply Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+function renderCertificates() {
+    const container = document.getElementById('certificates-list');
+    container.innerHTML = certificates.map(cert => `
+        <div class="flex items-center gap-3 p-3 bg-surface-card rounded-xl border border-stroke-soft hover:border-indigo-300 transition-colors group">
+            <div class="w-12 h-12 rounded-lg  overflow-hidden flex-shrink-0">
+                <img src="${cert.image}" alt="${cert.title}" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-content truncate">${cert.title}</p>
+                <p class="text-xs text-content-muted ">${cert.issuer} • ${cert.date}</p>
+            </div>
+            <span class="flex-shrink-0 px-2 py-1 text-xs font-medium rounded-full ${cert.status === 'verified' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                ${cert.status === 'verified' ? 'Verified' : 'Pending'}
+            </span>
+        </div>
+    `).join('');
+}
+
+// Actions
+function toggleSkillEdit() {
+    const area = document.getElementById('skill-input-area');
+    area.classList.toggle('hidden');
+    if (!area.classList.contains('hidden')) {
+        document.getElementById('new-skill-input').focus();
+    }
+}
+
+function addSkill() {
+    const input = document.getElementById('new-skill-input');
+    const skill = input.value.trim();
+
+    if (skill && !userSkills.some(s => s.name.toLowerCase() === skill.toLowerCase())) {
+        userSkills.push({ name: skill, level: 'beginner', category: 'other' });
+        renderSkills();
+        input.value = '';
+
+        // Show success toast
+        showToast(`Added ${skill} to your skills`);
+    }
+}
+
+function removeSkill(skillName) {
+    const index = userSkills.findIndex(s => s.name === skillName);
+    if (index > -1) {
+        userSkills.splice(index, 1);
+        renderSkills();
+        showToast(`Removed ${skillName}`);
+    }
+}
+
+function applyToJob(jobId) {
+    const job = opportunities.find(o => o.id === jobId);
+    showToast(`Applied to ${job.title} at ${job.company}!`);
+}
+
+// Modal Functions
+function openUploadModal() {
+    document.getElementById('upload-modal').classList.remove('hidden');
+}
+
+function closeUploadModal() {
+    document.getElementById('upload-modal').classList.add('hidden');
+}
+
+function handleFileSelect(input) {
+    if (input.files && input.files[0]) {
+        showToast(`Selected: ${input.files[0].name}`);
+    }
+}
+
+function uploadCertificate() {
+    closeUploadModal();
+    showToast('Certificate uploaded successfully! Verification in progress.');
+
+    // Add new certificate to list
+    certificates.unshift({
+        id: certificates.length + 1,
+        title: 'New Certificate',
+        issuer: 'Pending Verification',
+        date: 'Just now',
+        status: 'pending',
+        image: 'http://static.photos/technology/320x240/99'
+    });
+    renderCertificates();
+}
+
+// Toast Notification
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-6 right-6 bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2';
+    toast.innerHTML = `
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+        <span class="font-medium">${message}</span>
+    `;
+    document.body.appendChild(toast);
+    lucide.createIcons();
+
+    setTimeout(() => {
+        toast.classList.remove('translate-y-20', 'opacity-0');
+    }, 100);
+
+    setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Mobile Menu
+document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('mobile-open');
+});
+
+// Enter key for skill input
+document.getElementById('new-skill-input')?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addSkill();
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    renderSkills();
+    renderOpportunities();
+    renderCertificates();
+
+    // Simulate real-time updates
+    setInterval(() => {
+        // Randomly update a match score slightly to simulate live algorithm
+        const randomOpp = opportunities[Math.floor(Math.random() * opportunities.length)];
+        const change = Math.random() > 0.5 ? 1 : -1;
+        if (randomOpp.matchScore < 99 && randomOpp.matchScore > 70) {
+            randomOpp.matchScore += change;
+            renderOpportunities();
+        }
+    }, 30000); // Every 30 seconds
+});
+    </script>
+<!--<script src="https://deepsite.hf.co/deepsite-badge.js"></script>-->
+{% endblock %}

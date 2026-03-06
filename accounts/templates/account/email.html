@@ -1,0 +1,158 @@
+
+{% extends "core/base.html" %}
+{% load account %}
+{% load widget_tweaks %}
+{% load static tailwind_tags %}
+{% tailwind_css %}
+
+{% block title %}{% trans "Email Addresses" %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-content sm:text-4xl">
+                {% trans "Email Addresses" %}
+            </h1>
+            <p class="mt-2 text-base text-content-soft">
+                {% trans 'Manage your email addresses and account security settings.' %}
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- Sidebar Navigation -->
+            <aside class="lg:col-span-3 space-y-6">
+                <div class="bg-base border border-stroke-soft rounded-2xl p-2 shadow-sm">
+                    <nav class="space-y-1">
+                        <a href="{% url 'account_email' %}" class="flex items-center gap-3 px-4 py-3   rounded-xl font-semibold transition-all">
+                            <i class="fas fa-envelope text-sm"></i>
+                            <span>{% trans "Email Addresses" %}</span>
+                        </a>
+                        <a href="{% url 'account_change_password' %}" class="flex items-center gap-3 px-4 py-3 text-content hover:bg-base-soft hover:text-content rounded-xl transition-all">
+                            <i class="fas fa-lock text-sm"></i>
+                            <span>{% trans "Change Password" %}</span>
+                        </a>
+                        <a href="{% url 'socialaccount_connections' %}" class="flex items-center gap-3 px-4 py-3 text-content-soft hover:bg-base-soft hover:text-content rounded-xl transition-all">
+                            <i class="fas fa-share-nodes text-sm"></i>
+                            <span>{% trans "Account Connections" %}</span>
+                        </a>
+                        <div class="border-t border-stroke-soft my-2 mx-2"></div>
+                        <a href="{% url 'account_logout' %}" class="flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all font-medium">
+                            <i class="fas fa-sign-out-alt text-sm"></i>
+                            <span>{% trans "Sign Out" %}</span>
+                        </a>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="lg:col-span-9 space-y-8">
+
+                <!-- Existing Emails Section -->
+                <div class="bg-base border border-stroke-soft rounded-3xl shadow-sm overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-stroke-soft bg-base-soft/30">
+                        <h2 class="text-lg font-bold text-content flex items-center gap-2">
+                            <i class="fas fa-list text-primary"></i> {% trans "Current Emails" %}
+                        </h2>
+                        <p class="text-sm text-content-soft mt-1">{% trans 'The following email addresses are associated with your account:' %}</p>
+                    </div>
+
+                    <div class="p-6 sm:p-8">
+                        {% if user.emailaddress_set.all %}
+                        <form action="{% url 'account_email' %}" method="post">
+                            {% csrf_token %}
+                            <div class="space-y-3">
+                                {% for emailaddress in user.emailaddress_set.all %}
+                                <div class="group">
+                                    <label class="relative flex items-center p-4 rounded-2xl border border-stroke-soft hover:border-primary/50 transition-all cursor-pointer bg-base group-has-[:checked]:border-primary group-has-[:checked]:bg-primary/5">
+                                        <input type="radio" name="email" class="w-5 h-5 text-primary border-stroke-soft focus:ring-primary focus:ring-offset-0 rounded-full"
+                                               {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{% endif %}
+                                               value="{{emailaddress.email}}">
+
+                                        <div class="ml-4 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div class="flex items-center gap-3">
+                                                <span class="font-semibold text-content text-lg">{{ emailaddress.email }}</span>
+
+                                                <div class="flex gap-2">
+                                                    {% if emailaddress.verified %}
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                                            {% trans "Verified" %}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                                                            {% trans "Unverified" %}
+                                                        </span>
+                                                    {% endif %}
+
+                                                    {% if emailaddress.primary %}
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                                                            {% trans "Primary" %}
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-stroke-soft">
+                                <button type="submit" name="action_primary" class="flex-1 px-5 py-2.5 bg-primary text-white rounded-xl font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all">
+                                    {% trans 'Make Primary' %}
+                                </button>
+                                <button type="submit" name="action_send" class="flex-1 px-5 py-2.5 bg-base border border-stroke-soft text-content rounded-xl font-semibold hover:bg-base-soft transition-all">
+                                    {% trans 'Re-send Verification' %}
+                                </button>
+                                <button type="submit" name="action_remove" class="flex-1 px-5 py-2.5 bg-red-50 text-red-600 border border-red-100 rounded-xl font-semibold hover:bg-red-100 transition-all dark:bg-red-900/20 dark:border-red-900/50 dark:text-red-400">
+                                    {% trans 'Remove' %}
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                            <div class="text-center py-8 text-content-soft">
+                                {% trans "No email addresses associated with this account." %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+
+                <!-- Add New Email Section -->
+                <div class="bg-base border border-stroke-soft rounded-3xl shadow-sm overflow-hidden">
+                    <div class="p-6 sm:p-8">
+                        <h2 class="text-lg font-bold text-content flex items-center gap-2 mb-6">
+                            <i class="fas fa-plus-circle text-primary"></i> {% trans "Add Email Address" %}
+                        </h2>
+
+                        <form method="post" action="{% url 'account_email' %}" class="space-y-5">
+                            {% csrf_token %}
+
+                            <div class="grid gap-2">
+                                <label for="{{ form.email.id_for_label }}" class="text-sm font-semibold text-content-soft">
+                                    {% trans "Email" %}
+                                </label>
+                                {% render_field form.email class="w-full bg-base-soft border border-stroke-soft px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-content placeholder-content-soft/50"
+                                placeholder=_("Enter your email") %}
+
+                                {% if form.email.errors %}
+                                    <p class="text-red-500 text-xs mt-1 font-medium">{{ form.email.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <button name="action_add" type="submit" class="w-full py-3 bg-secondary text-white rounded-xl font-bold shadow-md hover:opacity-90 hover:shadow-lg transition-all cursor-pointer">
+                                {% trans "Add Email" %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+</div>
+{% endblock %}

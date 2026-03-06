@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% load static tailwind_tags %}
+{% tailwind_css %}
+
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>{% block title %}مشروعي{% endblock %}</title>
+
+<!--    {% if LANGUAGE_CODE == 'ar' %}-->
+<!--        <link rel="stylesheet" href="% static 'css/style.css' %}">-->
+<!--        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">-->
+<!--    {% else %}-->
+<!--        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
+<!--    {% endif %}-->
+<!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>-->
+
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+ <!-- مكتبة الأيقونات Phosphor Icons -->
+<!--    <script src="https://unpkg.com/@phosphor-icons/web"></script>-->
+    <!-- مكتبة المخططات البيانية Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body  class="bg-base  transition-colors duration-300  font-sans antialiased">
+
+    {% include 'core/includes/navbar.html' %}
+
+
+    <div class="w-full">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+
+    {% include 'core/includes/footer.html' %}
+
+<!--       // 1. الدالة المركزية لتطبيق الثيم-->
+<!--    <script src="{% static 'js/app.js' %}"></script>-->
+<script>
+    // 1. مصفوفة الثيمات المتاحة
+    const themes = ['light', 'dark'];//, 'emerald'];
+
+    // 2. دالة التطبيق (الوحيدة المسؤولة عن الشكل)
+    const applyTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        // إضافة كلاس dark فقط إذا كان الثيم هو dark لضمان عمل كلاسات dark: في تايلوند
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        localStorage.setItem('theme', theme);
+    };
+
+    // 3. دالة التبديل (الدوران بين الثيمات)
+    async function toggleTheme() {
+        const current = localStorage.getItem('theme') || 'light';
+        const currentIndex = themes.indexOf(current);
+        // اختيار الثيم التالي في المصفوفة (والموؤشر يعود للصفر بعد الأخير)
+        const nextTheme = themes[(currentIndex + 1) % themes.length];
+
+        applyTheme(nextTheme);
+
+        // المزامنة مع السيرفر
+        if ("{{ user.is_authenticated }}" === "True") {
+            fetch('{% url "core:toggle_theme" %}', {
+                method: 'POST',
+                headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+                body: JSON.stringify({ 'theme': nextTheme })
+            });
+        }
+    }
+
+    // 4. التشغيل الفوري عند التحميل
+    const initialTheme = "{{ request.session.theme }}" || localStorage.getItem('theme') || 'light';
+    applyTheme(initialTheme === 'None' ? 'light' : initialTheme);
+</script>
+<script>
+  lucide.createIcons();
+</script>
+
+</body>
+</html>

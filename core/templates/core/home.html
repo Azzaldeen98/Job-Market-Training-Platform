@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <div style="text-align: center; padding: 50px;">
+        <h1>مرحباً بك في مشروعنا الاحترافي!</h1>
+        <p>هذه الصفحة هي أول صفحة محتوى يتم حقنها داخل الـ Base Layout.</p>
+        
+        {% if user.is_authenticated %}
+            <p>أنت الآن مسجل دخول باسم: <strong>{{ user.username }}</strong></p>
+        {% else %}
+            <p>أنت تتصفح الموقع كـ زائر.</p>
+        {% endif %}
+
+        {% if user.is_student %}
+                <div class="max-w-sm p-6  mx-auto  my-5 border border-gray-200 rounded-2xl shadow-sm ">
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight ">مهارة Python</h5>
+                    <p class="mb-3 font-normal ">الفجوة الحالية: 20%</p>
+                    <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                        تحليل الفجوة
+                    </a>
+                </div>
+        {% endif %}
+
+        <div class="mx-auto my-5 border border-gray-200 rounded">
+                <input type="text"
+                       name="search"
+                       placeholder="ابحث عن مستخدم..."
+                       hx-get="{% url 'core:search_users' %}"
+                       hx-trigger="keyup delay:500ms"
+                       hx-target="#search-results"
+                       hx-indicator="#loading-spinner"
+                       class="my-3 border border-gray-200 rounded p-2">
+                <div id="loading-spinner" class="htmx-indicator">جاري البحث... </div>
+<!--                <div class="loader htmx-indicator">جاري البحث...</div>-->
+                <div id="search-results"></div>
+         </div>
+    </div>
+
+
+<div class="py-10">
+    <h1 class="text-2xl font-bold mb-6">قائمة أعضاء الفريق</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% user_card name="سارة أحمد" email="sara@example.com" user_id="101" %}
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-10">
+    {% plan_card title="Free" price="$0" features=free_features %}
+
+    {% plan_card title="Premium" price="$29" is_popular=True features=premium_features %}
+</div>
+
+
+
+
+
+{% endblock %}

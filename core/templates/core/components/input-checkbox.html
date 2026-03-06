@@ -1,0 +1,31 @@
+<div class="flex flex-col gap-1 py-2">
+    <label class="inline-flex items-center cursor-pointer group gap-2.5">
+
+        {# الحاوية الآن بحجم ثابت ومحدد لمنع أي حركة #}
+        <div class="relative flex items-center justify-center w-3.5 h-3.5 shrink-0">
+            <input type="checkbox"
+                   name="{{ name }}"
+                   id="{{ id }}"
+                   {% if checked %}checked{% endif %}
+                   {% if required %}required{% endif %}
+
+                   class="peer appearance-none w-full h-full rounded-sm border transition-all duration-150
+                          bg-field-base border-stroke-soft
+                          checked:bg-primary checked:border-primary
+                          focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer">
+
+
+            <svg class="absolute inset-0 m-auto w-2.5 h-2.5 scale-0 opacity-0 peer-checked:scale-100 peer-checked:opacity-100 pointer-events-none transition-all duration-200"
+                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+
+        {% if label %}
+            <span class="text-sm font-medium text-content group-hover:text-primary transition-colors leading-none select-none">
+                {{ label }}
+            </span>
+        {% endif %}
+    </label>
+</div>

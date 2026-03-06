@@ -1,0 +1,11 @@
+{% if users %}
+    <div class="list-group">
+        {% for item in users %}
+            <div class="list-group-item">
+                <strong>{{ user.username }}</strong> - {{ user.email }}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="alert alert-warning">لا توجد نتائج مطابقة لبحثك.</p>
+{% endif %}

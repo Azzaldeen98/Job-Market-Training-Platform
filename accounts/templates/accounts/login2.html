@@ -1,0 +1,59 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+ {% trans "Log in" %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .login-container {
+
+        margin: 50px auto;
+
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    /* تنسيق حقول الإدخال الجاهزة من دجانجو */
+    .login-container p { margin-bottom: 20px; }
+    .login-container input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box; /* لضمان عدم خروج الحقول عن الحاوية */
+
+
+    }
+
+</style>
+
+
+<div class=" bg-base flex flex-column items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
+      <div class="bg-surface text-content login-container w-full max-w-md p-8 rounded-2xl shadow-xl transition-all duration-300
+                 border border-transparent">
+
+        <h2 class="text-3xl font-bold text-center mb-8 text-current">{% trans "Log in" %}</h2>
+        <form method="post" class="">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <p class="text-err" style=" text-align: center;">
+                    {% trans "Invalid username or password." %} </p>
+            {% endif %}
+
+            {{ form.as_p }}
+
+            {% submit-button label=_("Log in") icon="log-in" bg_color="bg-btn" content_color="btn-text" %}
+<!--           {% submit-button label=_("Log in") icon="log-in" content_color="text-white" %}-->
+    <!--        <button type="submit" class="btn-login-submit bg-btn">{% trans "Enter Platform" %} </button>-->
+        </form>
+        <p style="text-align: center; margin-top: 20px;">
+            {% trans "Don't have an account?" %}
+            <a href="{% url 'accounts:signup' %}" style="color: #4361ee;">{% trans "Register here" %}</a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

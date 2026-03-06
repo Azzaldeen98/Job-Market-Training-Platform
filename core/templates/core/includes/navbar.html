@@ -1,0 +1,76 @@
+
+<nav class=" border-b border-gray-200   dark:border-slate-800 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+        <div class="flex items-center gap-x-4">
+            <a href="{% url 'core:home' %}" class="text-2xl font-bold text-blue-600 dark:text-blue-400 ml-8 rtl:ml-0 rtl:mr-8">
+                LogoSpace
+            </a>
+            <div class="hidden md:flex gap-x-4">
+                <a href="{% url 'core:home' %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+                    {% trans "Home" %}
+                </a>
+                <a href="#" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+                    {% trans "Services" %}
+                </a>
+            </div>
+        </div>
+            <div class="flex items-center gap-x-4 ">
+                <div class="language-switcher">
+                    <form action="{% url 'set_language' %}" method="post" class="flex items-center">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                        <select name="language" onchange="this.form.submit()"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1.5 dark:bg-slate-800 dark:border-slate-700 dark:placeholder-gray-400 dark:text-white">
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% get_available_languages as LANGUAGES %}
+                            {% for lang in LANGUAGES %}
+                                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                                    {{ lang.1 }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+             <button onclick="toggleTheme()" class="btn btn-ghost">
+    <span class="block dark:hidden [html[data-theme='emerald']_&]:hidden">☀️</span>
+    <span class="hidden dark:block">🌙</span>
+<!--    <span class="hidden [html[data-theme='emerald']_&]:block">🌿</span>-->
+</button>
+                {% if user.is_authenticated %}
+                    <div class="flex items-center space-x-3  border-l rtl:border-l-0 rtl:border-r border-gray-200 dark:border-slate-700 padding-inline-start-4 pl-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                            {% trans "Online" %}
+                        </span>
+                        <span class="text-gray-700 dark:text-gray-200 font-medium hidden sm:block">
+                            {{ user.username }}
+                        </span>
+
+                        <form action="{% url 'accounts:logout' %}" method="post" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 text-sm font-semibold">
+                                {% trans "Logout" %}
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="flex items-center space-x-2 ">
+<!--                        <a href="{% url 'accounts:login' %}" class="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 px-4 py-2 rounded-lg font-medium">-->
+<!--                            {% trans "Login" %}-->
+<!--                        </a>-->
+<!--                        <a href="{% url 'accounts:register' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">-->
+<!--                            {% trans "Register Now" %}-->
+<!--                        </a>    -->
+
+                        <a href="{% url 'account_login' %}" class="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 px-4 py-2 rounded-lg font-medium">
+                            {% trans "Login" %}
+                        </a>
+                        <a href="{% url 'account_signup' %}" class="bg-brand  text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            {% trans "Register Now" %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,245 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  /* هنا نحدد الثيمات التي سيقوم Tailwind بتوليد كلاساتها */
+  themes: light, dark, emerald, retro, cyberpunk, coffee;
+}
+
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant emerald (&:where([data-theme="emerald"], [data-theme="emerald"] *));
+@custom-variant retro (&:where([data-theme="retro"], [data-theme="retro"] *));
+@custom-variant cyberpunk (&:where([data-theme="cyberpunk"], [data-theme="cyberpunk"] *));
+@custom-variant coffee (&:where([data-theme="coffee"], [data-theme="coffee"] *));
+
+@source "../../../**/*.{html,py,js}";
+
+/* داخل ملف theme/static_src/src/styles.css */
+
+
+/* لضمان أن المتصفح يفهم الألوان الأساسية لكل ثيم */
+:root {
+  color-scheme: light;
+}
+
+/* ربط كلاس .dark بثيم dark الخاص بـ DaisyUI */
+.dark {
+  color-scheme: dark;
+  @apply [data-theme:dark];
+}
+
+/*  اخبار  المتصفح ان يعطي اولوية لهذي  القيم ويقدمها عن اي متغيات او كلاسات تابعة  لTailwind لها نفس الاسماء */
+@layer base {
+
+/* =========================
+   LIGHT THEME
+========================= */
+
+:root,
+[data-theme="light"] {
+
+--bg-1: #F8FAFC;      /* main background (slate-50) */
+--bg-2: #FFFFFF;      /* cards */
+
+--bg-card-1: #ccddef82;      /*  cards */
+--bg-card-2: #f8fafc;      /* cards */
+
+--bg-field-1: #F8FAFC; /* inputs */
+--bg-field-2: #F1F5F9; /* hover inputs */
+
+--button: #4F46E5;     /* indigo-600 */
+--button-text: #FFFFFF;
+
+--text-1: #0F172A;     /* slate-900 */
+--text-2: #64748B;     /* slate-500 */
+
+--border-1: #E2E8F0;   /* slate-200 */
+--border-2: #F1F5F9;   /* slate-100 */
+
+--brand: #4F46E5;      /* main brand color */
+
+--text-error: #EF4444;
+--text-error-soft: #FEE2E2;
+
+}
+
+
+/* =========================
+   DARK THEME
+========================= */
+
+.dark,
+[data-theme="dark"] {
+
+--bg-1: #020617;      /* slate-950 */
+--bg-2: #374d83;      /* slate-900 cards */
+
+--bg-card-1: #374d83;      /*  cards */
+--bg-card-2: #020617;      /* cards */
+
+--bg-field-1: #0F172A;
+--bg-field-2: #1E293B;
+
+--text-1: #F8FAFC;    /* slate-50 */
+--text-2: #94A3B8;    /* slate-400 */
+
+--button: #6366F1;    /* indigo-500 */
+--button-text: #FFFFFF;
+
+--border-1: #1E293B;  /* slate-800 */
+--border-2: #334155;  /* slate-700 */
+
+--brand: #6366F1;     /* indigo brand */
+
+--text-error: #F87171;
+--text-error-soft: #2D1A1A;
+
+}
+
+/* 3. Emerald Theme (The Masterpiece) */
+[data-theme="emerald"] {
+  --bg-1: #052E16;
+  --bg-2: #052E16;
+
+  --bg-card-1: #ccddef82;      /*  cards */
+  --bg-card-2: #45556c;      /* cards */
+
+  --bg-field-1: #052E16;
+  --bg-field-2: #ECFDF5;
+  --text-1: #ECFDF5;
+  --text-2: #8d8383f2;
+  --button: #F8FAFC;
+  --button-text: #F8FAFC;
+  --border-1: #059669;
+  --border-2: #064E3B;
+  --brand: #10B981;
+  --text-error: #fb7185;
+  --text-error-soft: #4c1d1d;
+}
+[data-theme="cyberpunk"] { color-scheme: light; }
+[data-theme="coffee"] { color-scheme: dark; }
+}
+/*
+@theme {
+// ربط متغيرات الـ CSS بكلاسات Tailwind
+  --color-main-bg: var(--bg-color);
+  --color-main-text: var(--text-color);
+  --color-brand: var(--primary-color);
+  --color-main-border: var(--border-color);
+}
+*/
+@theme {
+
+  --color-base: var(--bg-1);          /* bg-base */
+  --color-surface: var(--bg-2);       /* bg-surface */
+
+  --color-base-card: var(--bg-card-1);
+  --color-surface-card: var(--bg-card-2);
+
+  --color-field-base: var(--bg-field-1);          /* bg-field-base */
+  --color-field-surface: var(--bg-field-2);       /* bg-field-surface */
+
+  --color-btn: var(--button);            /* bg-btn */
+  --color-btn-text: var(--button-text);       /* button-text */
+
+  --color-content: var(--text-1);      /* text-content */
+  --color-content-muted: var(--text-2);/* text-content-muted */
+
+  --color-stroke: var(--border-1);     /* border-stroke */
+  --color-stroke-soft: var(--border-2);/* border-stroke-soft */
+
+  --color-brand: var(--brand);         /* bg-brand أو text-brand */
+
+  --color-err: var(--text-error);
+  --color-err-soft: var(--text-error-soft);/* text-err */
+
+}
+
+@layer utilities {
+
+  /* الخلفيات */
+
+  .bg-base {
+    background-color: var(--color-base);
+  }
+
+  .bg-surface {
+    background-color: var(--color-surface);
+  }
+
+  .bg-base-card {
+    background-color: var(--color-base-card);
+  }
+
+  .bg-surface-card {
+    background-color: var(--color-surface-card);
+  }
+
+  .bg-field-base {
+    background-color: var(--color-field-base);
+  }
+
+  .bg-field-surface {
+    background-color: var(--color-field-surface);
+  }
+
+  /* النص */
+
+  .text-content {
+    color: var(--color-content);
+  }
+
+  .text-content-muted {
+    color: var(--color-content-muted);
+  }
+
+  /* الأخطاء */
+
+  .text-error {
+    color: var(--color-err);
+  }
+
+  .text-error-soft {
+    color: var(--color-err-soft);
+  }
+
+  .color-error {
+    color: var(--color-err);
+  }
+
+  /* الأزرار */
+
+  .bg-btn {
+    background-color: var(--color-btn);
+  }
+
+  .btn-text {
+    color: var(--color-btn-text);
+  }
+
+  /* الحدود */
+
+  .border-stroke {
+    border-color: var(--color-stroke);
+  }
+
+  .border-stroke-soft {
+    border-color: var(--color-stroke-soft);
+  }
+
+  /* العلامة التجارية */
+
+  .bg-brand {
+    background-color: var(--color-brand);
+  }
+
+  .text-brand {
+    color: var(--color-brand);
+  }
+
+  /* الأيقونات */
+
+  .stroke-current {
+    stroke: currentColor;
+  }
+
+}

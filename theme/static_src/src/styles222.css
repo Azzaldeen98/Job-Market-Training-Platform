@@ -1,0 +1,23 @@
+
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* يجب أن يكون هذا السطر هنا (خارج @theme) ليعمل كمفتاح يدوي */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* هذا السطر يخبر تايلوند أننا سنستخدم كلاس 'dark' للتبديل */
+  /*--dark-mode: selector(.dark);*/
+}
+
+@source "../../../**/*.{html,py,js}";
+
+/* إضافة هذا السطر لإجبار الخلفية على التغير في حال وجود تضارب */
+@layer base {
+  body {
+    @apply bg-white text-black;
+  }
+  .dark body {
+    @apply bg-slate-900 text-white;
+  }
+}
