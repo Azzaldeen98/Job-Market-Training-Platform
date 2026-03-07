@@ -110,3 +110,22 @@ npx @tailwindcss/cli -i ./static/css/style.css -o ./static/css/output.css --watc
 ```bash 
 pip install django-allauth django-crispy-forms crispy-tailwind
 ```
+
+### 🚀 خارطة الطريق (Roadmap) 
+[x] بناء نظام الأدوار الديناميكي (Post-migrate Sync).
+
+[x] إعداد منطق التوجيه الذكي (Role-based Redirect).
+
+[X] بناء واجهات لوحات التحكم  (students app).
+
+[X] دمج نظام رفع الوظائف للشركات.
+
+[X] تفعيل نظام الإشعارات الفوري.
+
+### 📝 ملاحظات هامة للمطورين 
+
+- **دستور القاف: المنطق (Logic)** أولاً، العلاقات بين الجداول ثانياً، والتصميم آخراً. 
+
+- التحديث: عند إضافة دور جديد في SITE_ROLES بالـ settings.py قم بتشغيل python manage.py migrate لتحديث قاعدة البيانات فوراً.
+
+- الأمن: لا تقم بتعديل جدول الأدوار يدوياً من الـ DB؛ اعتمد دائماً على ملف الإعدادات.

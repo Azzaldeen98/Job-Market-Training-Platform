@@ -10,60 +10,52 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
-# from dotenv import dotenv_values
-
-from pathlib import Path
-
 import environ
-
+import shutil
+from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
 
 
+# =====================================================================
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# قراءة ملف .env الفعلي
-# environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# # بدلاً من كتابة المفتاح يدوياً، نطلبه من ملف الـ .env
-# SECRET_KEY = env('SECRET_KEY')
-env = environ.Env(
-    # ضبط القيم الافتراضية (في حال لم توجد في ملف .env)
-    DEBUG=(bool, False)
-)
+# =====================================================================
+# << env >>
+# =====================================================================
 
-# 3. قراءة ملف .env
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+env = environ.Env(DEBUG=(bool, False))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env')) # . قراءة ملف .env
 
-# 4. استدعاء الأسرار بطريقة احترافية
+APP_NAME=env('APP_NAME')
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
+EMAIL_SERVICE = env('EMAIL_SERVICE', default='console')
+
+
+# =======================[get npm path from system ]=====================
+
+# يبحث النظام عن مكان npm تلقائياً
+NPM_BIN_PATH = shutil.which("npm") or shutil.which("npm.cmd")
+
+# إذا لم يجده (في حالات نادرة على ويندوز)، نضع المسار الاحتياطي
+if not NPM_BIN_PATH:
+    NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+
+# =====================================================================
 
 TAILWIND_APP_NAME = 'theme'
-# فقط إذا ظهر خطأ يخص npm
-NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-e!*e6-j$4$*rcx7j+avc(&a5im&0z7#llh_py!a%ahw*7rb1&7'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
 
 ALLOWED_HOSTS = []
-# style files inputs
-TAILWIND_FIELD_CLASSES = (
-    "w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm "
-    "focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 "
-    "transition duration-200 outline-none"
-)
 
-# Application definition
 
+# =====================================================================
+# << Applications Definition >>
+# =====================================================================
 INSTALLED_APPS = [
 
     "unfold",  # <-- يجب أن تكون هنا في البداية
@@ -88,6 +80,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
 
     # 3. تطبيقات التنسيق (Crispy & Tailwind)
     'crispy_forms',
@@ -95,16 +88,19 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',  # تطبيق الثيم الخاص بك
 
-
-
     # 5. الأدوات الإضافية
     'django_browser_reload',
     "django_htmx",
     'widget_tweaks',
 
 ]
+
+# =====================================================================
+# << UNFOLD >>
+# =====================================================================
+
 UNFOLD = {
-    "SITE_TITLE": "لوحة تحكم مشروعي",
+    "SITE_TITLE": f"{APP_NAME} Control Panel",
     "SITE_SYMBOL": "settings", # أيقونة من Google Fonts
     "COLORS": {
         "primary": {
@@ -118,8 +114,11 @@ UNFOLD = {
 }
 
 
-# لا تنسى إضافة هذا السطر تحت القائمة مباشرة
 SITE_ID = 1
+
+# =====================================================================
+# << Middleware >>
+# =====================================================================
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -137,8 +136,11 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
 ]
 
-# ملف التوجيه الافتراضي  للموقع والذي يبداء الانطلاق منه
-ROOT_URLCONF = 'config.urls'
+
+
+# =====================================================================
+# << Templates & Components >>
+# =====================================================================
 
 TEMPLATES = [
     {
@@ -166,11 +168,18 @@ TEMPLATES = [
     },
 ]
 
+# =====================================================================
+# << Routers >>
+# =====================================================================
+
+ROOT_URLCONF = 'config.urls' # ملف التوجيه الافتراضي  للموقع والذي يبداء الانطلاق منه
 WSGI_APPLICATION = 'config.wsgi.application'
+DEFAULT_HOME_URL = 'core:home'
 
+# =====================================================================================
+# << Database >>
+# =====================================================================================
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -180,9 +189,67 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
+# =====================================================================================
+# << Internationalization >>
+# =====================================================================================
+
+
+TIME_ZONE = 'UTC' # التوقيت العالمي
+USE_TZ = True
+
+# =====================================================================================
+# << Local Languages >>
+# =====================================================================================
+
+LANGUAGE_CODE = 'en-us' # اللغة الافتراضية
+USE_I18N = True
+
+# قائمة الغات  المتاحة لترجمة
+LANGUAGES = [
+    ('ar', _('Arabic')),
+    ('en', _('English')),
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
+
+# ====================================================================================
+# << Static Files >>
+# =====================================================================================
+
+# Static files (CSS, JavaScript, Images)
+
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# مسار حفظ الوسائط
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# =====================================================================================
+# << Auth Settings >>
+# =====================================================================================
+
+ACCOUNT_FORMS = {
+    'signup': 'accounts.forms.CustomSignupForm',
+}
+
+LOGIN_URL = 'account_login'  # الرابط الذي يتم توجيه المستخدم إليه إذا حاول دخول صفحة محمية وهو غير مسجل
+AUTH_USER_MODEL = 'accounts.CustomUser' # تحديد الModel المعتمد لحساب المستخدم في المشروع
+LOGIN_REDIRECT_URL = 'accounts:redirect_by_role' #  التوجيه بناءً على "الهوية"
+LOGOUT_REDIRECT_URL = 'core:home' # الرابط الذي سيتم الانتقال إليه بعد تسجيل الخروج
+
+ACCOUNT_USERNAME_REQUIRED = False # التأكد من أن allauth لا يبحث عن username
+ACCOUNT_AUTHENTICATION_METHOD = "email" # يمكن للمستخدم الدخول عبر الإيميل بدلاً من اليوزر نيم
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True
+
+
+# << Password Validation Settings>>
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -199,117 +266,72 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-TIME_ZONE = 'UTC' # التوقيت العالمي
-USE_TZ = True
+# =============================================================
+# Email sending settings using Gmail SMTP
+# =============================================================
 
-LANGUAGE_CODE = 'en-us' # اللغة الافتراضية
+"""
+- mandatory: تجبر المستخدم على التحقق قبل الدخول
+- optional: يرسل بريداً لكن لا يمنعه من الدخول
+- none: لا يرسل بريداً
+"""
+ACCOUNT_EMAIL_VERIFICATION = "optional" # اختياري رابط التحقق
 
-USE_I18N = True
-
-
-# قائمة الغات  المتاحة لترجمة
-LANGUAGES = [
-    ('ar', _('Arabic')),
-    ('en', _('English')),
-]
-
-
-
-LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'locale'),
-]
-
-ACCOUNT_FORMS = {
-    'signup': 'accounts.forms.CustomSignupForm',
-}
+if EMAIL_SERVICE == 'smtp':
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # convert from console to SMTP
+    EMAIL_HOST = 'smtp.gmail.com'  # Gmail's SMTP server
+    EMAIL_PORT = 587  # Port used to send mail via TLS
+    EMAIL_USE_TLS = True  # Enable TLS encryption to protect the connection with the Gmail server
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER')  # The email address the application uses to connect to the mail server
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')  # Mail server password (App Password)
+    DEFAULT_FROM_EMAIL = f'{APP_NAME} | Support <{EMAIL_HOST_USER}>'  # The default sender name that will appear in the messages
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# =====================================================================================
+# << Identity Roles >>
+# =====================================================================================
 
-# مسار حفظ الوسائط
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
-
-
-# إخبار allauth باستخدام الفورم المخصص لحفظ الحقول الإضافية
-# ACCOUNT_SIGNUP_FORM_CLASS = 'accounts.forms.CustomSignupForm'
-
-         # منع تكرار الإيميل
-
-
-LOGIN_URL = 'account_login'  # الرابط الذي يتم توجيه المستخدم إليه إذا حاول دخول صفحة محمية وهو غير مسجل
-AUTH_USER_MODEL = 'accounts.CustomUser' # تحديد الModel المعتمد لحساب المستخدم في المشروع
-# LOGIN_REDIRECT_URL = 'core:home' # الرابط الذي سيتم الانتقال إليه بعد تسجيل الدخول
-LOGIN_REDIRECT_URL = 'accounts:redirect_by_role' #  التوجيه بناءً على "الهوية"
-LOGOUT_REDIRECT_URL = 'core:home' # الرابط الذي سيتم الانتقال إليه بعد تسجيل الخروج
-
-
-ACCOUNT_USERNAME_REQUIRED = False # التأكد من أن allauth لا يبحث عن username
-
-#====================== Email ==========================================
-
-
-ACCOUNT_AUTHENTICATION_METHOD = "email" # يمكن للمستخدم الدخول عبر الإيميل بدلاً من اليوزر نيم
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_REQUIRED = True
-# "mandatory" تجبر المستخدم على التحقق قبل الدخول
-# "optional" يرسل بريداً لكن لا يمنعه من الدخول
-# "none" لا يرسل بريداً
-# ACCOUNT_EMAIL_VERIFICATION = "mandatory" # الزامي رابط التحقق
-ACCOUNT_EMAIL_VERIFICATION = "optional"# اختياري رابط التحقق
-
-
-# . إعدادات خادم البريد (للتجربة أثناء التطوير)
-# هذا السطر يطبع الإيميل في التيرمينال بدلاً من إرساله فعلياً
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# settings.py
-
-# . تغيير المحرك من console إلى smtp لإرسال حقيقي
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# 2. معلومات سيرفر Gmail
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-# 3. بريدك الحقيقي وكلمة مرور التطبيق
-EMAIL_HOST_USER = 'azzaldeen771211417@gmail.com'
-EMAIL_HOST_PASSWORD = 'cqtj arks oxqk ywzg'  # ليس باسورد الإيميل العادي! (اقرأ التنبيه بالأسفل)
-
-# 4. البريد الذي سيظهر للمرسل إليه (يفضل أن يتطابق مع EMAIL_HOST_USER)
-DEFAULT_FROM_EMAIL = 'Django Web | Support <azzaldeen771211417@gmail.com>'
-
-# ====================================================================================
-
-handler404 = 'core.views.error_404'
-handler500 = 'core.views.error_500'
-
-DEFAULT_HOME_URL = 'core:home'
-# config/settings.py
+# create identity roles in your website
 
 SITE_ROLES = [
-    # {'code': 'user', 'name': 'user', 'is_identity': True ,'requires_approval': False,'view_in_register': True},
-    {'code': 'student', 'name': 'student', 'is_identity': True ,'requires_approval': False,'view_in_register': True,},
-    {'code': 'company', 'name': 'company', 'is_identity': True,'requires_approval': True,'view_in_register': True},
+    {
+        'code': 'student',
+        'name': 'student',
+        'is_identity': True ,
+        'requires_approval': False,
+        'view_in_register': True,
+    },
+    # {
+    #     'code': 'company',
+    #     'name': 'company',
+    #     'is_identity': True,
+    #     'requires_approval': True,
+    #     'view_in_register': True
+    # },
 ]
 
-#ربط هذه الأدوار بلوحات التحكم الخاصة بها
+#  Linking roles to their respective control panels
 
 ROLE_DASHBOARDS = {
-    # 'user': 'users:dashboard',
-    'student': 'students:dashboard',
-    'company': 'companies:dashboard',
-    'admin': 'admin:index'
+    role['code']: (
+        'admin:index' if role['code'] == 'admin'
+        else f"{role['code']}s:dashboard"
+    )
+    for role in SITE_ROLES
 }
 
-
-# إعدادات Crispy Forms
+# =====================================================================================
+# << Settings Crispy Forms >>
+# =====================================================================================
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
+
+
+# =====================================================================================
+# << Errors Pages >>
+# =====================================================================================
+handler404 = 'core.views.error_404'
+handler500 = 'core.views.error_500'
