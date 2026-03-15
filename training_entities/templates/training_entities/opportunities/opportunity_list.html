@@ -1,0 +1,131 @@
+{% extends 'training_entities/base.html' %}
+
+{% block title %}
+    {% trans "Training Opportunities" %}
+{% endblock %}
+
+{% block provider_content %}
+<div class="py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+            <div>
+                <h2 class="text-3xl font-extrabold text-content">
+                    {% trans "My Training Opportunities" %}
+                </h2>
+                <p class="text-sm text-content opacity-60 mt-1">
+                    {% trans "Manage and track your published training opportunities" %}
+                </p>
+            </div>
+
+            <a href="{% url 'training_entities:opportunity_add' %}"
+               class="inline-flex items-center px-6 py-3 bg-brand text-white rounded-xl font-bold shadow-lg hover:opacity-90 transition-all gap-2 w-fit">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                {% trans "Add New Opportunity" %}
+            </a>
+        </div>
+
+        {% if opportunities %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for opportunity in opportunities %}
+                    <div class="bg-surface border border-stroke-soft rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
+
+                        <div class="p-6 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="p-2 bg-brand/10 text-brand rounded-lg">
+                                    <i data-lucide="briefcase" class="w-6 h-6"></i>
+                                </span>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase">
+                                    {% trans "Active" %}
+                                </span>
+                            </div>
+
+                            <h3 class="text-xl font-bold text-content mb-2 group-hover:text-brand transition-colors">
+                                {{ opportunity.title|default:_("Training Opportunity") }}
+                            </h3>
+
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center text-sm opacity-70 gap-2">
+                                    <i data-lucide="building-2" class="w-4 h-4"></i>
+                                    <span>{{ opportunity.major.college.university.name }}</span>
+                                </div>
+                                <div class="flex items-center text-sm opacity-70 gap-2">
+                                    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                                    <span>{{ opportunity.major.college.name }}</span>
+
+                                </div>
+                                  <span class="text-[10px] px-2 py-1 bg-base border border-stroke-soft rounded-md ">
+                                        {{ opportunity.major.name }}
+                                    </span>
+                            </div>
+
+<!--                            <div class="flex flex-wrap gap-2 mt-4">-->
+<!--                                {% for major in opportunity.majors.all %}-->
+<!--                                    <span class="text-[10px] px-2 py-1 bg-base border border-stroke-soft rounded-md ">-->
+<!--                                        {{ opportunity.major.name }}-->
+<!--                                    </span>-->
+<!--                                {% endfor %}-->
+<!--                            </div>-->
+                        </div>
+
+                        <div class="py-4 px-2 bg-base/50 border-t border-stroke-soft flex justify-around gap-1">
+
+                            {% link-button   url=opportunity.get_detail_url  label=_("View")  icon='eye' %}
+                            {% link-button   url=opportunity.get_edit_url label=_("Edit")  icon='edit-3' %}
+                            {% link-button  url=opportunity.get_check_match_url label=_("Match") title=_('Checking matching students') icon='user-check' %}
+                            {% delete_button   action_url=opportunity.get_delete_url  message=_("Are you sure you want to delete this opportunity? All associated data will be permanently removed.") %}
+<!--                            <a href="{% url 'training_entities:opportunity_detail' opportunity.id %}"-->
+<!--                               class="flex-1 flex justify-center items-center py-2 text-sm font-medium hover:bg-white-->
+<!--                               rounded-lg transition-colors gap-2 border border-transparent  hover:border-stroke-soft">-->
+<!--                                <i data-lucide="eye" class="w-4 h-4"></i>-->
+<!--                                {% trans "View" %}-->
+<!--                            </a>-->
+<!--                            {% link-button  extra_classes="border border-brand/10 shadow-sm" url=opportunity.get_detail_url label=_("View")  icon='edit-3' %}-->
+
+<!--                            <a href="{% url 'training_entities:opportunity_edit' opportunity.id %}" class="flex-1  flex justify-center items-center py-2 text-sm font-medium hover:bg-white rounded-lg transition-colors gap-2 border border-transparent hover:border-stroke-soft">-->
+<!--                                <i data-lucide="edit-3" class="w-4 h-4"></i>-->
+<!--                                {% trans "Edit" %}-->
+<!--                            </a>-->
+<!--                            {% url 'training_entities:opportunity_edit' opportunity.id as edit_url %}-->
+
+<!--                            <a href="{% url 'training_entities:check_match' opportunity.id %}"-->
+<!--                                class="flex-1 flex flex-col sm:flex-row justify-center items-center py-2 text-xs font-medium bg-brand/5 text-brand hover:bg-brand hover:text-content-muted rounded-lg transition-all gap-1 border border-brand/10 shadow-sm"-->
+<!--                                title="{% trans 'Checking matching students' %}">-->
+<!--                                <i data-lucide="user-check" class="w-4 h-4"></i>-->
+<!--                                <span class="hidden sm:inline text-[10px] lg:text-xs">{% trans "Match" %}</span>-->
+<!--                            </a>-->
+
+<!--                            {% url 'training_entities:check_match' opportunity.id as match_url %}-->
+
+<!--                            <form action="{% url 'training_entities:opportunity_delete' opportunity.id %}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذه الفرصة؟');">-->
+<!--                                {% csrf_token %}-->
+<!--                                 <button class="flex-1 flex justify-center items-center py-2 text-sm font-medium text-err hover:bg-red-50 rounded-lg transition-colors gap-2">-->
+<!--                                    <i data-lucide="trash-2" class="w-4 h-4"></i>-->
+<!--                                    {% trans "Delete" %}-->
+<!--                                </button>-->
+<!--                            </form>-->
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-20 bg-surface rounded-3xl border-2 border-dashed border-stroke-soft">
+                <div class="inline-flex p-6 bg-base rounded-full mb-4">
+                    <i data-lucide="clipboard-list" class="w-12 h-12 opacity-20"></i>
+                </div>
+                <h3 class="text-xl font-bold opacity-80">{% trans "No opportunities found" %}</h3>
+                <p class="mt-2 opacity-50">{% trans "You haven't added any training opportunities yet." %}</p>
+                <div class="mt-8">
+                    <a href="{% url 'training_entities:training_opportunity' %}" class="text-brand font-bold underline">
+                        {% trans "Click here to add your first one" %}
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+
+{% endblock %}

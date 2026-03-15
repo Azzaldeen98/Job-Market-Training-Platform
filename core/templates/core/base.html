@@ -11,10 +11,19 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+     <title>{% block title %}مشروعي{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <title>{% block title %}مشروعي{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
 <!--    {% if LANGUAGE_CODE == 'ar' %}-->
 <!--        <link rel="stylesheet" href="% static 'css/style.css' %}">-->
@@ -28,9 +37,7 @@
  <!-- مكتبة الأيقونات Phosphor Icons -->
 <!--    <script src="https://unpkg.com/@phosphor-icons/web"></script>-->
     <!-- مكتبة المخططات البيانية Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{% static 'js/htmx.min.js' %}"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+
 </head>
 
 <body  class="bg-base  transition-colors duration-300  font-sans antialiased">

@@ -32,7 +32,8 @@ def sync_roles_from_settings(sender, **kwargs):
             code=role_data.get('code'),
             defaults={
                 'name': role_data.get('name'),
-                'is_identity': role_data.get('is_identity', True),
+                'is_identity': role_data.get('is_identity', True), 
+                'app_name': role_data.get('app_name'),
                 'requires_approval': role_data.get('requires_approval', False),
                 'view_in_register': role_data.get('view_in_register', True),
             }
@@ -60,7 +61,21 @@ def sync_roles_from_settings(sender, **kwargs):
 #             }
 #         )
 #
+def bind_profile_to_user(user_instance, profile_instance):
+    """
+    تقوم هذه الدالة بربط أي بروفايل تم إنشاؤه بالمستخدم
+    باستخدام نظام الـ Generic Foreign Key الخاص بك.
+    """
+    from django.contrib.contenttypes.models import ContentType
 
+    content_type = ContentType.objects.get_for_model(profile_instance)
+
+    # تحديث المستخدم ليرتبط بالبروفايل الجديد
+    user_instance.profile_type = content_type
+    user_instance.profile_id = profile_instance.id
+    user_instance.save()
+
+    return user_instance
 
 def create_dynamic_profile(user_instance, role_code):
     """
@@ -72,6 +87,7 @@ def create_dynamic_profile(user_instance, role_code):
 
     # 2. اكتشاف الموديل برمجياً (مثلاً: 'student' -> 'StudentProfile')
     model_name = f"{role_code.strip().title()}Profile".replace(" ", "")
+    print(f"DEBUG:def->create_dynamic_profile , {model_name}")
 
     TargetModel = None
     for model in apps.get_models():
@@ -80,7 +96,7 @@ def create_dynamic_profile(user_instance, role_code):
             break
 
     if not TargetModel:
-        logger.error(f"CRITICAL: الموديل {model_name} غير موجود. تأكد من إنشائه في models.py")
+        logger.error(f"CRITICAL: The model {model_name} does not exist. Make sure it is created in models.py")
         return None
 
     try:
@@ -102,9 +118,9 @@ def create_dynamic_profile(user_instance, role_code):
                 # تحديث الكائن في الذاكرة (Memory) للاستخدام الفوري
                 user_instance.profile_type = content_type
                 user_instance.profile_id = new_profile.id
-                logger.info(f"SUCCESS: تم إنشاء وربط {model_name} للمستخدم {user_instance.username}")
+                logger.info(f"SUCCESS: Created and bound to user {user_instance.username}")
                 return new_profile
 
     except Exception as e:
-        logger.error(f"ERROR: فشل إنشاء البروفايل الديناميكي: {str(e)}")
+        logger.error(f"ERROR: The creation of the dynamic profile failed: {str(e)}")
         return None

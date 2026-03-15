@@ -1,0 +1,17 @@
+<a  href="{{ url }}"
+    title="{{ title }}"
+    class=" flex-1 flex flex-col sm:flex-row justify-center items-center px-2  py-2 text-xs font-medium bg-brand/5
+            text-brand hover:bg-brand hover:text-content-muted rounded-lg transition-all gap-1
+        {{extra_classes}}"
+        {% if LANGUAGE_BIDI %} dir="rtl" {% endif %}
+         >
+
+    {% if icon %}
+       <i data-lucide="{{ icon }}"
+           class="w-5 h-5 stroke-current {% if LANGUAGE_BIDI %}rotate-180{% endif %}">
+        </i>
+    {% endif %}
+
+
+    <span class="">{{ label }}</span>
+</a>

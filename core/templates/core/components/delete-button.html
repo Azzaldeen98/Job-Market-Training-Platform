@@ -1,0 +1,80 @@
+
+<!--<form action="{{action_url}}" method="POST"-->
+<!--      onsubmit="return confirm({{message}});">-->
+<!--    {% csrf_token %}-->
+<!--     <button class="flex-1 flex justify-center items-center py-2 text-sm font-medium text-err hover:bg-red-50 rounded-lg transition-colors gap-2">-->
+<!--        <i data-lucide="trash-2" class="w-4 h-4"></i>-->
+<!--         {{ label|default:"Delete" }}-->
+<!--    </button>-->
+<!--</form>-->
+
+{% with form_id="delete-form-"|add:label|slugify %}
+<form id="{{ form_id }}" action="{{ url }}" method="POST" class="inline-block">
+    {% csrf_token %}
+    <button type="button"
+            onclick="confirmDelete('{{ form_id }}', '{{ message }}')"
+            class="cursor-pointer flex items-center gap-2 px-4 py-2 bg-err/10 text-err  rounded-xl transition duration-200   {{ extra_classes }}">
+
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+
+        <span class="font-medium">
+            {{ label }}
+        </span>
+    </button>
+</form>
+{% endwith %}
+
+{% if not swal_script_loaded %}
+
+<script>
+    function confirmDelete(formId, message) {
+        Swal.fire({
+            title: '{% trans "Confirm Deletion" %}',
+            text: message,
+            icon: 'warning',
+            iconColor: 'var(--text-error)', // لون الأيقونة (يمكنك تغييره للـ brand إذا أردت)
+            showCancelButton: true,
+            confirmButtonText: '{% trans "Yes, Delete Now" %}',
+            cancelButtonText: '{% trans "Cancel" %}',
+            reverseButtons: {% if LANGUAGE_BIDI %}true{% else %}false{% endif %},
+
+            // هذا السطر مهم جداً لتعطيل تنسيقات سويت أليرت الافتراضية واستخدام Tailwind
+            buttonsStyling: false,
+            background: 'var(--color-surface)',
+            customClass: {
+                popup: 'rounded-3xl  shadow-xl text-content p-6 z-index',
+                title: 'text-2xl font-bold text-content',
+                htmlContainer: 'text-content/80',
+                confirmButton: ' cursor-pointer bg-brand text-white rounded-xl px-6 py-2 font-bold mx-2 transition hover:opacity-90',
+                cancelButton: ' cursor-pointer  text-content rounded-xl px-6 py-2 font-bold mx-2 transition '
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+</script>
+<!--<script>-->
+<!--    function confirmDelete(formId, message) {-->
+<!--        Swal.fire({-->
+<!--            title: '{% trans "Confirm Deletion" %}',-->
+<!--            text: message,-->
+<!--            icon: 'warning',-->
+<!--            showCancelButton: true,-->
+<!--            confirmButtonText: '{% trans "Yes, Delete Now" %}',-->
+<!--            cancelButtonText: '{% trans "Cancel" %}',-->
+<!--            reverseButtons: {% if LANGUAGE_BIDI %}true{% else %}false{% endif %},-->
+<!--            customClass: {-->
+<!--                popup: 'bg-base rounded-3xl border-none shadow-xl bg-surface text-content',-->
+<!--                confirmButton: 'bg-brand rounded-xl px-6 py-2 font-bold mx-2',-->
+<!--                cancelButton: 'rounded-xl px-6 py-2 font-bold mx-2'-->
+<!--            }-->
+<!--        }).then((result) => {-->
+<!--            if (result.isConfirmed) {-->
+<!--                document.getElementById(formId).submit();-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+<!--</script>-->
+{% endif %}

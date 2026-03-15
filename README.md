@@ -8,6 +8,9 @@
 ### 2. تثبيت المكتبات المطلوبة 
 
 ```bash 
+
+pip freeze > requirements.txt #  إستعراض جميع المكتبات المثبتة حالياً مع أرقام إصداراتها الدقيقة وتحويلها الى ملف نصي  يجب تنفيذه بعد كل مكتبه يتم تثبيتها
+
 pip install -r requirements.txt
 ```
 
@@ -34,6 +37,7 @@ SITE_ROLES = [
 
 # 3. مزامنة قاعدة البيانات (سيقوم النظام بإنشاء الأدوار تلقائياً)##
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
@@ -85,7 +89,18 @@ python manage.py runserver
 ```bash
 python manage.py generate_apps
 ```
+### Clear Cash 
 
+```bash
+Get-ChildItem -Path . -Include *.pyc -Recurse | Remove-Item -Force
+```
+
+### Githup push commands
+```commandline
+git add .
+git commit -m /"Add:complete_profile , Academic apps, Location manager /" 
+git push -u origin main
+```
 
 ### 🚀 Roadmap
 [x] Building a dynamic role system (Post-migrate Sync).

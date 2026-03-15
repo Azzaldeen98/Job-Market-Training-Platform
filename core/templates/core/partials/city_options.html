@@ -1,0 +1,29 @@
+
+
+<div id="city-wrapper" class="space-y-2 relative">
+    <label for="id_city" class="block text-sm font-medium text-gray-700">
+        {% trans "City" %}
+    </label>
+
+    <div class="flex items-center gap-2">
+        <div class="relative flex-1">
+            <select name="city"
+                    id="id_city"
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none bg-white">
+                <option value="">{% trans "Select City" %}</option>
+                {% for city in cities %}
+                    <option value="{{ city.id }}">{{ city.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="button"
+                hx-get="{% url 'core:add_city' %}"
+                hx-target="#modal-container"
+                class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-purple-600 hover:text-white transition-colors border border-gray-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+        </button>
+    </div>
+</div>

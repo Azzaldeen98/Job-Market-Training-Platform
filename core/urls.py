@@ -8,4 +8,8 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('toggle-theme/', views.toggle_theme, name='toggle_theme'),
     path('search/', views.search_users, name='search_users'),
+
+
+    path('load_countries/', views.load_countries, name='load_countries'),
+    # path('add_country/', views.add_country, name='add_country'),
 ]

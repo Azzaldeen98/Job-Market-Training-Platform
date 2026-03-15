@@ -1,0 +1,38 @@
+
+<div id="region-wrapper" class="space-y-2 relative">
+    <label for="id_region" class="block text-sm font-medium text-gray-700">
+        {% trans "Region" %}
+    </label>
+
+    <div class="flex items-center gap-2">
+        <div class="relative flex-1">
+            <select name="region"
+                    id="id_region"
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none bg-white"
+                    hx-get="{% url 'core:load_cities' %}"
+                    hx-target="#city-wrapper"
+                    hx-indicator="#region-loader">
+                <option value="">{% trans "Select Region" %}</option>
+                {% for region in regions %}
+                    <option value="{{ region.id }}">{{ region.name }}</option>
+                {% endfor %}
+            </select>
+
+            <div id="region-loader" class="htmx-indicator absolute left-8 top-1/2 -translate-y-1/2">
+                <svg class="animate-spin h-4 w-4 text-blue-600" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <button type="button"
+                hx-get="{% url 'core:add_region' %}"
+                hx-target="#modal-container"
+                class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-green-600 hover:text-white transition-colors border border-gray-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+        </button>
+    </div>
+</div>

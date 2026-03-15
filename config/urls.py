@@ -12,23 +12,26 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path('admin/', admin.site.urls),
 
+    #--------------------------------------------------
     # نظام المصادقة (Allauth)
-    path('accounts/account/', include('allauth.urls')),
-
-    # روابط تطبيق الحسابات المخصص
+    # path('accounts/account/', include('allauth.urls')),
+    # # روابط تطبيق الحسابات المخصص
+    # path('accounts/', include('accounts.urls')),
     path('accounts/', include('accounts.urls')),
-
+    path('accounts/', include('allauth.urls')),
+    #--------------------------------------------------
+    path('', include('core.urls')),
+    #--------------------------------------------------
     # === [AUTO_GENERATED_URLS_START] ===
     # محرك الأتمتة سيضيف روابط الأدوار هنا (مثل students, companies)
     # === [AUTO_GENERATED_URLS_END] ===
 
-    # روابط تطبيق core (يجب أن يكون في الأسفل غالباً لأنه يحتوي على الصفحة الرئيسية)
-    path('', include('core.urls')),
-
+    path('academy/', include('academy.urls')),
     path('students/', include('students.urls')),
+    path('training_entities/', include('training_entities.urls')),
 
-    # أداة التحديث التلقائي للمتصفح أثناء التطوير
-    path("__reload__/", include("django_browser_reload.urls")),
+    #--------------------------------------------------
+    path("__reload__/", include("django_browser_reload.urls")),   # أداة التحديث التلقائي للمتصفح أثناء التطوير
 ]
 
 # إعدادات الملفات الساكنة والوسائط في وضع التطوير

@@ -1,0 +1,100 @@
+{% extends 'core/base.html' %}
+  {% block content %}
+
+<div class="w-full">
+    <div class="lg:hidden bg-surface border-b border-stroke-soft px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
+                <i data-lucide="building-2" class="w-5 h-5 btn-text"></i>
+            </div>
+            <span class="font-bold text-lg text-content">SkillMatch</span>
+        </div>
+        <button id="mobile-menu-btn" class="p-2 hover:bg-field-base rounded-lg transition-colors">
+            <i data-lucide="menu" class="w-6 h-6 text-content-muted"></i>
+        </button>
+    </div>
+
+    <div class="flex min-h-screen bg-base">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-surface border-r border-stroke-soft transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:inset-auto lg:h-screen overflow-y-auto">
+            <div class="p-6 border-b border-stroke-soft">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center shadow-lg shadow-brand/20">
+                        <i data-lucide="building-2" class="w-6 h-6 btn-text"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl text-content">SkillMatch</h1>
+                        <p class="text-xs text-content-muted font-medium text-brand">Business Panel</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="p-4 space-y-1">
+                <a href="{% url 'training_entities:dashboard' %}" class="nav-item active flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 bg-brand text-white">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    Dashboard
+                </a>
+
+                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    Post Opportunity
+                </a>
+
+                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                    My Listings
+                    <span class="ml-auto bg-brand/10 text-brand text-xs font-bold px-2 py-1 rounded-full">5</span>
+                </a>
+
+                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    Applicants
+                    <span class="ml-auto bg-orange-500/10 text-orange-600 text-xs font-bold px-2 py-1 rounded-full">24</span>
+                </a>
+
+                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                    <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+                    Evaluations
+                </a>
+
+                <a href="{% url 'training_entities:complete_profile' %}" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    Organization Info
+                </a>
+                <a href="{% url 'training_entities:complete_profile' %}" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                    Profile
+                </a>
+                <a href="{% url 'training_entities:training_opportunities' %}" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                    <i data-lucide="briefcase" class="w-5 h-5 "></i>
+                   {% trans ' Training Opportunities' %}
+                </a>
+            </nav>
+
+            <div class="p-4 mt-auto">
+                <div class="bg-field-base rounded-2xl p-4 border border-stroke-soft">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="check-badge" class="w-5 h-5 text-brand"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-content">Verification</p>
+                            <p class="text-xs text-content-muted">Identity Verified</p>
+                        </div>
+                    </div>
+                    <div class="w-full bg-stroke-soft rounded-full h-1.5 mb-2">
+                        <div class="bg-green-500 h-1.5 rounded-full" style="width: 100%"></div>
+                    </div>
+                    <p class="text-xs text-green-600 font-medium">Account Active</p>
+                </div>
+            </div>
+        </aside>
+
+        <main class="w-full overflow-x-hidden">
+            <div class="p-4 lg:p-8">
+                {% block provider_content %}
+                    {% endblock %}
+            </div>
+        </main>
+    </div>
+</div>
+ {% endblock  %}

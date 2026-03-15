@@ -1,0 +1,84 @@
+
+
+<!--<div id="modal-backdrop"-->
+<!--     class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">-->
+
+<!--    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform animate-in zoom-in-95 duration-200"-->
+<!--         onclick="event.stopPropagation()">-->
+
+<!--        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-green-50/50">-->
+<!--            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">-->
+<!--                <span class="p-1.5 bg-green-100 text-green-600 rounded-lg">-->
+<!--                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+<!--                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>-->
+<!--                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>-->
+<!--                    </svg>-->
+<!--                </span>-->
+<!--                {% trans "Add New Region" %}-->
+<!--            </h3>-->
+<!--            <button type="button"-->
+<!--                    onclick="document.getElementById('modal-backdrop').remove()"-->
+<!--                    class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1.5 rounded-xl transition-colors">-->
+<!--                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>-->
+<!--            </button>-->
+<!--        </div>-->
+
+<!--        <form hx-post="{% url 'core:add_city' %}"-->
+<!--              hx-target="#id_city"-->
+<!--              hx-swap="beforeend"-->
+<!--              hx-on::after-request="if(event.detail.successful) document.getElementById('modal-backdrop').remove()"-->
+<!--              class="p-6">-->
+<!--            {% csrf_token %}-->
+
+<!--            <div class="space-y-4">-->
+<!--                {% for field in form %}-->
+<!--                    <div class="space-y-1">-->
+<!--                        <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700">-->
+<!--                            {{ field.label }}-->
+<!--                        </label>-->
+<!--                        {{ field }}-->
+<!--                        {% if field.errors %}-->
+<!--                            <p class="text-xs text-red-500 mt-1">{{ field.errors.0 }}</p>-->
+<!--                        {% endif %}-->
+<!--                    </div>-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+
+<!--            <div class="mt-8 flex items-center justify-end gap-3">-->
+<!--                <button type="button"-->
+<!--                        onclick="document.getElementById('modal-backdrop').remove()"-->
+<!--                        class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-xl transition-all">-->
+<!--                    {% trans "Cancel" %}-->
+<!--                </button>-->
+<!--                <button type="submit"-->
+<!--                        class="px-5 py-2.5 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded-xl shadow-lg shadow-green-200 transition-all flex items-center gap-2">-->
+<!--                    <span class="htmx-indicator-hide">{% trans "Save Region" %}</span>-->
+<!--                    <svg class="htmx-indicator animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">-->
+<!--                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>-->
+<!--                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>-->
+<!--                    </svg>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<style>-->
+<!--    /* تنسيق الحقول لتناسب Tailwind داخل تطبيق core */-->
+<!--    #modal-backdrop input, #modal-backdrop select {-->
+<!--        width: 100%;-->
+<!--        padding: 0.625rem;-->
+<!--        border: 1px solid #e5e7eb;-->
+<!--        border-radius: 0.75rem;-->
+<!--        outline: none;-->
+<!--        transition: all 0.2s;-->
+<!--        background-color: #fff;-->
+<!--    }-->
+<!--    #modal-backdrop input:focus, #modal-backdrop select:focus {-->
+<!--        border-color: #10b981;-->
+<!--        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);-->
+<!--    }-->
+<!--    .htmx-indicator { display: none; }-->
+<!--    .htmx-request .htmx-indicator { display: inline; }-->
+<!--    .htmx-request .htmx-indicator-hide { display: none; }-->
+<!--</style>-->

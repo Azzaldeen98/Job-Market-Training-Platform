@@ -1,0 +1,9 @@
+<div id="major-wrapper" class="space-y-2">
+    <label class="block text-sm font-medium text-gray-700">التخصص</label>
+    <select name="major" class="w-full p-2 border rounded-lg">
+        <option value="">اختر التخصص</option>
+        {% for major in majors %}
+            <option value="{{ major.id }}">{{ major.name }}</option>
+        {% endfor %}
+    </select>
+</div>

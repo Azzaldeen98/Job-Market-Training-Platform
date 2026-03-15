@@ -1,4 +1,5 @@
 from django import template
+from django.utils.translation import gettext_lazy as _
 
 register = template.Library()
 
@@ -9,7 +10,29 @@ register = template.Library()
   أو بيانات الطلب (Request) دون تمريرها يدوياً.
 """
 
+@register.inclusion_tag('core/components/back-button.html', takes_context=True)
+def back_button(context,label=None, url=None, extra_classes="",icon=None):
+    return {
+        'label': label or _("Back"),
+        'url': url or 'javascript:history.back()',
+        'extra_classes': extra_classes ,
+        # 'icon': icon,
+        # 'content_color': content_color,
+        # 'bg_color': bg_color,
+        'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI'),
+    }
 
+
+
+@register.inclusion_tag('core/components/delete-button.html', takes_context=True)
+def delete_button(context, action_url, label=None, message=None, extra_classes=""):
+    return {
+        'url': action_url,
+        'label': label or _("Delete"),
+        'message': message or _("Are you sure you want to delete this item?"),
+        'extra_classes': extra_classes,
+        'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI', False), # مهم لترتيب الأزرار
+    }
 
 @register.inclusion_tag('core/components/user-card.html')
 def user_card(name, email,user_id=None, image_url=None,redirect_link=None):
@@ -40,6 +63,18 @@ def submit_button(context,label, content_color=None,icon=None,bg_color=None):
         'icon': icon ,
         'content_color': content_color ,
         'bg_color': bg_color ,
+        'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI'),
+    }
+
+@register.inclusion_tag('core/components/link-button.html',name='link-button', takes_context=True)
+def link_button(context,url,label="",title="",icon=None,extra_classes=None):
+
+    return {
+        'url': url,
+        'label': label,
+        'title': title,
+        'icon': icon ,
+        'extra_classes': extra_classes ,
         'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI'),
     }
 

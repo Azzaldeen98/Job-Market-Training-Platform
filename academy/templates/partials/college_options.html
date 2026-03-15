@@ -1,0 +1,13 @@
+<div id="college-wrapper" class="space-y-2">
+    <label class="block text-sm font-medium text-gray-700">الكلية</label>
+    <select name="college"
+            class="w-full p-2 border rounded-lg"
+            hx-get="{% url 'academy:load_majors' %}"
+            hx-target="#major-wrapper"
+            hx-indicator=".loader">
+        <option value="">اختر الكلية</option>
+        {% for college in colleges %}
+            <option value="{{ college.id }}">{{ college.name }}</option>
+        {% endfor %}
+    </select>
+</div>

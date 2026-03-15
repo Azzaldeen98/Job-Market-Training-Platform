@@ -5,29 +5,38 @@ from django.dispatch import receiver
 from django.db import transaction
 
 
-# ملاحظة: نستخدم 'accounts.CustomUser' كنص بدلاً من استيراد الموديل مباشرة
-# لتجنب الـ Circular Import Error
 @receiver(post_save, sender='accounts.CustomUser')
 def handle_user_identity_flow(sender, instance, created, **kwargs):
-    """
-    يعمل فور حفظ المستخدم. تم تأمينها ضد أخطاء الاستيراد والتعليق.
-    """
-    # 1. التحقق من وجود الهوية
     if instance.identity:
-
-        # استيراد الدالة من ملف utils عند الحاجة فقط (Lazy Import)
-        from .utils import create_dynamic_profile
-
-        # 2. إنشاء البروفايل إذا لم يكن موجوداً
-        if not instance.profile_id:
-            # نستخدم transaction.on_commit لضمان أن البروفايل يُنشأ
-            # فقط بعد نجاح حفظ المستخدم نهائياً في قاعدة البيانات
-            transaction.on_commit(lambda: create_dynamic_profile(instance, instance.identity.code))
-
-        # 3. مزامنة الصلاحيات
+        # 1. مزامنة الصلاحيات (بقاء هذا الجزء مهم)
         if instance.identity.permissions.exists():
-            # نستخدم .set() أو .add()، ولكن .add() مناسبة هنا
             instance.user_permissions.add(*instance.identity.permissions.all())
+
+
+        # 2. حذفنا استدعاء create_dynamic_profile من هنا نهائياً
+# ملاحظة: نستخدم 'accounts.CustomUser' كنص بدلاً من استيراد الموديل مباشرة
+# لتجنب الـ Circular Import Error
+# @receiver(post_save, sender='accounts.CustomUser')
+# def handle_user_identity_flow(sender, instance, created, **kwargs):
+#     """
+#     يعمل فور حفظ المستخدم. تم تأمينها ضد أخطاء الاستيراد والتعليق.
+#     """
+#     # 1. التحقق من وجود الهوية
+#     if instance.identity:
+#
+#         # استيراد الدالة من ملف utils عند الحاجة فقط (Lazy Import)
+#         from .utils import create_dynamic_profile
+#
+#         # 2. إنشاء البروفايل إذا لم يكن موجوداً
+#         if not instance.profile_id:
+#             # نستخدم transaction.on_commit لضمان أن البروفايل يُنشأ
+#             # فقط بعد نجاح حفظ المستخدم نهائياً في قاعدة البيانات
+#             transaction.on_commit(lambda: create_dynamic_profile(instance, instance.identity.code))
+#         print(f"DEBUG:def->create_dynamic_profile")
+#         # 3. مزامنة الصلاحيات
+#         if instance.identity.permissions.exists():
+#             # نستخدم .set() أو .add()، ولكن .add() مناسبة هنا
+#             instance.user_permissions.add(*instance.identity.permissions.all())
 
 
 # @receiver(post_save, sender=CustomUser)

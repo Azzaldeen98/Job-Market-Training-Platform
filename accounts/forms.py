@@ -1,37 +1,78 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm,UserChangeForm
-from .models import *
-from allauth.account import forms as allauth_forms
-from django.utils.translation import gettext_lazy as _
 from allauth.account.forms import SignupForm
+from django import forms
+from django.contrib.auth import get_user_model
+from django.utils.text import slugify
+from core.forms import CoreModelForm
+from .models import *
 
 
+# from django.contrib.auth.forms import AuthenticationForm
 
-# 1. كلاس التنسيق (نظيف تماماً من أي وراثة ModelForm)
-class BaseStyledForm:
-    tailwind_fields_classes = (
-        " bg-base text-content border border-stroke-soft px-4 py-2 mt-1 rounded-lg "
-        "focus:ring-2 transition duration-200 outline-none w-full"
+class BaseModelForm:
+    """
+    المرجع الأساسي (Abstract-like Base Form):
+    يجمع بين تنسيقات Tailwind CSS ونظام التحقق في Django.
+    """
+    # كلاسات الحالة العادية (Design System)
+    base_classes = (
+        "bg-base text-content border border-stroke-soft px-4 py-2 mt-1 rounded-lg "
+        "focus:ring-2 transition duration-200 outline-none w-full shadow-sm"
     )
 
-    def apply_tailwind_styles(self):
-        for field in self.fields.values():
-            existing_classes = field.widget.attrs.get('class', '')
-            field.widget.attrs.update({
-                'class': f"{existing_classes} {self.tailwind_fields_classes}".strip()
-            })
+    # كلاسات التنبيه عند الخطأ
+    error_classes = "border-red-500 focus:ring-red-500 text-red-600"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # تطبيق النظام التصميمي فور الإنشاء
+        self.apply_design_system()
+
+    def apply_design_system(self):
+        for field_name, field in self.fields.items():
+            # 1. الحفاظ على أي كلاسات تمت إضافتها يدوياً في الـ widgets
+            existing = field.widget.attrs.get('class', '')
+
+            # 2. بناء قائمة الكلاسات بناءً على حالة الحقل (صحيح أم يحتوي خطأ)
+            current_classes = self.base_classes
+            if self.errors.get(field_name):
+                current_classes += f" {self.error_classes}"
+
+            # 3. دمج الكلاسات وتحديث الحقل
+            field.widget.attrs['class'] = f"{existing} {current_classes}".strip()
+
+    class Meta:
+        # جعلها فارغة لأن هذا الكلاس "قالب" فقط
+        model = None
+        fields = None
 
 # 2. الكلاس الموحد والنهائي (استخدم هذا الاسم فقط)
-class CustomSignupForm(SignupForm, BaseStyledForm):
-    first_name = forms.CharField(max_length=150, label='First Name')
-    last_name = forms.CharField(max_length=150, label='Last Name')
+class CustomSignupForm(SignupForm, BaseModelForm):
+
     identity = forms.ModelChoiceField(
         queryset=Role.objects.filter(view_in_register=True, is_identity=True),
         label="Account Type",
         empty_label="--- Select account type ---",
         required=True
     )
+    User = get_user_model()
+    # first_name = forms.CharField(max_length=150, label='First Name')
+    # last_name = forms.CharField(max_length=150, label='Last Name')
+
+
+    def clean_username(self):
+        email = self.cleaned_data.get('email')
+        base_username = email.split('@')[0]
+
+        # تحويله لشكل صالح كاسم مستخدم (بدون مسافات أو رموز غريبة)
+        username = slugify(base_username)
+
+        # التأكد من عدم تكراره في قاعدة البيانات
+        if self.User.objects.filter(username=username).exists():
+            import uuid
+            # إضافة جزء بسيط من UUID لضمان التفرد
+            username = f"{username}_{uuid.uuid4().hex[:4]}"
+
+        return username
 
     def __init__(self, *args, **kwargs):
         # تشغيل الـ init الخاص بـ Allauth
@@ -40,21 +81,57 @@ class CustomSignupForm(SignupForm, BaseStyledForm):
             self.fields['username'].widget = forms.HiddenInput()
             self.fields['username'].required = False
         # تطبيق تنسيق Tailwind على كل الحقول (بما فيها الباسورد والايميل)
-        self.apply_tailwind_styles()
+        self.apply_design_system()
 
     def save(self, request):
-        email=self.cleaned_data.get('email')
-        self.cleaned_data['username']=email
-        # حفظ المستخدم عبر Allauth أولاً
+        # توليد اسم المستخدم وتعيينه قبل الحفظ
+        self.cleaned_data['username'] = self.clean_username()
+
+        # حفظ المستخدم عبر Allauth (يتكفل بكلمة السر وتأكيد الإيميل)
         user = super(CustomSignupForm, self).save(request)
 
-        # حفظ الحقول الإضافية في موديل CustomUser
-        user.first_name = self.cleaned_data['first_name']
-        user.last_name = self.cleaned_data['last_name']
-        user.identity = self.cleaned_data['identity']
+        # جلب الهوية المختارة من الفورم
+        selected_identity = self.cleaned_data.get('identity')
+        user.identity = selected_identity
+
+        # تحديث الحقول المنطقية بناءً على نوع الهوية (Identity)
+        # ملاحظة: تأكد أن موديل Role يحتوي على حقل slug أو معرف لتمييز الأنواع
+        # if selected_identity:
+        #     if selected_identity.code == 'student':  # افترضنا وجود حقل slug
+        #         user.is_student = True
+        #     elif selected_identity.code == 'training_entity':
+        #         user.is_training_entity = True
 
         user.save()
         return user
+
+
+
+
+
+# class ActiveUserAuthenticationForm(AuthenticationForm):
+#     """
+#     فورم مخصص للتحقق من أن الحساب نشط (is_active)
+#     ومفعل برمجياً (is_verified) قبل تسجيل الدخول.
+#     """
+#
+#     def confirm_login_allowed(self, user):
+#         # 1. فحص النشاط (is_active)
+#         if not user.is_active:
+#             raise forms.ValidationError(
+#                 _("This account is inactive. Please contact support."),
+#                 code='inactive',
+#             )
+#
+#         # 2. فحص التفعيل (is_verified)
+#         # ملاحظة: تأكد أن حقل is_verified موجود في موديل المستخدم لديك
+#         if hasattr(user, 'is_verified') and not user.is_verified:
+#             raise forms.ValidationError(
+#                 _("Your account is not verified yet. Please check your email."),
+#                 code='not_verified',
+#             )
+
+
 
 
 # class CustomSignupForm(allauth_forms.SignupForm):
@@ -75,7 +152,7 @@ class CustomSignupForm(SignupForm, BaseStyledForm):
 #         return user
 #
 #
-# class BaseStyledForm(forms.ModelForm):
+# class BaseModelForm(forms.ModelForm):
 #     tailwind_fields_classes = (
 #         " bg-base text-content border border-stroke-soft px-4 py-2 mt-1 rounded-lg "
 #         "focus:ring-2 transition duration-200 outline-none"
@@ -89,7 +166,7 @@ class CustomSignupForm(SignupForm, BaseStyledForm):
 #     # تأكد من الوراثة من SignupForm الخاص بـ Allauth لتجنب خطأ try_save
 #
 #
-# class CustomUserCreationForm(SignupForm, BaseStyledForm):
+# class CustomUserCreationForm(SignupForm, BaseModelForm):
 #     # تعريف الحقول الإضافية يدوياً هنا لأن SignupForm لا يقرأ Meta model
 #     first_name = forms.CharField(max_length=30, label="First Name")
 #     last_name = forms.CharField(max_length=30, label="Last Name")
@@ -168,7 +245,7 @@ class CustomSignupForm(SignupForm, BaseStyledForm):
 
 
 
-# class BaseStyledForm(forms.ModelForm):
+# class BaseModelForm(forms.ModelForm):
 #     # نضع كلاسات Tailwind هنا لسهولة تغييرها في كل الموقع لاحقاً
 #     tailwind_classes = (
 #         "w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm "
@@ -191,7 +268,7 @@ class CustomSignupForm(SignupForm, BaseStyledForm):
 
 
 
-# class BaseStyledForm2(forms.ModelForm):
+# class BaseModelForm2(forms.ModelForm):
 #     # تعريف كلاسات Tailwind الشاملة (نهاري + ليلي + تفاعلي)
 #     standard_classes = (
 #         "block w-full px-4 py-2.5 text-base font-normal transition duration-200 ease-in-out "
@@ -241,7 +318,7 @@ class CustomSignupForm(SignupForm, BaseStyledForm):
 
 
 # --- 1. نموذج إنشاء الحساب ---
-# class CustomUserCreationForm(BaseStyledForm, UserCreationForm):
+# class CustomUserCreationForm(BaseModelForm, UserCreationForm):
 #     class Meta(UserCreationForm.Meta):
 #         model = CustomUser
 #         fields = ('identity','first_name', 'last_name', 'username', 'email')
@@ -268,31 +345,31 @@ class CustomSignupForm(SignupForm, BaseStyledForm):
 
 
 # --- 2. نموذج تعديل البيانات الأساسية (User Model) ---
-class UserUpdateForm(BaseStyledForm):
-    class Meta:
-        model = CustomUser
-        # أضفنا الجوال وتاريخ الميلاد هنا لأنك وضعتهما في BaseCustomUser
-        fields = ('first_name', 'last_name', 'username','email', 'phone_number', 'birth_date')
-        widgets = {
-            'birth_date': forms.DateInput(attrs={'type': 'date'}),
-        }
+# class UserUpdateForm:
+#     class Meta:
+#         model = CustomUser
+#         # أضفنا الجوال وتاريخ الميلاد هنا لأنك وضعتهما في BaseCustomUser
+#         fields = ('first_name', 'last_name', 'username','email', 'phone_number', 'birth_date')
+#         widgets = {
+#             'birth_date': forms.DateInput(attrs={'type': 'date'}),
+#         }
 
 # --- 3. نموذج تعديل الملف الشخصي (Profile Model) ---
-class ProfileUpdateForm(BaseStyledForm):
-    class Meta:
-        model = Profile  # التغيير الجذري هنا: نربطه بموديل Profile
-        fields = ('picture', 'bio') # لاحظ الفاصلة بعد العنصر الأخير إذا كان واحداً
-        widgets = {
-            'bio': forms.Textarea(attrs={'rows': 3}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if 'bio' in self.fields:
-            self.fields['bio'].widget.attrs.update({'class': self.tailwind_fields_classes + ' w-full resize-none'})
+# class ProfileUpdateForm(BaseModelForm):
+#     class Meta:
+#         model = Profile  # التغيير الجذري هنا: نربطه بموديل Profile
+#         fields = ('picture', 'bio') # لاحظ الفاصلة بعد العنصر الأخير إذا كان واحداً
+#         widgets = {
+#             'bio': forms.Textarea(attrs={'rows': 3}),
+#         }
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         if 'bio' in self.fields:
+#             self.fields['bio'].widget.attrs.update({'class': self.tailwind_fields_classes + ' w-full resize-none'})
 
 #
-# class BaseStyledForm(forms.ModelForm):
+# class BaseModelForm(forms.ModelForm):
 #
 #     tailwind_fields_classes = ( "w-full bg-base text-content border border-stroke-soft  px-4 py-2 mt-1  rounded-lg  "
 #         "focus:ring-2  transition duration-200 outline-none")
@@ -305,7 +382,7 @@ class ProfileUpdateForm(BaseStyledForm):
 #
 #
 # # --- 1. نموذج إنشاء الحساب (Signup) ---
-# class CustomUserCreationForm(BaseStyledForm,UserCreationForm):
+# class CustomUserCreationForm(BaseModelForm,UserCreationForm):
 #     class Meta(UserCreationForm.Meta):
 #         model = CustomUser
 #         fields = ('username', 'email') # التسجيل السريع دائماً أفضل
@@ -314,7 +391,7 @@ class ProfileUpdateForm(BaseStyledForm):
 #
 # # --- 2. نموذج تعديل البيانات الأساسية (Account Info) ---
 # # هذا النموذج لتعديل (الاسم، الإيميل) - بيانات جدول User
-# class UserUpdateForm(BaseStyledForm):
+# class UserUpdateForm(BaseModelForm):
 #     class Meta:
 #         model = CustomUser
 #         fields = ('first_name', 'last_name', 'email')
@@ -327,18 +404,18 @@ class ProfileUpdateForm(BaseStyledForm):
 #
 # # --- 3. نموذج تعديل الملف الشخصي (Profile Info) ---
 # # هذا النموذج لتعديل (الصورة، النبذة، الجوال) - بيانات جدول Profile
-# class ProfileUpdateForm(BaseStyledForm):
+# class ProfileUpdateForm(BaseModelForm):
 #     class Meta:
 #         model = CustomUser  # يفضل استخدام settings.AUTH_USER_MODEL في المشاريع الحقيقية
 #         fields = ('picture') #, 'bio', 'phone_number', 'birth_date')
 #         # widgets = {
-#         #     # لاحظ أننا لم نضع كلاسات هنا، سنترك المهمة لـ BaseStyledForm
+#         #     # لاحظ أننا لم نضع كلاسات هنا، سنترك المهمة لـ BaseModelForm
 #         #     'birth_date': forms.DateInput(attrs={'type': 'date'}),
 #         #     'bio': forms.Textarea(attrs={'rows': 3}),
 #         # }
 #
 #     def __init__(self, *args, **kwargs):
-#         # 1. استدعاء __init__ الخاص بـ BaseStyledForm أولاً
+#         # 1. استدعاء __init__ الخاص بـ BaseModelForm أولاً
 #         # سيقوم تلقائياً بإضافة كلاسات Tailwind لكل الحقول
 #         super().__init__(*args, **kwargs)
 #

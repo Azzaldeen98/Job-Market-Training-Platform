@@ -19,6 +19,7 @@
 /* لضمان أن المتصفح يفهم الألوان الأساسية لكل ثيم */
 :root {
   color-scheme: light;
+
 }
 
 /* ربط كلاس .dark بثيم dark الخاص بـ DaisyUI */
@@ -36,6 +37,9 @@
 
 :root,
 [data-theme="light"] {
+
+--bg-orange: #ea580c;
+--border-orange: #ea580c;
 
 --bg-1: #F8FAFC;      /* main background (slate-50) */
 --bg-2: #FFFFFF;      /* cards */
@@ -67,8 +71,9 @@
    DARK THEME
 ========================= */
 
-.dark,
-[data-theme="dark"] {
+.dark,[data-theme="dark"] {
+--bg-orange: #ea580c;
+--border-orange: #ea580c;
 
 --bg-1: #020617;      /* slate-950 */
 --bg-2: #374d83;      /* slate-900 cards */
@@ -97,6 +102,10 @@
 
 /* 3. Emerald Theme (The Masterpiece) */
 [data-theme="emerald"] {
+
+  --bg-orange: #ea580c;
+  --border-orange: #ea580c;
+
   --bg-1: #052E16;
   --bg-2: #052E16;
 
@@ -111,6 +120,7 @@
   --button-text: #F8FAFC;
   --border-1: #059669;
   --border-2: #064E3B;
+
   --brand: #10B981;
   --text-error: #fb7185;
   --text-error-soft: #4c1d1d;
@@ -129,6 +139,7 @@
 */
 @theme {
 
+  --color-orange: var(--bg-orange);          /* bg-base */
   --color-base: var(--bg-1);          /* bg-base */
   --color-surface: var(--bg-2);       /* bg-surface */
 
@@ -158,12 +169,18 @@
 
   /* الخلفيات */
 
+  .bg-orange {
+    background-color: var(--color-orange);
+  }
   .bg-base {
     background-color: var(--color-base);
   }
 
   .bg-surface {
     background-color: var(--color-surface);
+  }
+   .bg-err {
+    background-color: var(--color-err);
   }
 
   .bg-base-card {
@@ -221,7 +238,12 @@
   .border-stroke {
     border-color: var(--color-stroke);
   }
-
+  .border-orange {
+    border-color: var(--color-orange);
+  }
+ .border-orange {
+    border-color: var(--color-orange);
+  }
   .border-stroke-soft {
     border-color: var(--color-stroke-soft);
   }

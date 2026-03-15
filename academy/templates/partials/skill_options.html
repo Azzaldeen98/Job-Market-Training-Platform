@@ -1,0 +1,9 @@
+<div id="major-wrapper" class="space-y-2">
+    <label class="block text-sm font-medium text-gray-700">{% trans 'Skills' %}</label>
+    <select name="major" class="w-full p-2 border rounded-lg">
+        <option value="">{% trans 'Select Skills' %}</option>
+        {% for skill in skills %}
+            <option value="{{ skill.id }}">{{ skill.name }}</option>
+        {% endfor %}
+    </select>
+</div>

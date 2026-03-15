@@ -14,7 +14,7 @@ import environ
 import shutil
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
-
+import unfold
 
 
 # =====================================================================
@@ -58,6 +58,7 @@ ALLOWED_HOSTS = []
 # =====================================================================
 INSTALLED_APPS = [
 
+    'modeltranslation',
     "unfold",  # <-- يجب أن تكون هنا في البداية
     "unfold.contrib.filters",
     "unfold.contrib.forms",
@@ -71,10 +72,21 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',  # ضروري جداً لـ allauth
 
+    # 3. تطبيقات التنسيق (Crispy & Tailwind)
+    'tailwind',
+    'theme',
+    'crispy_forms',
+    'crispy_tailwind',  # تطبيق الثيم الخاص بك
+    # ---------------------------------
     # 4. تطبيقاتك البرمجية الخاصة
+    # ---------------------------------
     'accounts',
     'core',
+    'academy',
     'students',
+    'training_entities',
+
+    # ---------------------------------
 
     # 2. تطبيقات Allauth (يجب أن تأتي بعد تطبيقات Django الأساسية)
     'allauth',
@@ -82,11 +94,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     # 'allauth.socialaccount.providers.google',
 
-    # 3. تطبيقات التنسيق (Crispy & Tailwind)
-    'crispy_forms',
-    'crispy_tailwind',
-    'tailwind',
-    'theme',  # تطبيق الثيم الخاص بك
 
     # 5. الأدوات الإضافية
     'django_browser_reload',
@@ -145,10 +152,12 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates',
+                os.path.join(os.path.dirname(unfold.__file__), 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -301,27 +310,37 @@ SITE_ROLES = [
         'code': 'student',
         'name': 'student',
         'is_identity': True ,
+        'app_name': 'students',
         'requires_approval': False,
         'view_in_register': True,
     },
-    # {
-    #     'code': 'company',
-    #     'name': 'company',
-    #     'is_identity': True,
-    #     'requires_approval': True,
-    #     'view_in_register': True
-    # },
+    {
+        'code': 'training_entity',
+        'name': 'Training Entity',
+        'is_identity': True,
+        'app_name': 'training_entities',
+        'requires_approval': True,
+        'view_in_register': True
+    },
 ]
 
 #  Linking roles to their respective control panels
 
 ROLE_DASHBOARDS = {
-    role['code']: (
-        'admin:index' if role['code'] == 'admin'
-        else f"{role['code']}s:dashboard"
-    )
+    role['code']: f"{role['app_name']}:dashboard"
     for role in SITE_ROLES
+    if role.get('is_identity') and 'app_name' in role
 }
+# إضافة رابط الأدمن الافتراضي لـ Django
+ROLE_DASHBOARDS['admin'] = 'admin:index'
+
+# ROLE_DASHBOARDS = {
+#     role['code']: (
+#         'admin:index' if role['code'] == 'admin'
+#         else f"{role['app_name']}:dashboard"
+#     )
+#     for role in SITE_ROLES
+# }
 
 # =====================================================================================
 # << Settings Crispy Forms >>

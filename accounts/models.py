@@ -171,6 +171,8 @@ from django.contrib.auth.base_user import BaseUserManager
 #         verbose_name_plural = _("Sub-Roles / Permission Packages")
 
 
+
+
 class Role(BaseRole):
 
     permissions = models.ManyToManyField(Permission, blank=True, verbose_name=_("Permissions"))
@@ -186,27 +188,60 @@ class Role(BaseRole):
     def __str__(self):
         return self.name
 
-
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
+        identity_data = extra_fields.get('identity')
+
+        # التحقق من نوع البيانات الواصلة (هل هي كائن أم رقم معرف؟)
+        if identity_data:
+            if isinstance(identity_data, Role):
+                role_obj = identity_data
+            else:
+                # إذا كان ID، نقوم بجلب الكائن من قاعدة البيانات
+                role_obj = Role.objects.filter(id=identity_data).first()
+
+            # الآن نطبق منطق الأتمتة بأمان
+            if role_obj and role_obj.requires_approval:
+                # extra_fields['is_active'] = False
+                extra_fields.setdefault('is_verified', False)
+            else:
+                extra_fields.setdefault('is_verified', True)
+
+            extra_fields['is_active'] = True
+
+        else:
+            # حالة افتراضية إذا لم يتم تمرير هوية (مثل الأدمن)
+            extra_fields.setdefault('is_active', True)
+            extra_fields.setdefault('is_verified', False)
+
+
+
         if not email:
             raise ValueError(_('The Email must be set'))
+
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, password, **extra_fields)
+    # def create_superuser(self, email, password=None, **extra_fields):
+    #     # extra_fields.setdefault('is_staff', True)
+    #     # extra_fields.setdefault('is_superuser', True)
+    #     # extra_fields.setdefault('is_active', True)  # التأكد من أن الحساب نشط فوراً
+    #
+    #     # تحقق معياري لضمان سلامة البيانات
+    #     # if extra_fields.get('is_staff') is not True:
+    #     #     raise ValueError(_('Superuser must have is_staff=True.'))
+    #     # if extra_fields.get('is_superuser') is not True:
+    #     #     raise ValueError(_('Superuser must have is_superuser=True.'))
+    #
+    #     return self.create_user(email, password, **extra_fields)
 
 class CustomUser(BaseCustomUser):
 
     objects = CustomUserManager()
-    # roles = models.ManyToManyField(Role, blank=True, related_name='users', verbose_name=_("Roles"))
+
     identity = models.ForeignKey(
         Role,
         on_delete=models.PROTECT,
@@ -217,6 +252,14 @@ class CustomUser(BaseCustomUser):
         related_name="identity_users"
     )
 
+
+
+    is_verified = models.BooleanField(
+        _("Is Verified"),
+        default=False,
+        help_text=_("Activated by administrator after log review")
+    )
+
     def has_role(self, role_code):
         """
         التحقق من دور المستخدم الحالي (0% أخطاء - تعامل مباشر مع ForeignKey)
@@ -225,13 +268,21 @@ class CustomUser(BaseCustomUser):
             return False
         return self.identity.code == role_code
 
-    def is_company(self):
-        return self.has_role('company')
+
+    def get_role(self):
+        if not self.identity:
+            return ''
+        return self.identity.code
+
+    @property
+    def is_training_entity(self):
+        return self.has_role('training_entity')
 
     @property
     def is_student(self):
         return self.has_role('student')
 
+    @property
     def is_fully_active(self):
         """
         التحقق من التفعيل بناءً على الهوية الواحدة (Identity) والبروفايل:
@@ -252,14 +303,39 @@ class CustomUser(BaseCustomUser):
         # الافتراضي: غير مفعل حتى يثبت العكس
         return False
 
-# --- بروفايلات منفصلة بجداول منفصلة ---
-class Profile(BaseProfile):
-    bio = models.TextField(max_length=500, blank=True, verbose_name=_("bio"))
-    pass
+    @property
+    def is_approved_entity(self):
+        return self.is_fully_active
 
-# class StudentProfile(BaseProfile):
-#     university = models.CharField(max_length=100, verbose_name=_("University"))
-#     major = models.CharField(max_length=100, verbose_name=_("Major"))
+    # داخل كلاس CustomUser في models.py
+
+    @property
+    def profile(self):
+        """
+        الديناميكية الموحدة: الوصول للبروفايل الصحيح بناءً على الهوية (Identity)
+        """
+        if not self.identity:
+            return None
+
+        # إذا كان المستخدم "جهة تدريب"
+        if self.is_training_entity:
+            return getattr(self, 'training_profile', None)
+
+        # إذا كان المستخدم "طالب"
+        if self.is_student:
+            return getattr(self, 'student_profile', None)
+
+        return None
+
+# --- بروفايلات منفصلة بجداول منفصلة ---
+# class Profile(BaseProfile):
+#
+#     bio = models.TextField(max_length=500, blank=True, verbose_name=_("bio"))
+#     pass
+
+
+
+
 #
 # class CompanyProfile(BaseProfile):
 #     tax_number = models.CharField(max_length=50, verbose_name=_("Tax Number"))

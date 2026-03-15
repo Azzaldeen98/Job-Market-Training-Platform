@@ -1,0 +1,112 @@
+{% extends 'training_entities/base.html' %}
+
+{% block title %}
+    {% trans "Complete Profile" %}
+{% endblock %}
+
+
+<style>
+   /* جعل حاوية الإدخال مرنة وتسمح بنزول العناصر لسطر جديد */
+.ts-control {
+    @apply flex flex-wrap gap-2 border-stroke-soft bg-base rounded-lg !important;
+    padding: 12px !important;
+}
+
+/* تمييز مربع البحث ليظهر في سطر مستقل أو بشكل واضح */
+.ts-control > input {
+    @apply w-full mb-2 border-b border-stroke-soft pb-2 !important;
+    display: block !important;
+}
+
+/* تنسيق الوسوم (التي ستظهر الآن تحت المربع بسبب العرض الكامل للمدخل) */
+.ts-control .item {
+    @apply bg-brand text-white px-3 py-1.5 rounded-full flex items-center text-sm font-medium !important;
+    margin: 0 !important;
+}
+
+/* إخفاء السهم الصغير لتبدو كمربع بحث خالص */
+.ts-wrapper.single .ts-control::after, .ts-wrapper.multi .ts-control::after {
+    display: none !important;
+}
+</style>
+{% block provider_content %}
+<div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+
+    <div class="bg-surface  text-content w-full  p-8 rounded-2xl transition-all duration-300
+                 border border-transparent ">
+
+        <h2 class="text-3xl font-bold text-center mb-8 text-current">
+            {% trans "Complete Profile" %}
+        </h2>
+
+        <form method="post" enctype="multipart/form-data" novalidate class="space-y-6  ">
+            {% csrf_token %}
+        <div class="flex flex-wrap justify-content p-3">
+            {% for field in form %}
+                {% if not field.is_hidden and field.name != 'skills' %}
+
+                    <div class="flex flex-col gap-1 mx-3 mt-4" style="width:45%">
+                    <label class="text-sm font-medium opacity-80">
+                        {{ field.label }}
+                    </label>
+
+                    {# هنا سيظهر الحقل بكلاس input-field تلقائياً من البايثون #}
+                    {{ field }}
+
+                    {# أخطاء الحقول بتنسيق يتناسب مع الألوان #}
+                    {% if field.errors %}
+                        <p class="text-err text-xs mt-1">
+                            {{ field.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                {% else %}
+                <div class="flex flex-col gap-1 w-full mx-3 mt-4" >
+                    <label class="text-sm font-medium opacity-80">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <p class="text-err text-xs mt-1">
+                            {{ field.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+                <div class="max-w-md mx-auto">
+              {% submit-button label=_("Save") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}
+                </div>
+
+        </form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const skillsSelect = document.querySelector('.select2-enable');
+
+        if (skillsSelect) {
+            new TomSelect(skillsSelect, {
+                plugins: ['remove_button'],
+                maxItems: null,
+                valueField: 'id',
+                labelField: 'title',
+                searchField: 'title',
+                placeholder: "ابحث عن مهارة وأضفها...",
+                // هذا الجزء هو السر: منع ظهور العناصر داخل المربع وإضافتها بالأسفل
+                hidePlaceholder: true,
+                onItemAdd: function() {
+                    this.setTextboxValue(''); // مسح مربع البحث بعد الإضافة
+                    this.refreshOptions();
+                }
+            });
+        }
+    });
+
+</script>
+    </div>
+</div>
+
+{% endblock %}
+

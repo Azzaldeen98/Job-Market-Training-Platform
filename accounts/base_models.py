@@ -8,7 +8,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 class BaseRole(models.Model):
     name = models.CharField(max_length=50,unique=True, verbose_name=_("Role Name"))
-    code = models.SlugField(max_length=20, unique=True, verbose_name=_("Role Key/Code"))
+    code = models.SlugField(max_length=50, unique=True, verbose_name=_("Role Key/Code"))
     description = models.TextField(
         blank=True,
         null=True,
@@ -27,11 +27,10 @@ class BaseRole(models.Model):
 
 class BaseCustomUser(AbstractUser):
 
-    first_name = models.CharField(_("first name"), max_length=150, blank=False)
-    last_name = models.CharField(_("last name"), max_length=150, blank=False)
+
     email = models.EmailField(_('email address'), unique=True)
-    phone_number = models.CharField(max_length=15, blank=True, null=True, verbose_name=_("phone number"))
-    birth_date = models.DateField(null=True, blank=True, verbose_name=_("birth date"))
+
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active Account"))
     # هذا السطر يخبر Django باستخدام البريد للدخول
     USERNAME_FIELD = 'email'
 
@@ -47,7 +46,7 @@ class BaseCustomUser(AbstractUser):
     last_ip = models.GenericIPAddressField(null=True, blank=True, verbose_name=_("last login IP"))
     # --- حقول الربط الديناميكي (The Magic Logic) ---
     # تخزين نوع جدول البروفايل (طالب، شركة، إلخ)
-    profile_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_profiles")
+    profile_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_profile")
     # تخزين رقم المعرف داخل ذلك الجدول
     profile_id = models.PositiveIntegerField(null=True, blank=True)
     # الحقل الذي ستستخدمه في الكود للوصول لأي بروفايل
@@ -80,16 +79,3 @@ class BaseCustomUser(AbstractUser):
     #     return False
 
 
-class BaseProfile(models.Model):
-    # حقول مشتركة لكل أنواع البروفايلات
-    picture = models.ImageField(
-        upload_to='users/profiles/%Y/%m/',
-        blank=True,
-        null=True,
-        verbose_name=_("Picture")
-    )
-    is_verified = models.BooleanField(default=False, verbose_name=_("Is Verified Account"))
-    extra_data = models.JSONField(default=dict, blank=True, verbose_name=_("Extra Data"))
-
-    class Meta:
-        abstract = True
