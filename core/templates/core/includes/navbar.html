@@ -11,22 +11,31 @@
                     {% trans "Home" %}
                 </a>
 
-             {% if user.is_authenticated %}
 
-                     {% if user.is_student %}
-                        <a href="{% url 'students:dashboard'  %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
-                            {% trans "Dashboard" %}
-                        </a>
+                {% if user.is_authenticated %}
 
-                    {% elif user.is_training_entity %}
 
-                        <a href="{% url  'training_entities:dashboard'  %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
-                            {% trans "Dashboard" %}
-                        </a>
 
-                     {% endif  %}
+                       {% if user.is_identity and user.get_dashboard_url %}
+                          <a href="{{ user.get_dashboard_url }}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+                                {% trans "Dashboard" %}
+                          </a>
+                    {% endif  %}
 
-             {% endif  %}
+<!--                     {% if user.is_student %}-->
+<!--                        <a href="{% url 'students:dashboard'  %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">-->
+<!--                            {% trans "Dashboard" %}-->
+<!--                        </a>-->
+
+<!--                    {% elif user.is_training_entity %}-->
+
+<!--                        <a href="{% url  'training_entities:dashboard'  %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">-->
+<!--                            {% trans "Dashboard" %}-->
+<!--                        </a>-->
+
+<!--                     {% endif  %}-->
+
+    {% endif  %}
 
             </div>
         </div>

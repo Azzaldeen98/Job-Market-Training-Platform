@@ -1,0 +1,77 @@
+{% extends 'training_entities/base.html' %}
+
+
+{% block provider_content %}
+
+
+{% back_button %}
+
+<div class="container mx-auto py-8 px-4">
+    <nav class="flex mb-6 text-sm text-content/60 gap-2">
+        <a href="{% url 'training_entities:opportunity_detail' application.opportunity.id %}" class="hover:text-brand transition-colors">
+            {{ application.opportunity.title }}
+        </a>
+        <span>/</span>
+        <span class="text-content font-medium">{% trans "Review Application" %}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-1">
+            <div class="sticky top-6">
+                {% profile-card data=application.student.card_data  %}
+
+                <div class="mt-4 p-4 rounded-2xl border border-base bg-surface shadow-sm">
+                    <h4 class="text-xs font-bold text-content/50 uppercase mb-2">{% trans "Current Status" %}</h4>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full
+                            {% if application.status == 'pending' %}bg-yellow-500
+                            {% elif application.status == 'accepted' %}bg-green-500
+                            {% else %}bg-red-500{% endif %}">
+                        </span>
+                        <span class="font-bold text-content">{{ application.get_status_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+
+            <div class="bg-surface border border-base rounded-3xl p-8 shadow-sm">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <i data-lucide="file-text" class="w-6 h-6 text-brand"></i>
+                    {% trans "Application Details" %}
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="p-4 bg-base/30 rounded-xl">
+                        <p class="text-sm text-content/60">{% trans "Applied On" %}</p>
+                        <p class="font-medium">{{ application.created_at|date:"d M Y" }}</p>
+                    </div>
+                    <div class="p-4 bg-base/30 rounded-xl">
+                        <p class="text-sm text-content/60">{% trans "Match Score" %}</p>
+                        <p class="font-bold text-brand text-lg">{{ application.match_score }}%</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-base pt-8">
+                    <h3 class="font-bold mb-4 text-content">{% trans "Decision" %}</h3>
+                    <p class="text-sm text-content/60 mb-6">
+                        {% trans "Review the student's profile carefully before making a decision. An automated notification will be sent to the student." %}
+                    </p>
+
+                    <div class="flex flex-wrap gap-4">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 p-4 bg-blue-50 text-blue-700 rounded-xl text-sm">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                {% trans "Only your organization can see this candidate's full information." %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

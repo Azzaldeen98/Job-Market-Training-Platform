@@ -28,7 +28,7 @@ def back_button(context,label=None, url=None, extra_classes="",icon=None):
 def delete_button(context, action_url, label=None, message=None, extra_classes=""):
     return {
         'url': action_url,
-        'label': label or _("Delete"),
+        'label': label or '',
         'message': message or _("Are you sure you want to delete this item?"),
         'extra_classes': extra_classes,
         'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI', False), # مهم لترتيب الأزرار
@@ -123,4 +123,34 @@ def input_checkbox(label, name, checked=False, required=False, id=None, error=No
         'required': required,
         'id': id if id else f"id_{name}",
         'error': error,
+    }
+
+
+
+@register.inclusion_tag('core/components/ratio-bar.html', name='ratio-bar', takes_context=True)
+def ratio_bar(context, label='',ratio=0):
+
+    # استخدم هذا الحل الآمن:
+    if isinstance(ratio, str):
+        ratio = ratio.replace(',', '.')  # استبدال الفصلة بنقطة
+    value = float(ratio or 0)
+
+    return {
+        'label':label ,
+        'ratio':value
+    }
+
+@register.inclusion_tag('core/components/profile-card.html', name='profile-card', takes_context=True)
+def profile_card(context, data,badge=None):
+    """
+    تستقبل كائن الطالب، وتستخلص منه البيانات عبر دالة card_data
+    """
+    # إضافة السكور إلى القاموس إذا تم تمريره (لأن السكور خارجي وليس من خصائص الطالب الثابتة)
+
+
+    return {
+        'data': data,
+        'badge': badge or '',
+        'request': context.get('request'),
+        'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI'),
     }

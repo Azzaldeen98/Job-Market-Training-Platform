@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser, Permission
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from core.helpers import get_identities_apps, get_identities_dashboards, get_url_view, app_is_exists
+from core.routes import Routes
 from .base_models import *
 from django.contrib.auth.base_user import BaseUserManager
 
@@ -281,6 +283,11 @@ class CustomUser(BaseCustomUser):
     @property
     def is_student(self):
         return self.has_role('student')
+    @property
+    def is_identity(self):
+        if not self.identity:
+            return False
+        return getattr(self.identity, 'is_identity', False)
 
     @property
     def is_fully_active(self):
@@ -308,6 +315,28 @@ class CustomUser(BaseCustomUser):
         return self.is_fully_active
 
     # داخل كلاس CustomUser في models.py
+    @property
+    def get_app_name(self):
+        if self.is_authenticated and self.is_identity:
+            role_code = getattr(self.identity, 'code', None)
+            if role_code:
+                identities_apps = get_identities_apps()
+                if identities_apps:
+                    return identities_apps[role_code]
+        return None
+
+    @property
+    def get_dashboard_url(self):
+
+        if self.is_authenticated and self.is_identity:
+            role_code = getattr(self.identity, 'code', None)
+            app_name = getattr(self.identity, 'app_name', None)
+            if role_code and app_is_exists(app_name):
+                dashboards = get_identities_dashboards()
+                if dashboards:
+                    dashboard_url = dashboards.get(role_code, Routes.HOME)
+                    return get_url_view(dashboard_url)
+        return Routes.HOME
 
     @property
     def profile(self):

@@ -6,6 +6,7 @@ from config import settings
 from core.base_models import BaseProfile, BaseModel
 
 
+
 # Create your models here.
 class StudentProfile(BaseModel):
 
@@ -15,6 +16,7 @@ class StudentProfile(BaseModel):
         related_name='student_profile',
         verbose_name=_("User Account")
     )
+
     major = models.ForeignKey(
         Major,
         on_delete=models.SET_NULL,
@@ -55,7 +57,52 @@ class StudentProfile(BaseModel):
     #extra_data = models.JSONField(default=dict, blank=True, verbose_name=_("Extra Data"))
 
     @property
+    def get_full_name(self):
+        full_name = f"{self.first_name or ''} {self.last_name or ''}".strip()
+        return  full_name
+
+    @property
     def get_app_name(self):
         return  'students'
     def get_opportunities_url(self):
         self.get_url(f'{self.get_app_name}:opportunities', [self.id])
+
+    @property
+    # داخل كلاس StudentProfile في models.py
+    def card_data(self):
+        """تجهيز البيانات بشكل عام للـ core مع حماية كاملة"""
+
+        # حماية الاسم (في حال عدم وجود الاسم الأول أو الأخير)
+        full_name = f"{self.first_name or ''} {self.last_name or ''}".strip()
+
+        # حماية الوصول المتسلسل للجامعة
+        # نستخدم try/except أو التحقق المتداخل لضمان عدم توقف الكود إذا كان التخصص غير محدد
+        university_name = "-"
+        location = "-"
+        if self.major and self.major.college and self.major.college.university:
+            university_name = self.major.college.university.name
+            location = self.major.college.university.city.name
+
+        return {
+            'title': full_name or self.user.username,
+            'image_url': self.picture.url if self.picture else None,  # صورة حقيقية
+            'image_icon': 'user',  # أيقونة احتياطية
+            'badge': f"ID: #{self.id}",
+            'academic_info': [
+                {'label': 'University', 'value': university_name},
+                {'label': 'College', 'value': self.major.college.name if self.major and self.major.college else "-"},
+                {'label': 'Major', 'value': self.major.name if self.major else "-"},
+            ],
+            'location': {'label': 'City', 'value': location or ''},
+            'stats': {'label': 'GPA', 'value': self.gpa or "0.00"},
+            'status': [
+                {'label': 'Active', 'value': self.user.is_active },
+                {'label': 'Available', 'value': self.is_available }
+            ],
+            'skills': [skill.name for skill in self.skills.all()],  # نمرر الأسماء كنصوص
+            'action_url': self.cv_file.url if self.cv_file else None
+        }
+
+
+
+

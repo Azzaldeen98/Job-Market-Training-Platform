@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from core.base_models import BaseModel
+
+
 # from core.enums import UniversityType
 
 
@@ -25,6 +28,9 @@ class City(models.Model):
     region = models.ForeignKey(Region, on_delete=models.CASCADE, related_name="cities")
     def __str__(self):
         return f"{self.name}"
+
+
+
 
 
 

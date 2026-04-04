@@ -1,0 +1,26 @@
+
+ {% with r=ratio|add:0 %}
+<div class="flex  items-end gap-1 w-full  my-4 md:my-0">
+    <div class="flex items-center gap-2">
+        <span class="text-sm font-bold
+        {% if r > 75 %} text-green-500
+        {% elif r > 50 %} text-orange
+        {% else %} text-err
+        {% endif %}">
+            {{ ratio|floatformat:"0" }}%
+        </span>
+        <span class="text-[10px] opacity-50 font-medium">{{ label }}</span>
+    </div>
+     <div class="w-full h-2 bg-base rounded-full overflow-hidden border border-stroke-soft">
+
+           <div class="h-full transition-all duration-1000
+            {% if r > 75 %} bg-green-500
+            {% elif r > 50 %} bg-orange-500
+            {% else %} bg-err
+            {% endif %}"
+            style="width: {{ ratio|floatformat:0 }}%">
+        </div>
+
+    </div>
+</div>
+{% endwith %}

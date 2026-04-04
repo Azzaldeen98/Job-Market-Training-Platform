@@ -1,9 +1,8 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser, Permission
-from django.utils.translation import gettext_lazy as _
-from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class BaseRole(models.Model):
@@ -58,6 +57,9 @@ class BaseCustomUser(AbstractUser):
         verbose_name = _("user")
         verbose_name_plural = _("users")
         ordering = ['-date_joined']
+
+
+
 
     # def has_role(self, role_code):
     #     return self.roles.filter(code=role_code).exists()

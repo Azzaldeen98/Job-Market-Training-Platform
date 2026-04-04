@@ -27,6 +27,8 @@ urlpatterns = [
     # === [AUTO_GENERATED_URLS_END] ===
 
     path('academy/', include('academy.urls')),
+    path('applications/', include('applications.urls')),
+
     path('students/', include('students.urls')),
     path('training_entities/', include('training_entities.urls')),
 

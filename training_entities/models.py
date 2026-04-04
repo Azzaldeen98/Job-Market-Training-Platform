@@ -4,6 +4,7 @@ from academy.models import Skill, Major
 from config import settings
 from core.base_models import BaseModel
 from core.models import City
+from core.utils import current_date
 from training_entities.enums import EntityType
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
@@ -280,7 +281,7 @@ class TrainingOpportunity(BaseModel):
         return self.get_url(f'{self.get_app_name()}:opportunity_edit', [self.id])
 
     def get_detail_url(self):
-        print(f"Detail:9999999999999")
+        # print(f"Detail:9999999999999")
         url=self.get_url(f'{self.get_app_name()}:opportunity_detail', [self.id])
         print(f"Detail:{url}")
         return url
@@ -288,4 +289,16 @@ class TrainingOpportunity(BaseModel):
     def get_check_match_url(self):
         return self.get_url(f'{self.get_app_name()}:check_match', [self.id])
 
+    def is_expired(self):
+        """تحقق مما إذا كان تاريخ اليوم قد تجاوز تاريخ الانتهاء"""
+        return current_date() > self.end_date
+
+    @property
+    def days_left(self):
+        """حساب عدد الأيام المتبقية (إذا لم تنتهِ بعد)"""
+        today = current_date()
+        if today <= self.end_date:
+            delta = self.end_date - today
+            return delta.days
+        return 0
 

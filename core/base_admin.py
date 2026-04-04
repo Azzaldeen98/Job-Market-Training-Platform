@@ -57,36 +57,36 @@ class BaseModelAdmin(admin.ModelAdmin):
         return field
 
 
-    def changelist_view(self, request, extra_context=None):
-        # تعطيل الحقن البرمجي مؤقتاً للتأكد من زوال الخطأ
-        return super().changelist_view(request, extra_context=extra_context)
     # def changelist_view(self, request, extra_context=None):
-    #     app_label = self.model._meta.app_label
-    #     model_name = self.model._meta.model_name
-    #     add_url = reverse(f'admin:{app_label}_{model_name}_add')
-    #     btn_text = f"{_('Add')} {self.model._meta.verbose_name}"
-    #
-    #     # حقن كود JS يضيف الزر في الـ DOM مباشرة
-    #     # هذا الكود يبحث عن مكان البحث ويضع الزر بجانبه
-    #     script = format_html('''
-    #         <script>
-    #             document.addEventListener("DOMContentLoaded", function() {{
-    #                 if (!document.getElementById("custom-add-btn")) {{
-    #                     var container = document.getElementById("changelist-search") || document.querySelector(".object-tools");
-    #                     var btn = document.createElement("a");
-    #                     btn.id = "custom-add-btn";
-    #                     btn.href = "{}";
-    #                     btn.innerHTML = "{}";
-    #
-    #                     btn.style = "background:#9333EA; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; margin: 10px; display:inline-block; font-weight:bold;";
-    #                     container.prepend(btn);
-    #                 }}
-    #             }});
-    #         </script>
-    #     ''', add_url, btn_text)
-    #
-    #     self.message_user(request, script, level='INFO')
+    #     # تعطيل الحقن البرمجي مؤقتاً للتأكد من زوال الخطأ
     #     return super().changelist_view(request, extra_context=extra_context)
+    def changelist_view(self, request, extra_context=None):
+        app_label = self.model._meta.app_label
+        model_name = self.model._meta.model_name
+        add_url = reverse(f'admin:{app_label}_{model_name}_add')
+        btn_text = f"{_('Add')} {self.model._meta.verbose_name}"
+
+        # حقن كود JS يضيف الزر في الـ DOM مباشرة
+        # هذا الكود يبحث عن مكان البحث ويضع الزر بجانبه
+        script = format_html('''
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {{
+                    if (!document.getElementById("custom-add-btn")) {{
+                        var container = document.getElementById("changelist-search") || document.querySelector(".object-tools");
+                        var btn = document.createElement("a");
+                        btn.id = "custom-add-btn";
+                        btn.href = "{}";
+                        btn.innerHTML = "{}";
+
+                        btn.style = "background:#9333EA; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; margin: 10px; display:inline-block; font-weight:bold;";
+                        container.prepend(btn);
+                    }}
+                }});
+            </script>
+        ''', add_url, btn_text)
+
+        self.message_user(request, script, level='INFO')
+        return super().changelist_view(request, extra_context=extra_context)
 
 class BaseTabularInline(admin.TabularInline):
     # كلاس أب لتنسيق الجداول التابعة (Inlines)

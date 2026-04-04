@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'accounts',
     'core',
     'academy',
+    'applications',
     'students',
     'training_entities',
 
@@ -251,11 +252,12 @@ AUTH_USER_MODEL = 'accounts.CustomUser' # تحديد الModel المعتمد ل
 LOGIN_REDIRECT_URL = 'accounts:redirect_by_role' #  التوجيه بناءً على "الهوية"
 LOGOUT_REDIRECT_URL = 'core:home' # الرابط الذي سيتم الانتقال إليه بعد تسجيل الخروج
 
-ACCOUNT_USERNAME_REQUIRED = False # التأكد من أن allauth لا يبحث عن username
-ACCOUNT_AUTHENTICATION_METHOD = "email" # يمكن للمستخدم الدخول عبر الإيميل بدلاً من اليوزر نيم
+# ACCOUNT_USERNAME_REQUIRED = False # التأكد من أن allauth لا يبحث عن username
+# ACCOUNT_AUTHENTICATION_METHOD = "email" # يمكن للمستخدم الدخول عبر الإيميل بدلاً من اليوزر نيم
+ACCOUNT_LOGIN_METHODS = {'email'} #
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_REQUIRED = True
-
+# ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 # << Password Validation Settings>>
 AUTH_PASSWORD_VALIDATORS = [
@@ -308,16 +310,16 @@ SITE_ROLES = [
     {
         'code': 'student',
         'name': 'student',
-        'is_identity': True ,
         'app_name': 'students',
+        'is_identity': True ,
         'requires_approval': False,
         'view_in_register': True,
     },
     {
         'code': 'training_entity',
         'name': 'Training Entity',
-        'is_identity': True,
         'app_name': 'training_entities',
+        'is_identity': True,
         'requires_approval': True,
         'view_in_register': True
     },

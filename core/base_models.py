@@ -1,5 +1,7 @@
 from django.db import models
 
+from core.helpers import get_url_view
+
 
 class BaseModel(models.Model):
 
@@ -8,12 +10,9 @@ class BaseModel(models.Model):
     #    return self.get_app_url
 
     def get_url(self, view_name, args_list=None):
-        from django.urls import reverse, NoReverseMatch
-        try:
-            return reverse(view_name, args=args_list)
-        except NoReverseMatch:
-            # إذا لم يجد الرابط، سيعيد رابطاً وهمياً يوضح لك المشكلة في المتصفح
-            return f"/error-not-found-link-named-{view_name}/"
+        return  get_url_view(view_name,args_list)
+
+
     class Meta:
         abstract = True
 

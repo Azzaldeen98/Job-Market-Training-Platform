@@ -9,6 +9,9 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
+
+
+
 def sync_roles_from_settings(sender, **kwargs):
     """
     مزامنة كاملة: تحديث، إضافة، وحذف الأدوار بناءً على الإعدادات.

@@ -1,7 +1,7 @@
 {% extends 'students/base.html' %}
 {% load i18n %}
 
-{% block student_content %}
+{% block provider_content %}
 <div class="py-8 px-4 max-w-5xl mx-auto">
     {% back_button label=_("العودة لملفي الشخصي") %}
 
@@ -87,9 +87,13 @@
                 </div>
 
                 <div class="flex gap-2 mx-3  md:w-auto">
-                    <a href="{{ item.opportunity.get_detail_url }}"
-                       class="flex-1 md:flex-none text-center px-6 py-2.5 bg-orange text-white rounded-xl text-xs font-bold shadow-sm hover:bg-orange-600 transition-all">
-                        {% trans "Apply Now" %}
+<!--                    <a href="{{ item.opportunity.get_detail_url }}"-->
+<!--                       class="flex-1 md:flex-none text-center px-6 py-2.5 bg-orange text-white rounded-xl text-xs font-bold shadow-sm hover:bg-orange-600 transition-all">-->
+<!--                        {% trans "Apply Now" %}-->
+<!--                    </a>-->
+                    <a href="{% url 'training_entities:opportunity_detail'  item.opportunity.id %}"
+                       class="flex-1 md:flex-none text-center px-6 py-2.5 app-btn-primary rounded-xl text-xs font-bold shadow-sm hover:bg-orange-600 transition-all">
+                        {% trans "More" %}
                     </a>
                 </div>
             </div>

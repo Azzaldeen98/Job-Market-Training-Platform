@@ -61,6 +61,7 @@
 
 --brand: #4F46E5;      /* main brand color */
 
+--text-light: #FFFFFF;
 --text-error: #EF4444;
 --text-error-soft: #FEE2E2;
 
@@ -95,6 +96,7 @@
 
 --brand: #6366F1;     /* indigo brand */
 
+--text-light: #FFFFFF;
 --text-error: #F87171;
 --text-error-soft: #2D1A1A;
 
@@ -122,6 +124,8 @@
   --border-2: #064E3B;
 
   --brand: #10B981;
+
+  --text-light: #FFFFFF;
   --text-error: #fb7185;
   --text-error-soft: #4c1d1d;
 }
@@ -152,6 +156,7 @@
   --color-btn: var(--button);            /* bg-btn */
   --color-btn-text: var(--button-text);       /* button-text */
 
+  --color-light: var(--text-light);      /* text-content */
   --color-content: var(--text-1);      /* text-content */
   --color-content-muted: var(--text-2);/* text-content-muted */
 
@@ -228,6 +233,14 @@
   .bg-btn {
     background-color: var(--color-btn);
   }
+  .app-btn-primary {
+    background-color: var(--color-orange);
+    color: #FFFFFF;
+  }
+/*
+.app-btn-primary:hover {
+    border:2px solid #FFFFFF;
+  }*/
 
   .btn-text {
     color: var(--color-btn-text);

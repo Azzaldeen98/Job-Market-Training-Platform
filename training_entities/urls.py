@@ -20,4 +20,10 @@ urlpatterns = [
     path('training_opportunity/delete/<int:id>/', views.delete_opportunity, name='opportunity_delete'),
     # match
     path('check-match/<int:opportunity_id>/', views.check_match, name='check_match'),
+
+    # path('student_profile/<int:student_id>/', views.student_profile, name='student_profile'),
+    path('student_profile', views.student_profile, name='student_profile'),
+
+    path('invite/<int:opportunity_id>/<int:student_id>/', views.send_invitation, name='send_invite'),
+
 ]

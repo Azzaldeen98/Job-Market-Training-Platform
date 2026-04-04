@@ -1,7 +1,10 @@
 ### 1. إنشاء البيئة الوهمية وتفعيلها
 ```bash
     python -m venv venv
-    source venv/bin/activate  # Windows: venv\Scripts\activate
+    # Activating the environment in Windows system:
+      venv\Scripts\activate 
+    # Activating the environment in other systems :
+      source venv/bin/activate  
 ```
 
 
@@ -70,15 +73,35 @@ mkdir -p static/css static/js static/img
 ```Bash
 python manage.py collectstatic
 ```
+### Install Frontend Dependencies
+```bash
+
+Run the following commands after cloning the project.
+
+```bash
+# Install cross-env (needed for Windows compatibility)
+npm install -D cross-env
+
+# Move to the Tailwind theme directory
+cd theme
+
+# Install UI components
+npm install daisyui
+
+# Install Tailwind CSS 4 and PostCSS tooling
+npm install tailwindcss @tailwindcss/postcss postcss postcss-cli autoprefixer postcss-simple-vars postcss-nested
+
+# Return to project root
+cd ..
+```
+After installing dependencies, start the Tailwind watcher:
+أفتح Terminal جديد ونفذ الامر التالي  لتشغيل المراقبة (Start/Dev) بهدف تطبيق تنسيقات tailwind على الواجهات 
+```bash
+ python manage.py tailwind start # لتشغيل المراقبة الحية أثناء التطوير
+```
 
 ### 7. تشغيل المشروع
 
-أفتح Terminal جديد ونفذ الامر التالي  لتشغيل المراقبة (Start/Dev) بهدف تطبيق تنسيقات tailwind على الواجهات 
-```bash
-#python manage.py tailwind install
-python manage.py tailwind dev || python manage.py tailwind start # لتشغيل المراقبة الحية أثناء التطوير
-
-```
 أفتح Terminal أخر ونفذ الامر التالي لتشغيل السرفر 
 ```bash
 python manage.py runserver
@@ -87,7 +110,7 @@ python manage.py runserver
 ### Generated Apps 
 
 ```bash
-python manage.py generate_apps
+python manage.py startapp  app_name
 ```
 ### Clear Cash 
 
