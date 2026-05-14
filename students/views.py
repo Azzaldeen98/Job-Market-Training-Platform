@@ -186,8 +186,9 @@ def my_opportunities_apps(request):
 def opportunity_apply(request,id):
 
     opportunity = get_object_or_404(TrainingOpportunity, id=id)
-    student = request.user.profile.id
-    if student and student:
+    student = request.user.profile
+
+    if student:
         application = JoinTrainingOpportunity.objects.filter(
             student=student,
             opportunity=opportunity
@@ -209,8 +210,8 @@ def opportunity_apply(request,id):
             # else:
             #     application.status = JoinTrainingOpportunity.Status.INVITED
             #     application.save()
-        #     #     messages.success(request, "Request status updated to 'Invited'.")
-        # else:
+            #     messages.success(request, "Request status updated to 'Invited'.")
+
 
 
     return redirect(f'{app_name}:check_match', opportunity_id=opportunity.id)
