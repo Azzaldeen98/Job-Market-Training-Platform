@@ -1,0 +1,118 @@
+    {% extends 'students/base.html' %}
+{% load i18n %}
+
+{% block provider_content %}
+<div class="py-8 px-4 max-w-5xl mx-auto">
+    {% back_button label=_("back to dashboard") %}
+
+    <div class="mt-6 mb-8 flex justify-between items-end">
+        <div>
+            <h2 class="text-2xl font-bold text-content">
+                     <span class="text-brand">{% trans 'My Applications' %}</span>
+                </h2>
+            <p class="text-sm opacity-60 mt-1">
+                {% trans "Training opportunities tailored to your major and skills." %}
+            </p>
+        </div>
+        <div class="text-left hidden md:block">
+            <span class="text-xs font-medium px-3 py-1 bg-surface border border-orange/30 text-orange rounded-full">
+                {% trans "Your GPA:" %} {{ student.gpa }}
+            </span>
+        </div>
+    </div>
+
+    <div class="grid gap-4">
+        {% for app in apps %}
+        <div class="bg-surface p-5 rounded-2xl border border-stroke-soft flex flex-col md:flex-row items-center justify-between hover:border-orange/50 transition-all group shadow-sm hover:shadow-md">
+
+                <div class="flex items-center gap-4 w-full md:w-2/5">
+                    <div class="relative">
+                        <div class="w-14 h-14 bg-orange/10 text-orange rounded-2xl flex items-center justify-center font-bold text-xl transition-transform group-hover:scale-110">
+<!--                            <i data-lucide="briefcase" class="w-7 h-7"></i>-->
+                            {% if app.opportunity.provider.logo %}
+                                <img src="{{ app.opportunity.provider.logo.url }}"
+                                     alt="{{ app.opportunity.company_name }}"
+                                     class="w-12 h-12 rounded-xl object-cover border border-stroke-soft">
+                            {% else %}
+                                <div class="w-12 h-12 bg-orange/10 text-orange rounded-xl flex items-center justify-center font-bold">
+                                    {{ app.opportunity.company_name|first }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="flex-1">
+                        <h4 class="font-bold text-content group-hover:text-orange transition-colors">
+                            {{ app.opportunity.title }}
+                        </h4>
+                        <p class="text-xs mt-4 opacity-70 flex items-center gap-1 font-medium text-brand">
+                            <i data-lucide="building-2" class="w-3.5 h-3.5"></i>
+                            {{ app.opportunity.provider }}
+                        </p>
+                        <div class="flex gap-3 mt-1.5">
+                             <span class="text-[12px] flex items-center gap-1 opacity-50">
+                                <i data-lucide="map-pin" class="w-3 h-3"></i>
+                                {{ app.opportunity.city|default:_("Remote") }}
+                            </span>
+                            <span class="text-[12px] flex items-center gap-1 opacity-50">
+                                <i data-lucide="calendar" class="w-3 h-3"></i>
+                                {{ app.opportunity.deadline }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden lg:block w-1/4 px-4">
+                    <p class="text-[12px] uppercase tracking-wider opacity-40 mb-2 font-bold">
+                        {% trans "Skills Requirements" %}
+                    </p>
+                    <div class="flex flex-wrap gap-1">
+                        {% for skill in app.opportunity.required_skills.all|slice:":3" %}
+                            <span class="text-[12px] px-2 py-0.5 bg-base-card rounded-md border border-stroke-soft text-content/80">
+                                {{ skill.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center md:items-end gap-1 w-full md:w-1/4 my-4 md:my-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold {% if app.match_score > 75 %}text-green-500{% elif app.match_score > 45 %}text-orange{% else %}text-err{% endif %}">
+                            {{ app.match_score }}%
+                        </span>
+                        <span class="text-[10px] opacity-50 font-medium uppercase tracking-tighter">{% trans "Match" %}</span>
+                    </div>
+                    <div class="w-full max-w-[150px] h-1.5 bg-base-card rounded-full overflow-hidden border border-stroke-soft">
+                        <div class="h-full transition-all duration-1000 {% if app.match_score > 75 %}bg-green-500{% elif app.match_score > 45 %}bg-orange{% else %}bg-err{% endif %}"
+                             style="width: {{ score }}%"></div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mx-3  md:w-auto">
+<!--                    <a href="{{ opportunity.get_detail_url }}"-->
+<!--                       class="flex-1 md:flex-none text-center px-6 py-2.5 bg-orange text-white rounded-xl text-xs font-bold shadow-sm hover:bg-orange-600 transition-all">-->
+<!--                        {% trans "Apply Now" %}-->
+<!--                    </a>-->
+                    <a href="{% url 'students:opportunity_detail'  app.opportunity.id %}"
+                       class="flex-1 md:flex-none text-center px-6 py-2.5 app-btn-primary rounded-xl text-xs font-bold shadow-sm hover:bg-orange-600 transition-all">
+                        {% trans "More" %}
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="text-center py-20 bg-surface rounded-3xl border-2 border-dashed border-stroke-soft">
+                <div class="w-20 h-20 bg-base-card rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="search-x" class="w-10 h-10 opacity-20"></i>
+                </div>
+                <h3 class="text-lg font-bold opacity-80">{% trans "No Invitations opportunities found" %}</h3>
+                <p class="text-sm opacity-50 mt-2 max-w-xs mx-auto">
+                    {% trans "We couldn't find matches for your current profile. Try adding more skills to your CV." %}
+                </p>
+
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}

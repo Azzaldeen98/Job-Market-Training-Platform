@@ -7,22 +7,22 @@ from core.routes import Routes
 
 
 def training_entity_required(view_func):
-    """التحقق الأساسي: هل هو جهة تدريب؟"""
-
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        # التأكد من تسجيل الدخول
+
         if not request.user.is_authenticated:
             return redirect(Routes.LOGIN)
 
-        # التأكد من نوع الحساب
         if not getattr(request.user, 'is_training_entity', False):
-            messages.error(request, "هذه الصفحة مخصصة لجهات التدريب فقط.")
+            messages.error(request, "This page is for training providers only.")
             return redirect(Routes.HOME)
 
         return view_func(request, *args, **kwargs)
 
     return _wrapped_view
+
+
+
 
 
 def training_entity_approval_required(view_func):

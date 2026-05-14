@@ -1,73 +1,114 @@
 {% extends 'core/base.html' %}
   {% block content %}
 
-<div class="w-full">
-    <div class="lg:hidden bg-surface border-b border-stroke-soft px-4 py-3 flex items-center justify-between sticky top-0 z-50">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-                <i data-lucide="building-2" class="w-5 h-5 btn-text"></i>
-            </div>
-            <span class="font-bold text-lg text-content">SkillMatch</span>
-        </div>
-        <button id="mobile-menu-btn" class="p-2 hover:bg-field-base rounded-lg transition-colors">
-            <i data-lucide="menu" class="w-6 h-6 text-content-muted"></i>
-        </button>
-    </div>
+<div class="w-full ">
 
-    <div class="flex min-h-screen bg-base">
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-surface border-r border-stroke-soft transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:inset-auto lg:h-screen overflow-y-auto">
-            <div class="p-6 border-b border-stroke-soft">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center shadow-lg shadow-brand/20">
-                        <i data-lucide="building-2" class="w-6 h-6 btn-text"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-bold text-xl text-content">SkillMatch</h1>
-                        <p class="text-xs text-content-muted font-medium text-brand">Business Panel</p>
-                    </div>
-                </div>
-            </div>
+<!--    <div class="lg:hidden bg-surface border-b border-stroke-soft px-4 py-3 flex items-center justify-between sticky top-0 z-50">-->
+<!--        <div class="flex items-center gap-2">-->
+<!--            <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">-->
+<!--                <i data-lucide="building-2" class="w-5 h-5 btn-text"></i>-->
+<!--            </div>-->
+<!--            <span class="font-bold text-lg text-content">SkillMatch</span>-->
+<!--        </div>-->
+<!--        <button id="mobile-menu-btn" class="p-2 hover:bg-field-base rounded-lg transition-colors">-->
+<!--            <i data-lucide="menu" class="w-6 h-6 text-content-muted"></i>-->
+<!--        </button>-->
+<!--    </div>-->
 
-            <nav class="p-4 space-y-1">
-                <a href="{% url 'training_entities:dashboard' %}" class="nav-item active flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 bg-brand text-white">
+    <div class=" flex h-full   relative z-10">
+
+        <aside id="sidebar" class="mt-[80px] fixed inset-y-0 left-0 z-40 w-64 bg-surface border-r
+        border-stroke-soft transform -translate-x-full lg:translate-x-0 transition-transform
+         duration-300 ease-in-out lg:static lg:inset-auto lg:h-screen overflow-y-auto">
+
+<!--            <div class="p-6 border-b border-stroke-soft">-->
+<!--                <div class="flex items-center gap-3">-->
+<!--                    <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center shadow-lg shadow-brand/20">-->
+<!--                        <i data-lucide="building-2" class="w-6 h-6 btn-text"></i>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <h1 class="font-bold text-xl text-content">SkillMatch</h1>-->
+<!--                        <p class="text-xs text-content-muted font-medium text-brand">Business Panel</p>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <nav class="p-4 mt-5 space-y-1">
+                <a href="{% url 'training_entities:dashboard' %}"
+                   class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200
+                    {% if request.resolver_match.url_name == 'dashboard' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                     Dashboard
                 </a>
-
-                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                 <a href="{% url 'training_entities:training_opportunities' %}" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200
+                    {% if request.resolver_match.url_name == 'training_opportunities' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">
+                    <i data-lucide="briefcase" class="w-5 h-5 "></i>
+                   {% trans ' Training Opportunities' %}
+                </a>
+                <a href="{% url 'training_entities:opportunity_add' %}"
+                   class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200
+                    {% if request.resolver_match.url_name == 'opportunity_add' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">
                     <i data-lucide="plus-circle" class="w-5 h-5"></i>
                     Post Opportunity
                 </a>
 
-                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
-                    <i data-lucide="briefcase" class="w-5 h-5"></i>
-                    My Listings
-                    <span class="ml-auto bg-brand/10 text-brand text-xs font-bold px-2 py-1 rounded-full">5</span>
-                </a>
 
-                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+                <a href="{% url 'training_entities:incoming_apps' %}"
+                   class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200
+                    {% if request.resolver_match.url_name == 'incoming_apps' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">
                     <i data-lucide="users" class="w-5 h-5"></i>
                     Applicants
-                    <span class="ml-auto bg-orange-500/10 text-orange-600 text-xs font-bold px-2 py-1 rounded-full">24</span>
+                    <span class="ml-auto bg-orange-500/10 text-orange-600 text-xs font-bold px-2 py-1 rounded-full">
+                        {{ total_apps|default:0 }}
+                    </span>
                 </a>
 
-                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
-                    <i data-lucide="clipboard-check" class="w-5 h-5"></i>
-                    Evaluations
-                </a>
+<!--                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200
+                    {% if request.resolver_match.url_name == 'opportunities_invites' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">-->
+<!--                    <i data-lucide="clipboard-check" class="w-5 h-5"></i>-->
+<!--                    Evaluations-->
+<!--                </a>-->
 
-                <a href="{% url 'training_entities:complete_profile' %}" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
-                    <i data-lucide="settings" class="w-5 h-5"></i>
-                    Organization Info
-                </a>
-                <a href="{% url 'training_entities:complete_profile' %}" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+<!--                <a href="{% url 'training_entities:complete_profile' %}" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200
+                    {% if request.resolver_match.url_name == 'opportunities_invites' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">-->
+<!--                    <i data-lucide="settings" class="w-5 h-5"></i>-->
+<!--                    Organization Info-->
+<!--                </a>-->
+                <a href="{% url 'training_entities:complete_profile' %}"
+                   class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200
+                    {% if request.resolver_match.url_name == 'complete_profile' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">
                     <i data-lucide="user" class="w-5 h-5"></i>
                     Profile
                 </a>
-                <a href="{% url 'training_entities:training_opportunities' %}" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
-                    <i data-lucide="briefcase" class="w-5 h-5 "></i>
-                   {% trans ' Training Opportunities' %}
-                </a>
+
             </nav>
 
             <div class="p-4 mt-auto">
@@ -89,12 +130,38 @@
             </div>
         </aside>
 
-        <main class="w-full overflow-x-hidden">
-            <div class="p-4 lg:p-8">
-                {% block provider_content %}
-                    {% endblock %}
-            </div>
-        </main>
+           <div class="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
+
+             <header class="flex h-16 items-center justify-between border-b border-stroke-soft bg-surface px-6">
+
+                 <div class=" flex items-center gap-4  "  >
+                      <div class="" style="width:50px;height:50px" >
+                          {% url 'training_entities:complete_profile' as pro_url%}
+                          {% profile_dropdown  profile_url=pro_url img_url=user.profile.get_logo_url display_name=user.profile.entity_name  sub_text=user.identity.name %}
+                        </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="text-content-muted hover:text-content md:hidden">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                    <div class="relative hidden md:block">
+                        <i class="ph ph-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-content-muted"></i>
+                        <input type="text" placeholder="بحث..." class="rounded-full border border-stroke-soft bg-field-surface py-2 pr-10 pl-4 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand w-64 text-content">
+                    </div>
+                </div>
+
+
+        </header>
+             <main class="flex-1 p-5 lg:p-7 overflow-y-auto custom-scrollbar">
+                 {% include 'training_entities/includes/dashboard_navbar.html' %}
+                   <div class="max-w-7xl mx-auto space-y-8">
+
+                    {% block provider_content %}
+                        {% endblock %}
+                 </div>
+             </main>
+
+        </div>
     </div>
 </div>
  {% endblock  %}

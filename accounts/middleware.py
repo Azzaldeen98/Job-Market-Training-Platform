@@ -3,35 +3,35 @@ from django.urls import reverse
 from core.routes import Routes
 
 
-class RegistrationFlowMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        user = request.user
-
-        if user.is_authenticated and not user.is_superuser:
-            # 1. إذا كان يحتاج موافقة ولم يتم تفعيله بعد
-            if user.requires_approval:
-                # مسموح له فقط بصفحة إكمال البيانات أو صفحة الانتظار
-                allowed_paths = [
-                    reverse(Routes.STUDENT_COMPLETE_PROFILE),
-                    reverse(Routes.TRAINING_COMPLETE_PROFILE),
-                    reverse(Routes.WAITING_APPROVAL),
-                    reverse(Routes.LOGOUT),
-                ]
-
-                if request.path not in allowed_paths:
-                    # إذا لم يكمل بياناته بعد، أرسله للإكمال
-                    # (يمكنك فحص حقل معين مثل الهاتف أو الصورة للتأكد من الإكمال)
-                    if not user.phone_number:
-                        return redirect(Routes.STUDENT_COMPLETE_PROFILE) if user.is_student else redirect(
-                            Routes.TRAINING_COMPLETE_PROFILE)
-
-                    # إذا أكمل البيانات، أرسله لصفحة الانتظار
-                    return redirect(Routes.WAITING_APPROVAL)
-
-        return self.get_response(request)
+# class RegistrationFlowMiddleware:
+#     def __init__(self, get_response):
+#         self.get_response = get_response
+#
+#     def __call__(self, request):
+#         user = request.user
+#
+#         if user.is_authenticated and not user.is_superuser:
+#             # 1. إذا كان يحتاج موافقة ولم يتم تفعيله بعد
+#             if user.requires_approval:
+#                 # مسموح له فقط بصفحة إكمال البيانات أو صفحة الانتظار
+#                 allowed_paths = [
+#                     reverse(Routes.STUDENT_COMPLETE_PROFILE),
+#                     reverse(Routes.TRAINING_ENTITY_COMPLETE_PROFILE),
+#                     reverse(Routes.WAITING_APPROVAL),
+#                     reverse(Routes.LOGOUT),
+#                 ]
+#
+#                 if request.path not in allowed_paths:
+#                     # إذا لم يكمل بياناته بعد، أرسله للإكمال
+#                     # (يمكنك فحص حقل معين مثل الهاتف أو الصورة للتأكد من الإكمال)
+#                     if not user.phone_number:
+#                         return redirect(Routes.STUDENT_COMPLETE_PROFILE) if user.is_student else redirect(
+#                             Routes.TRAINING_ENTITY_COMPLETE_PROFILE)
+#
+#                     # إذا أكمل البيانات، أرسله لصفحة الانتظار
+#                     return redirect(Routes.WAITING_APPROVAL)
+#
+#         return self.get_response(request)
 
 
 # class VerificationMiddleware:
@@ -43,7 +43,7 @@ class RegistrationFlowMiddleware:
 #             # الروابط المسموح له بدخولها دائماً (صفحة البروفايل، تسجيل الخروج، صفحة الانتظار)
 #             allowed_routes = [
 #                 reverse(Routes.STUDENT_COMPLETE_PROFILE),
-#                 reverse(Routes.TRAINING_COMPLETE_PROFILE),
+#                 reverse(Routes.TRAINING_ENTITY_COMPLETE_PROFILE),
 #                 reverse(Routes.LOGOUT),
 #                 reverse(Routes.WAITING_APPROVAL), # صفحة سننشئها لاحقاً
 #             ]

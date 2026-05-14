@@ -26,17 +26,19 @@ class CustomUserAdmin(UserAdmin):
     )
 
     # 2. تخصيص الأعمدة في القائمة الرئيسية
-    # أضفنا 'is_active' لسهولة الرقابة
-    list_display = ['username', 'email', 'is_verified', 'is_active', 'is_dark_mode']
+    list_display = ['username', 'email', 'role_name','is_verified', 'is_active', 'is_dark_mode']
 
     # 3. السماح بتغيير حالة التوثيق مباشرة من القائمة دون الدخول لصفحة المستخدم
     list_editable = ['is_verified', 'is_active']
 
     # 4. إضافة فلاتر جانبية لتسهيل الوصول للمستخدمين غير الموثقين
-    list_filter = UserAdmin.list_filter + ('is_verified', 'is_dark_mode')
+    list_filter = UserAdmin.list_filter + ('is_verified', 'is_dark_mode'    )
 
     # 5. إضافة عمليات جماعية (Bulk Actions)
     actions = ['approve_users', 'deactivate_users']
+
+    def role_name(self, obj):
+        return obj.role_name
 
     @admin.action(description=_("Approve selected users (Set as Verified)"))
     def approve_users(self, request, queryset):
@@ -48,7 +50,7 @@ class CustomUserAdmin(UserAdmin):
         updated = queryset.update(is_active=False)
         self.message_user(request, _(f"Successfully deactivated {updated} users."))
 
-
+    role_name.short_description = _('Role')
 admin.site.register(CustomUser, CustomUserAdmin)
 
 # class CustomUserAdmin(UserAdmin):

@@ -19,6 +19,8 @@ class JoinTrainingOpportunity(BaseModel):
         REJECTED = 'rejected', _('Rejected')
         ON_TRAINING = 'on_training', _('On Training')
         COMPLETED = 'completed', _('Completed')
+        # SUSPEND = 'suspend', _('Suspend')
+        # CANCEL = 'cancel', _('Cancel')
 
     # STATUS_CHOICES = [
     #     ('draft', _('Draft')),  # مسودة لدى الطالب
@@ -69,29 +71,32 @@ class JoinTrainingOpportunity(BaseModel):
 
 
     @property
+    def is_draft(self):
+        return self.status == self.Status.DRAFT
+    @property
     def is_pending(self):
         """هل الطلب لا يزال تحت المراجعة؟"""
-        return self.status == 'pending'
+        return self.status == self.Status.PENDING
 
     @property
     def is_accepted(self):
         """هل تم قبول الطالب (قبول مبدئي)؟"""
-        return self.status == 'accepted'
+        return self.status == self.Status.ACCEPTED
 
     @property
     def is_rejected(self):
         """هل تم رفض الطلب؟"""
-        return self.status == 'rejected'
+        return self.status == self.Status.REJECTED
 
     @property
     def is_active_training(self):
         """هل الطالب حالياً يباشر التدريب في الشركة؟"""
-        return self.status == 'on_training'
+        return self.status == self.Status.ON_TRAINING
 
     @property
     def is_completed(self):
-        """هل أنهى الطالب فترة التدريب بالكامل؟"""
-        return self.status == 'completed'
+        return self.status == self.Status.COMPLETED
+
 
     @property
     def can_be_edited(self):
@@ -99,8 +104,8 @@ class JoinTrainingOpportunity(BaseModel):
         return self.status in ['draft', 'pending']
 
     # دالة إضافية للحصول على التسمية المقروءة للحالة (بالعربي أو الإنجليزي)
-    def get_status_label(self):
-        return dict(self.STATUS_CHOICES).get(self.status)
+    # def get_status_label(self):
+    #     return dict(self.status).get(self.status)
 
     @property
     def is_currently_training(self):

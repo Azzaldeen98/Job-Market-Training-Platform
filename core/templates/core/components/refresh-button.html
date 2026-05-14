@@ -1,0 +1,19 @@
+{% load i18n %}
+
+<button
+    onclick="window.location.reload();"
+    class="flex items-center gap-2 px-4 py-2 bg-base border border-stroke-soft rounded-xl text-sm
+    font-bold text-content-muted hover:bg-surface hover:text-brand transition-all shadow-sm group
+    {{ extra_classes }}">
+
+    <i data-lucide="{{ icon|default:'refresh-cw' }}"
+       class="w-4 h-4 group-hover:rotate-180 transition-transform duration-500"></i>
+
+    <span>
+        {% if label %}
+            {{ label }}
+        {% else %}
+            {% trans "Refresh" %}
+        {% endif %}
+    </span>
+</button>

@@ -1,6 +1,8 @@
 from django import template
 from django.utils.translation import gettext_lazy as _
 
+from core.routes import Routes
+
 register = template.Library()
 
 
@@ -22,6 +24,42 @@ def back_button(context,label=None, url=None, extra_classes="",icon=None):
         'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI'),
     }
 
+@register.inclusion_tag('core/components/refresh-button.html', takes_context=True)
+def refresh_button(context,label=None,extra_classes=None,icon=None):
+    return {
+        'label': label or _("Refresh"),
+        # 'url': url or 'javascript:history.back()',
+        'extra_classes': extra_classes,
+        'icon': icon or 'refresh-cw',
+        'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI'),
+    }
+
+@register.inclusion_tag('core/components/list_button.html', takes_context=True)
+def list_button(context,label,url,icon=None):
+    return {
+        'label': label,
+        'link': url ,
+        'icon': icon ,
+        'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI'),
+    }
+
+
+@register.inclusion_tag('core/components/profile_dropdown.html')
+def profile_dropdown(img_url=None, display_name="", initials=None, sub_text="",profile_url="", settings_url="#", support_url="#", logout_url=None):
+    _initials=""
+    if not initials and display_name and not img_url and len(display_name)>=1:
+        _initials = "".join([n for n in display_name[:1]]).upper()
+
+    return {
+        'img_url': img_url,
+        'display_name': display_name,
+        'initials': initials or _initials,
+        'sub_text': sub_text,
+        'profile_url': profile_url,
+        'settings_url': settings_url,
+        'support_url': support_url,
+        'logout_url': logout_url or Routes.LOGOUT,
+    }
 
 
 @register.inclusion_tag('core/components/delete-button.html', takes_context=True)
@@ -33,6 +71,7 @@ def delete_button(context, action_url, label=None, message=None, extra_classes="
         'extra_classes': extra_classes,
         'LANGUAGE_BIDI': context.get('LANGUAGE_BIDI', False), # مهم لترتيب الأزرار
     }
+
 
 @register.inclusion_tag('core/components/user-card.html')
 def user_card(name, email,user_id=None, image_url=None,redirect_link=None):

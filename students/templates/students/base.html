@@ -15,24 +15,23 @@
 
         <div class="flex min-h-screen bg-base">
             <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-surface border-r border-stroke-soft transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:inset-auto lg:h-screen overflow-y-auto">
-                <div class="p-6 border-b border-stroke-soft">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center shadow-lg shadow-brand/20">
-                            <i data-lucide="zap" class="w-6 h-6 btn-text"></i>
-                        </div>
-                        <div>
-                            <h1 class="font-bold text-xl text-content">SkillMatch</h1>
-                            <p class="text-xs text-content-muted font-medium">Pro Platform</p>
-                        </div>
-                    </div>
-                </div>
 
-                <nav class="p-4 space-y-1">
-                    <a href="#" class="nav-item active  flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 bg-brand text-white">
+
+                <nav class="p-4 mt-5 space-y-1">
+                    <br>
+                    <br>
+                    <br>
+                    <a href="{% url 'students:dashboard' %}"
+                       class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200
+                       {% if request.resolver_match.url_name == 'dashboard' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">
                         <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                         Dashboard
                     </a>
-              <a href="{% url 'students:match_opportunities' %}"
+                    <a href="{% url 'students:match_opportunities' %}"
                    class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200
                    {% if request.resolver_match.url_name == 'match_opportunities' %}
                       bg-orange/10 text-orange
@@ -40,20 +39,50 @@
                       text-content-muted hover:bg-field-base hover:text-content
                    {% endif %}">
                     <i data-lucide="briefcase" class="w-5 h-5"></i>
-                    {% trans "Opportunities" %}
-                    <span class="ml-auto bg-orange/20 text-orange text-xs font-bold px-2 py-0.5 rounded-full">
-                        {{ results|length }}
-                    </span>
+                    {% trans "Match Opportunities" %}
+
+                    {% if total_opportunities  %}
+                        <span class="ml-auto bg-orange/20 text-orange text-xs font-bold px-2 py-0.5 rounded-full">
+                            {{ total_opportunities }}
+                        </span>
+                    {% endif %}
                 </a>
-                    <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
-                        <i data-lucide="file-check" class="w-5 h-5"></i>
-                        Applications
+                    <a href="{% url 'students:opportunities_invites' %}"
+                       class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200
+                       {% if request.resolver_match.url_name == 'opportunities_invites' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">
+                        <i data-lucide="briefcase" class="w-5 h-5"></i>
+                        {% trans "Opportunities Invites" %}
+                        {% if total_apps  %}
+                            <span class="ml-auto bg-orange/20 text-orange text-xs font-bold px-2 py-0.5 rounded-full">
+                                {{ total_apps }}
+                            </span>
+                        {% endif %}
+                </a>
+                    <a href="{% url 'students:my_opportunities_apps' %}"
+                       class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200
+                         {% if request.resolver_match.url_name == 'my_opportunities_apps' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">
+                         <i data-lucide="list" class="w-5 h-5"></i>
+                        {% trans "Applications" %}
+<!--                          <span class="ml-auto bg-orange/20 text-orange text-xs font-bold px-2 py-0.5 rounded-full">-->
+<!--                            {{ total_apps|length }}-->
+<!--                        </span>-->
                     </a>
-                    <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
-                        <i data-lucide="award" class="w-5 h-5"></i>
-                        Certificates
-                    </a>
-                    <a href="{% url 'students:complete_profile' %}" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200">
+
+                    <a href="{% url 'students:complete_profile' %}"
+                       class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-content-muted rounded-xl hover:bg-field-base hover:text-content transition-all duration-200
+                         {% if request.resolver_match.url_name == 'complete_profile' %}
+                          bg-orange/10 text-orange
+                       {% else %}
+                          text-content-muted hover:bg-field-base hover:text-content
+                       {% endif %}">
                         <i data-lucide="user" class="w-5 h-5"></i>
                         Profile
                     </a>
@@ -77,11 +106,16 @@
                     </div>
                 </div>
             </aside>
+
           <div class="w-full">
 
+              {% include 'students/includes/dashboard_navbar.html' %}
 
-            {% block provider_content %}
+              <main class="flex-1 lg:ml-0 overflow-x-hidden">
+                  {% block provider_content %}
                   {% endblock %}
+              </main>
+
           </div>
 
         </div>

@@ -1,9 +1,10 @@
 from django.contrib import admin
-from core.admin import BaseModelAdmin
-from training_entities.models import TrainingEntityProfile, Industry
-from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
-from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+
+from core.admin import BaseModelAdmin
+from training_entities.models import TrainingEntityProfile, Industry, TrainingOpportunity
+
 
 # Register your models here.
 @admin.register(TrainingEntityProfile)
@@ -11,11 +12,13 @@ class TrainingEntityProfileAdmin(BaseModelAdmin):
     tailwind_fields = []
 
     list_display = (
+
         'view_logo',
+        'user',
         'entity_name',
         'entity_type',
-        'description',
         'phone_number',
+        'registration_number',
         'city',
         'view_cr_document',
         'is_available',
@@ -59,7 +62,38 @@ class IndustryAdmin(BaseModelAdmin):
                 '<i class="{}"></i>',
                 obj.icon
             )
-        return ""
+        return ""\
+
+@admin.register(TrainingOpportunity)
+class TrainingOpportunityAdmin(BaseModelAdmin):
+    tailwind_fields = []
+
+    list_display = ( 'title',
+                     # 'description',
+                     'field',
+                     'city',
+                     'start_date',
+                     'end_date',
+                     'capacity',
+                     'status',
+                     'university',
+                     'gpa_scale',
+                     )
+    # exclude = ['icon']
+    list_filter = ('status','field','major__college__university','city')
+    search_fields = ('title','field','major','city','capacity')
+    def university(self, obj):
+        if obj.major and obj.major.college and obj.major.college.university:
+            return obj.major.college.university
+        return "-"
+
+    # def view_icon(self, obj):
+    #     if obj.icon:
+    #         return format_html(
+    #             '<i class="{}"></i>',
+    #             obj.icon
+    #         )
+    #     return ""
 
 
 

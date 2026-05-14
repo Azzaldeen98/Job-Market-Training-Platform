@@ -1,100 +1,207 @@
 
-<nav class=" border-b border-gray-200   dark:border-slate-800 transition-colors duration-300">
+{% load i18n static %}
+
+<nav class="fixed mt-0 w-full z-50 transition-all duration-300 bg-surface/80 backdrop-blur-md border-b border-stroke-soft shadow-sm" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
-        <div class="flex items-center gap-x-4">
-            <a href="{% url 'core:home' %}" class="text-2xl font-bold text-blue-600 dark:text-blue-400 ml-8 rtl:ml-0 rtl:mr-8">
-                LogoSpace
-            </a>
-            <div class="hidden md:flex gap-x-4">
-                <a href="{% url 'core:home' %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
-                    {% trans "Home" %}
+        <div class="flex justify-between items-center h-20">
+
+            <div class="flex items-center gap-8">
+                <a href="{% url 'core:home' %}" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-brand to-brand/60 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform">
+                        <i data-lucide="briefcase" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-2xl font-black text-content tracking-tight">Skill<span class="text-brand">Match</span></span>
                 </a>
 
+                <div class="hidden md:flex items-center gap-6">
 
-                {% if user.is_authenticated %}
+                    {% if not user.is_authenticated or user.is_student %}
+                             <a href="{% url 'core:home' %}" class="active text-content-muted hover:text-brand font-bold transition-all relative group">
+                                {% trans "Home" %}
+                                <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
+                            </a>
+                            <a href="{% url 'core:opportunities' %}" class="text-content-muted hover:text-brand font-bold transition-all relative group">
+                                    {% trans "Opportunities" %}
+                                    <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
+                            </a>
+                           <a href="{% url 'core:training_entities' %}" class="text-content-muted hover:text-brand font-bold transition-all relative group">
+                                {% trans "Training  Entities" %}
+                                <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
+                            </a>
+                     {% endif %}
 
-
-
-                       {% if user.is_identity and user.get_dashboard_url %}
-                          <a href="{{ user.get_dashboard_url }}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
-                                {% trans "Dashboard" %}
-                          </a>
-                    {% endif  %}
-
-<!--                     {% if user.is_student %}-->
-<!--                        <a href="{% url 'students:dashboard'  %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">-->
-<!--                            {% trans "Dashboard" %}-->
-<!--                        </a>-->
-
-<!--                    {% elif user.is_training_entity %}-->
-
-<!--                        <a href="{% url  'training_entities:dashboard'  %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">-->
-<!--                            {% trans "Dashboard" %}-->
-<!--                        </a>-->
-
-<!--                     {% endif  %}-->
-
-    {% endif  %}
-
-            </div>
-        </div>
-            <div class="flex items-center gap-x-4 ">
-                <div class="language-switcher">
-                    <form action="{% url 'set_language' %}" method="post" class="flex items-center">
-                        {% csrf_token %}
-                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                        <select name="language" onchange="this.form.submit()"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1.5 dark:bg-slate-800 dark:border-slate-700 dark:placeholder-gray-400 dark:text-white">
-                            {% get_current_language as LANGUAGE_CODE %}
-                            {% get_available_languages as LANGUAGES %}
-                            {% for lang in LANGUAGES %}
-                                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
-                                    {{ lang.1 }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </form>
+                    {% if user.is_authenticated %}
+                        {% if user.is_identity and user.get_dashboard_url %}
+                        <a href="{{ user.get_dashboard_url }}" class="text-content-muted hover:text-brand font-bold transition-all relative group">
+                            {% trans "Dashboard" %}
+                            <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
+                        </a>
+                        {% endif %}
+                    {% endif %}
                 </div>
-             <button onclick="toggleTheme()" class="btn btn-ghost">
-    <span class="block dark:hidden [html[data-theme='emerald']_&]:hidden">☀️</span>
-    <span class="hidden dark:block">🌙</span>
-<!--    <span class="hidden [html[data-theme='emerald']_&]:block">🌿</span>-->
-</button>
-                {% if user.is_authenticated %}
-                    <div class="flex items-center space-x-3  border-l rtl:border-l-0 rtl:border-r border-gray-200 dark:border-slate-700 padding-inline-start-4 pl-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                            {% trans "Online" %}
-                        </span>
-                        <span class="text-gray-700 dark:text-gray-200 font-medium hidden sm:block">
-                            {{ user.username }}
-                        </span>
+            </div>
 
+            <div class="flex items-center gap-4">
+
+                <div class="language-switcher hidden sm:block">
+<!--                    <form action="{% url 'set_language' %}" method="post">-->
+<!--                        {% csrf_token %}-->
+<!--                        <input name="next" type="hidden" value="{{ request.get_full_path }}">-->
+<!--                        <select name="language" onchange="this.form.submit()"-->
+<!--                                class="bg-field-base border border-stroke-soft text-content text-xs font-bold rounded-xl focus:ring-brand focus:border-brand block p-2 cursor-pointer outline-none">-->
+<!--                            {% get_current_language as LANGUAGE_CODE %}-->
+<!--                            {% get_available_languages as LANGUAGES %}-->
+<!--                            {% for lang in LANGUAGES %}-->
+<!--                                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>-->
+<!--                                    {{ lang.1|upper }}-->
+<!--                                </option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+<!--                    </form>-->
+                </div>
+
+<!--                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-field-base text-content-muted hover:text-brand hover:bg-brand/10 transition-colors border border-stroke-soft">-->
+<!--                    <span class="block dark:hidden">☀️</span>-->
+<!--                    <span class="hidden dark:block">🌙</span>-->
+<!--                </button>-->
+
+                {% if user.is_authenticated %}
+                    <div class="flex items-center gap-3 pr-4 border-r border-stroke-soft">
+                        <div class="hidden sm:block text-left">
+                            <p class="text-xs font-black text-content">{{ user.username }}</p>
+                            <p class="text-[10px] text-green-600 font-bold uppercase">Online</p>
+                        </div>
                         <form action="{% url 'accounts:logout' %}" method="post" class="inline">
                             {% csrf_token %}
-                            <button type="submit" class="btn text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 text-sm font-semibold">
-                                {% trans "Logout" %}
+                            <button type="submit" class="p-2.5 rounded-xl bg-error/10 text-error hover:bg-error hover:text-white transition-all border border-error/20">
+                                <i data-lucide="log-out" class="w-5 h-5"></i>
                             </button>
                         </form>
                     </div>
                 {% else %}
-                    <div class="flex items-center space-x-2 ">
-<!--                        <a href="{% url 'accounts:login' %}" class="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 px-4 py-2 rounded-lg font-medium">-->
-<!--                            {% trans "Login" %}-->
-<!--                        </a>-->
-<!--                        <a href="{% url 'accounts:register' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">-->
-<!--                            {% trans "Register Now" %}-->
-<!--                        </a>    -->
-
-                        <a href="{% url 'account_login' %}" class="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 px-4 py-2 rounded-lg font-medium">
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'account_login' %}" class="hidden sm:block text-content-muted hover:text-brand font-bold px-4 py-2 transition-colors">
                             {% trans "Login" %}
                         </a>
-                        <a href="{% url 'account_signup' %}" class="bg-brand  text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        <a href="{% url 'account_signup' %}" class="bg-brand text-white px-6 py-2.5 rounded-xl font-bold hover:bg-brand-dark transition-all shadow-lg shadow-brand/20">
                             {% trans "Register Now" %}
                         </a>
                     </div>
                 {% endif %}
+
+                <button class="md:hidden p-2 text-content" id="mobileMenuBtn">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
             </div>
         </div>
     </div>
+
+    <div class="hidden md:hidden bg-surface border-t border-stroke-soft px-4 py-6 space-y-4 shadow-xl" id="mobileMenu">
+        <a href="{% url 'core:home' %}" class="block py-2 text-content font-bold border-b border-stroke-soft/50">{% trans "Home" %}</a>
+        {% if user.is_authenticated and user.get_dashboard_url %}
+            <a href="{{ user.get_dashboard_url }}" class="block py-2 text-content font-bold border-b border-stroke-soft/50">{% trans "Dashboard" %}</a>
+        {% endif %}
+        <div class="pt-2">
+            <p class="text-[10px] font-black text-content-muted uppercase mb-2">Language</p>
+            </div>
+    </div>
 </nav>
+<!--<nav class=" border-b border-gray-200   dark:border-slate-800 transition-colors duration-300">-->
+<!--    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">-->
+<!--        <div class="flex justify-between h-16 items-center">-->
+<!--        <div class="flex items-center gap-x-4">-->
+<!--            <a href="{% url 'core:home' %}" class="text-2xl font-bold text-blue-600 dark:text-blue-400 ml-8 rtl:ml-0 rtl:mr-8">-->
+<!--                Job Market Training-->
+<!--            </a>-->
+<!--            <div class="hidden md:flex gap-x-4">-->
+<!--                <a href="{% url 'core:home' %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">-->
+<!--                    {% trans "Home" %}-->
+<!--                </a>-->
+
+
+<!--                {% if user.is_authenticated %}-->
+
+
+
+<!--                       {% if user.is_identity and user.get_dashboard_url %}-->
+<!--                          <a href="{{ user.get_dashboard_url }}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">-->
+<!--                                {% trans "Dashboard" %}-->
+<!--                          </a>-->
+<!--                    {% endif  %}-->
+
+<!--&lt;!&ndash;                     {% if user.is_student %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        <a href="{% url 'students:dashboard'  %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% trans "Dashboard" %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        </a>&ndash;&gt;-->
+
+<!--&lt;!&ndash;                    {% elif user.is_training_entity %}&ndash;&gt;-->
+
+<!--&lt;!&ndash;                        <a href="{% url  'training_entities:dashboard'  %}" class=" text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium">&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% trans "Dashboard" %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        </a>&ndash;&gt;-->
+
+<!--&lt;!&ndash;                     {% endif  %}&ndash;&gt;-->
+
+<!--    {% endif  %}-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--            <div class="flex items-center gap-x-4 ">-->
+<!--                <div class="language-switcher">-->
+<!--                    <form action="{% url 'set_language' %}" method="post" class="flex items-center">-->
+<!--                        {% csrf_token %}-->
+<!--                        <input name="next" type="hidden" value="{{ request.get_full_path }}">-->
+<!--                        <select name="language" onchange="this.form.submit()"-->
+<!--                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1.5 dark:bg-slate-800 dark:border-slate-700 dark:placeholder-gray-400 dark:text-white">-->
+<!--                            {% get_current_language as LANGUAGE_CODE %}-->
+<!--                            {% get_available_languages as LANGUAGES %}-->
+<!--                            {% for lang in LANGUAGES %}-->
+<!--                                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>-->
+<!--                                    {{ lang.1 }}-->
+<!--                                </option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--             <button onclick="toggleTheme()" class="btn btn-ghost">-->
+<!--    <span class="block dark:hidden [html[data-theme='emerald']_&]:hidden">☀️</span>-->
+<!--    <span class="hidden dark:block">🌙</span>-->
+<!--&lt;!&ndash;    <span class="hidden [html[data-theme='emerald']_&]:block">🌿</span>&ndash;&gt;-->
+<!--</button>-->
+<!--                {% if user.is_authenticated %}-->
+<!--                    <div class="flex items-center space-x-3  border-l rtl:border-l-0 rtl:border-r border-gray-200 dark:border-slate-700 padding-inline-start-4 pl-4">-->
+<!--&lt;!&ndash;                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% trans "Online" %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        </span>&ndash;&gt;-->
+<!--                        <span class="text-gray-700 dark:text-gray-200 font-medium hidden sm:block">-->
+<!--                            {{ user.username }}-->
+<!--                        </span>-->
+
+<!--                        <form action="{% url 'accounts:logout' %}" method="post" class="inline">-->
+<!--                            {% csrf_token %}-->
+<!--                            <button type="submit" class="btn text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 text-sm font-semibold">-->
+<!--                                {% trans "Logout" %}-->
+<!--                            </button>-->
+<!--                        </form>-->
+<!--                    </div>-->
+<!--                {% else %}-->
+<!--                    <div class="flex items-center space-x-2 ">-->
+<!--&lt;!&ndash;                        <a href="{% url 'accounts:login' %}" class="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 px-4 py-2 rounded-lg font-medium">&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% trans "Login" %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        </a>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <a href="{% url 'accounts:register' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% trans "Register Now" %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        </a>    &ndash;&gt;-->
+
+<!--                        <a href="{% url 'account_login' %}" class="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 px-4 py-2 rounded-lg font-medium">-->
+<!--                            {% trans "Login" %}-->
+<!--                        </a>-->
+<!--                        <a href="{% url 'account_signup' %}" class="bg-brand  text-white px-4 py-2 rounded-lg font-medium transition-colors">-->
+<!--                            {% trans "Register Now" %}-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                {% endif %}-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</nav>-->

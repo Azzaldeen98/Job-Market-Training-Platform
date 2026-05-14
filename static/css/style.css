@@ -5,3 +5,20 @@
 
 /* جعل الانتقال بين الألوان ناعماً */
 body { transition: background-color 0.3s ease, color 0.3s ease; }
+
+/* تغيير الألوان الأساسية للوحة التحكم */
+:root {
+    --primary: #2c3e50;         /* لون الأزرار الأساسي */
+    --primary-fg: #fff;         /* لون النص داخل الزر */
+    --secondary: #34495e;       /* لون الأزرار الثانوية */
+    --accent: #1abc9c;          /* لون العناصر التفاعلية */
+}
+
+/* استهداف الأزرار بشكل مباشر للتأكد من التغيير */
+.button, input[type=submit], input[type=button], .submit-row a.deletelink {
+    background: var(--primary) !important;
+}
+
+.button:hover, input[type=submit]:hover {
+    background: #1a252f !important; /* لون أغمق قليلاً عند التمرير */
+}

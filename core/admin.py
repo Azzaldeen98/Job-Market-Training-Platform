@@ -5,13 +5,18 @@ from .base_admin import BaseTabularInline, BaseModelAdmin
 from .models import Country, Region, City
 
 
+
 class RegionInline(BaseTabularInline):
     model = Region
     extra = 1
     fields = ('name', 'code')
+    can_delete = True
+    show_change_link = True
 class CityInline(BaseTabularInline):
     model = City
     extra = 1
+    can_delete = True
+    show_change_link = True
 
 @admin.register(Country)
 class CountryAdmin(BaseModelAdmin):
@@ -19,6 +24,7 @@ class CountryAdmin(BaseModelAdmin):
     list_display = ('name', 'code')
     search_fields = ('name',)
     inlines = [RegionInline] # دمج المناطق داخل الدولة
+
 
 @admin.register(Region)
 class RegionAdmin(BaseModelAdmin):

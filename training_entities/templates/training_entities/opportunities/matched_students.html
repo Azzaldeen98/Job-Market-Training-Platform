@@ -3,22 +3,55 @@
 
 {% block provider_content %}
 <div class="py-8 px-4 max-w-5xl mx-auto">
-    {% back_button label=_("العودة للفرص") %}
+    <div class="flex gab-4">
+        {% back_button  %}
+        {% refresh_button  extra_classes="px-5" %}
+    </div>
+    <div class="p-4 mt-6 mb-8 border border-stroke rounded-xl">
+        <div class=" flex justify-between items-end">
+            <div>
+                <h2 class="text-2xl font-bold text-content">
+                    {% trans "Matching Students for:" %} <span class="text-brand">{{ opportunity.title }}</span>
+                </h2>
+                <p class="text-sm opacity-60 mt-1">
+                    {% trans "Ranked by GPA, Major, and Skills alignment." %}
+                </p>
 
-    <div class="mt-6 mb-8 flex justify-between items-end">
-        <div>
-            <h2 class="text-2xl font-bold text-content">
-                {% trans "Matching Students for:" %} <span class="text-brand">{{ opportunity.title }}</span>
-            </h2>
-            <p class="text-sm opacity-60 mt-1">
-                {% trans "Ranked by GPA, Major, and Skills alignment." %}
-            </p>
+
+
+            </div>
+
+            <div class="text-left">
+                <span class="text-xl font-bold  text-content-muted font-medium px-3 py-1 bg-base border border-stroke-soft rounded-full">
+                    {% trans "Required GPA" %} <span class="border rounded-xl px-2 text-brand"> {{ opportunity.min_gpa }}</span>
+                </span>
+            </div>
         </div>
-        <div class="text-left">
-            <span class="text-xs font-medium px-3 py-1 bg-base border border-stroke-soft rounded-full">
-                {% trans "Required GPA:" %} {{ opportunity.min_gpa }}
-            </span>
-        </div>
+           <div class="flex items-center gap-4 font-bold text-content opacity-70">
+                    <span class="flex text-xl items-center gap-1">
+                        <i data-lucide="building-2" class="w-4 h-4"></i>
+                        {{ opportunity.provider }}
+                    </span>
+                    <span class="flex items-center my-5 gap-1">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i>
+                        {{ opportunity.city|default:_("Remote") }}
+                    </span>
+                </div>
+<!--        <div class="mt-4 p-3 flex flex-wrap">-->
+
+            <div class=" p-3  rounded-xl ">
+                 <p class="text-xl opacity-60 mt-0">
+                        {% trans "Required Skills" %}
+                </p>
+                <div class="flex flex-wrap gap-1 p-3     my-3">
+                    {% for skill in opportunity.required_skills.all|slice:":3" %}
+                        <span class="text-[15px] font-bold px-1.5 py-1.5 bg-brand/75 text-white rounded-md ">
+                           #  {{ skill }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+<!--        </div>-->
     </div>
 
     <div class="grid gap-4">
@@ -90,10 +123,17 @@
                             {% trans "View Profile" %}
                         </button>
                     </form>
-                    {%  if item.status != 'draft' %}
+
+                    {%  if item.status == 'draft' or item.status == None %}
                         <div class="">
                             {% url 'training_entities:send_invite'  opportunity.id item.student.id  as invite_url %}
                             {% link-button extra_classes="w-full w-5 mx-2  app-btn-primary"  url=invite_url icon="square-plus" label=_("Send Invite")  %}
+                        </div>
+
+                    {%  elif item.status == 'invited' %}
+                        <div class="">
+                            {% url 'training_entities:cancel_invite'  opportunity.id item.student.id  as invite_url %}
+                            {% link-button extra_classes="w-full text-[12px] w-5 mx-2 border border-error text-error"  url=invite_url  label=_("Cancel Invite")  %}
                         </div>
                     {% endif %}
                 </div>

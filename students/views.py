@@ -1,19 +1,15 @@
-from django.shortcuts import render,redirect
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
-from accounts.models import CustomUser
+from django.shortcuts import redirect
+from django.shortcuts import render, get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from applications.models import JoinTrainingOpportunity
-from core.utils import calculate_match_score, current_date
+from core.routes import Routes
+from core.utils import calculate_match_score
 from students.decorators import student_required
 from students.forms import StudentProfileForm
 from students.models import StudentProfile
-from core.routes import Routes
-from django.shortcuts import render, get_object_or_404
-from django.db.models import Q
-from decimal import Decimal, InvalidOperation
-from django.contrib import messages
-
-
+from students.utils import student_match_opportunities
 from training_entities.models import TrainingOpportunity
 
 # Create your views here.
@@ -22,7 +18,65 @@ app_name="students"
 @login_required
 @student_required
 def dashboard(request):
-    return render(request, f'{app_name}/dashboard.html')
+
+    try:
+
+        student = get_object_or_404(StudentProfile, user=request.user)
+        context = {
+            "opportunities_count": 0,
+            "apps_count":0,
+            "matches_count": 0,
+        }
+
+        if student:
+
+            context['accepted_apps_count'] = JoinTrainingOpportunity.objects.filter(
+                student=student,
+                status__in=['Accepted', 'on_training', 'completed']
+            ).count()
+
+            # 2. إجمالي طلبات الانضمام الواردة (تم تصحيح .cou إلى .filter)
+            context['apps_count'] = JoinTrainingOpportunity.objects.filter(
+                student=student
+            ).count()
+
+            matches = student_match_opportunities(request)
+            matches_count=0 if not matches else len(matches)
+            context['matches_count'] = matches_count
+
+            matches_persent=0
+            if matches_count :
+                for  match in matches:
+                    matches_persent += match['score']
+                matches_persent = matches_persent / matches_count
+
+            context['matches_persent'] = matches_persent
+            context['complete_profile_persent'] = student.complete_profile_persent
+            # print( "student.skills>>")
+            # print( student.skills)
+
+            # profile=StudentProfile.objects.filter(user=request.user).prefetch_related('skills').distinct()
+            context['skills'] = student.skills.all()
+
+
+            # 5. عدد الدعوات المرسلة (إذا كان لديك حالة باسم Invited)
+            # context['invited_apps_count'] = JoinTrainingOpportunity.objects.filter(
+            #     student=student,
+            #     status='Invited'
+            # ).count()
+
+            # context['on_training_apps_count'] = JoinTrainingOpportunity.objects.filter(
+            #     student=student,
+            #     status='on_training'
+            # ).count()
+
+    except StudentProfile.DoesNotExist:
+        messages.error(request, _("Please complete your profile first to view opportunities that match your specialization"))
+        return redirect(Routes.STUDENT_COMPLETE_PROFILE)
+
+    return render(request, f'{app_name}/dashboard.html',context)
+
+
 
 @login_required
 @student_required
@@ -44,61 +98,139 @@ def student_complete_profile(request):
 
     return render(request, f'{app_name}/complete_profile.html', {'form': form})\
 
+@login_required
+@student_required
+def opportunities_invitations(request):
+
+    try:
+        student = StudentProfile.objects.get(user=request.user)
+    except StudentProfile.DoesNotExist:
+        # إذا لم يوجد ملف، نوجهه لصفحة إنشاء الملف مع رسالة تنبيه
+        messages.error(request, _("Please complete your profile first to view opportunities that match your specialization"))
+        return redirect(f'{app_name}:complete_profile')  # تأكد من اسم الـ URL الصحيح لديك
+
+
+    app_opportunities=JoinTrainingOpportunity.objects.filter(student_id=student)
+    results=[]
+    for app in app_opportunities:
+        if app.status == JoinTrainingOpportunity.Status.INVITED:
+            match_percent = calculate_match_score(student, app.opportunity)
+            results.append({
+                'app': app,
+                'status': app.status,
+                'score': round(match_percent, 1)
+            })
+
+
+    return render(request, f'{app_name}/opportunities/opportunities_invites.html', {
+        'student': student,
+        'results': results,
+        'total_apps': len(results)
+    })
+
 
 
 
 @login_required
 @student_required
 def match_opportunities(request):
+
     student = get_object_or_404(StudentProfile, user=request.user)
-    today=current_date()
-
-    query = Q(end_date__gte=today) & (Q(major=student.major) | Q(major__isnull=True))
-    if student.gpa is not None:
-        query &= (Q(min_gpa__lte=student.gpa) | Q(min_gpa__isnull=True))
-    else:
-        query &= Q(min_gpa__isnull=True)
-
-    # query &= Q(end_date__gte=today)
-
-    potential_opportunities = TrainingOpportunity.objects.filter(query).prefetch_related('required_skills').distinct()
-
-    results = []
-    for opp in potential_opportunities:
-
-        application = JoinTrainingOpportunity.objects.filter(student=student, opportunity=opp).first()
-        std_opp_status=None
-        if application :
-            std_opp_status=application.status
-        # استدعاء الدالة العامة للحساب
-        match_percent = calculate_match_score(student, opp)
-
-        # احتفظ بشرط الحد الأدنى للعرض (25%)
-        if match_percent >= 25:
-            results.append({
-                'opportunity': opp,
-                'status': std_opp_status,
-                'score': round(match_percent, 1)
-            })
-
-    results.sort(key=lambda x: x['score'], reverse=True)
+    results= student_match_opportunities(request)
 
     return render(request,
                   f'{app_name}/opportunities/matched_opportunities.html', {
                       'student': student,
                       'results': results,
-                      'count': len(results)
+                      'total_opportunities': len(results)
                   })
+
+@login_required
+@student_required
+def my_opportunities_apps(request):
+
+    apps=[]
+
+    if request.user.is_authenticated and request.user.is_fully_active:
+        student = request.user.profile
+
+        if student :
+            apps= JoinTrainingOpportunity.objects.filter(
+                student=student,
+                # ~Q(status=JoinTrainingOpportunity.Status.INVITED),
+             )
+        #     results = []
+        #
+        #     for app in apps:
+        #     if app.status == JoinTrainingOpportunity.Status.INVITED:
+        #         match_percent = calculate_match_score(student, app)
+        #         results.append({
+        #             'app': app,
+        #             'status': app.status,
+        #             'score': round(match_percent, 1)
+        #         })
+        #
+        # return render(request, f'{app_name}/opportunities/opportunities_invites.html', {
+        #     'student': student,
+        #     'results': results,
+        #     'count': len(results)
+        # })
+
+    return render(request, f'{app_name}/opportunities/my_opportunities_apps.html', {
+        "student":student,
+        # "total_apps":len(apps),
+        "apps":apps
+    })
+@login_required
+@student_required
+def opportunity_apply(request,id):
+
+    opportunity = get_object_or_404(TrainingOpportunity, id=id)
+    student = request.user.profile.id
+    if student and student:
+        application = JoinTrainingOpportunity.objects.filter(
+            student=student,
+            opportunity=opportunity
+        ).first()
+
+        if not application:
+
+            JoinTrainingOpportunity.objects.create(
+                student=student,
+                opportunity=opportunity,
+                status=JoinTrainingOpportunity.Status.PENDING
+            )
+            messages.success(request, f" apply is successfully.")
+
+
+            # if application.status == JoinTrainingOpportunity.Status.INVITED:
+            #     messages.warning(request, "This student has already been apply.")
+            #
+            # else:
+            #     application.status = JoinTrainingOpportunity.Status.INVITED
+            #     application.save()
+        #     #     messages.success(request, "Request status updated to 'Invited'.")
+        # else:
+
+
+    return redirect(f'{app_name}:check_match', opportunity_id=opportunity.id)
+
 @login_required
 @student_required
 def opportunity_detail(request,id):
 
     student = get_object_or_404(StudentProfile, user=request.user)
     opportunity = get_object_or_404(TrainingOpportunity, id=id)
+    has_applied =False
+    if(student and opportunity):
+        has_applied=JoinTrainingOpportunity.objects.filter(student=student, opportunity=opportunity).exists()
+
+
     matching_result = calculate_match_score(student, opportunity)
     context = {
         'matching_result': matching_result,
         'opportunity': opportunity,
+        'has_applied': has_applied,
     }
     return render(request, f'{app_name}/opportunities/opportunity_detail.html', context)
 

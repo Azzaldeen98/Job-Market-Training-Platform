@@ -1,0 +1,135 @@
+{% extends 'core/base.html' %}
+
+
+{% block content %}
+<div class="py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+
+
+
+    <div class="bg-surface  mt-24 border border-stroke-soft rounded-3xl p-8 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-stroke-soft pb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-content-bold mb-2">{{ opportunity.title }}</h1>
+                <div class="flex items-center gap-4 text-content opacity-70">
+                    <span class="flex items-center gap-1">
+                        <i data-lucide="building-2" class="w-4 h-4"></i>
+                        {{ opportunity.provider }}
+                    </span>
+                    <span class="flex items-center my-5 gap-1">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i>
+                        {{ opportunity.city|default:_("Remote") }}
+                    </span>
+                </div>
+            </div>
+             <div class="">
+
+               {% if user.is_authenticated  %}
+
+                       {% if matching_result %}
+                            <b> {% trans 'Matching Result' %}</b>
+                            :<span class="brand/100 mx-2 text-light px-4 py-2 rounded-full text-sm font-bold">
+                                    {{ matching_result }}%
+                            </span>
+                        {% endif %}
+
+                 {% else %}
+                        {% url 'account_login'  as login_url %}
+                        {% link-button url=login_url  label=_("Login") icon="log-in" extra_classes="bg-brand btn-text"  %}
+<!--                      <div class="flex items-center gap-2">-->
+<!--                        <a href="{% url 'account_login' %}" class="hidden sm:block text-content-muted hover:text-brand font-bold px-4 py-2 transition-colors">-->
+<!--                            {% trans "Login" %}-->
+<!--                        </a>-->
+<!--                     </div>-->
+                 {% endif %}
+
+             </div>
+            <div class="bg-brand/10 text-brand px-4 py-2 rounded-full text-sm font-bold">
+                {{ opportunity.get_status_display }}
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <div class="space-y-6">
+                <h3 class="text-lg font-bold flex items-center gap-2 border-b border-stroke-soft pb-2">
+                    <i data-lucide="calendar" class="w-5 h-5 text-brand"></i>
+                    {% trans "Timeline" %}
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "Start Date" %}</label>
+                        <p class="font-medium">{{ opportunity.start_date }}</p>
+                    </div>
+                    <div>
+                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "End Date" %}</label>
+                        <p class="font-medium">{{ opportunity.end_date }}</p>
+                    </div>
+                    <div class="text-err">
+                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "Application Deadline" %}</label>
+                        <p class="font-bold">{{ opportunity.deadline }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <h3 class="text-lg font-bold flex items-center gap-2 border-b border-stroke-soft pb-2">
+                    <i data-lucide="graduation-cap" class="w-5 h-5 text-brand"></i>
+                    {% trans "Academic Requirements" %}
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "Target Major" %}</label>
+                        <p class="font-medium">{{ opportunity.major.name }}</p>
+                    </div>
+                    <div>
+                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "Min GPA" %}</label>
+                        <p class="font-medium text-brand text-xl">{{ opportunity.min_gpa }} / {{ opportunity.gpa_scale }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <h3 class="text-lg font-bold flex items-center gap-2 border-b border-stroke-soft pb-2">
+                    <i data-lucide="award" class="w-5 h-5 text-brand"></i>
+                    {% trans "Required Skills" %}
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for skill in opportunity.required_skills.all %}
+                        <span class="bg-base border border-stroke-soft px-3 py-1 rounded-lg text-sm italic">
+                            #{{ skill.name }}
+                        </span>
+                    {% empty %}
+                        <p class="text-sm opacity-50 italic">{% trans "No specific skills listed" %}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 p-6 bg-base rounded-2xl border border-stroke-soft">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i data-lucide="align-left" class="w-5 h-5 text-brand"></i>
+                {% trans "Description & Responsibilities" %}
+            </h3>
+            <div class="prose prose-sm max-w-none text-content leading-relaxed">
+                {{ opportunity.description|linebreaks }}
+            </div>
+        </div>
+         {% if user.is_authenticated  %}
+            {% if  has_applied  %}
+                <div  class="  text-center font-bold text-3xl text-green p-3 rounded-xl w-full">{% trans 'Pre-applied' %}</div>
+
+                {% url 'applications:cancel_app_opportunity' opportunity.id as cancel_url %}
+                {% link-button  extra_classes="bg-err text-white text-3xl w-auto mt-3 py-2" url=cancel_url  label=_("Cancel Apply")  icon='cancel' %}
+
+            {% else  %}
+
+                {% url 'applications:join_opportunity' opportunity.id as apply_url %}
+                {% link-button  extra_classes="bg-brand text-white  mt-3" url=apply_url  label=_("Apply Now")  icon='apply' %}
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

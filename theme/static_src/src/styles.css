@@ -59,7 +59,7 @@
 --border-1: #E2E8F0;   /* slate-200 */
 --border-2: #F1F5F9;   /* slate-100 */
 
---brand: #4F46E5;      /* main brand color */
+--brand: #096;      /* main brand color */
 
 --text-light: #FFFFFF;
 --text-error: #EF4444;
@@ -123,7 +123,7 @@
   --border-1: #059669;
   --border-2: #064E3B;
 
-  --brand: #10B981;
+  --brand: #096;
 
   --text-light: #FFFFFF;
   --text-error: #fb7185;

@@ -1,17 +1,47 @@
 from django import forms
 from django.core.exceptions import ValidationError
+import datetime
 
 from academy.models import Major, College, University
 from core.constants import FormErrorMessages as MSG
 from core.forms import CoreModelForm
+from core.validators import PhoneValidator
 from students.models import StudentProfile
 from django.utils.translation import gettext_lazy as _
 
 class StudentProfileForm(CoreModelForm):
 
-    university = forms.ModelChoiceField(queryset=University.objects.all(), required=False,widget=forms.Select(attrs={'id': 'id_university'}))
-    college = forms.ModelChoiceField(queryset=College.objects.all(), required=False, widget=forms.Select(attrs={'id': 'id_college', 'disabled': 'disabled'}))
-    major = forms.ModelChoiceField(queryset=Major.objects.all(), widget=forms.Select(attrs={'id': 'id_major', 'disabled': 'disabled'}))
+    current_year = datetime.date.today().year
+
+    first_name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
+    phone_number = forms.CharField(validators=[PhoneValidator(prefix='05', length=10)]
+                                   ,required=True)
+    
+    gpa = forms.CharField(required=True)
+
+
+    university = forms.ModelChoiceField(queryset=University.objects.all(), required=True,
+                                        widget=forms.Select(attrs={'id': 'id_university'}))
+    college = forms.ModelChoiceField(queryset=College.objects.all(), required=True,
+                                     widget=forms.Select(attrs={'id': 'id_college', 'disabled': 'disabled'}))
+    major = forms.ModelChoiceField(queryset=Major.objects.all(), required=True,
+                                   widget=forms.Select(attrs={'id': 'id_major', 'disabled': 'disabled'}))
+    graduation_year = forms.TypedChoiceField(
+        coerce=int,
+        choices=[(year, str(year)) for year in range(current_year - 10, current_year+7 )],
+        required=True,
+        label=_("Graduation Year"),
+        error_messages={
+            'invalid': 'Please enter a valid year.',
+            'min_value': 'Graduation year is too old.',
+            'max_value': 'Graduation year is too far in the future.',
+        }
+    )
+
+    picture = forms.ImageField(required=False)
+    cv_file = forms.FileField(required=False)
+
 
     class Meta:
         model= StudentProfile
@@ -19,16 +49,11 @@ class StudentProfileForm(CoreModelForm):
         fields=('first_name', 'last_name','phone_number', 'university', 'college','major', 'graduation_year',
             'gpa','skills','picture', 'cv_file')
 
-        # exclude = ['is_available']
-
         widgets = {
-            # 'first_name': forms.NumberInput(attrs={'class': 'max-w-md'}),
-            # 'last_name': forms.NumberInput(attrs={'class': 'max-w-md'}),
-            'graduation_year': forms.NumberInput(attrs={'placeholder': '2025'}),
+            'graduation_year': forms.NumberInput(attrs={'placeholder': '2026'}),
             'gpa': forms.NumberInput(attrs={'step': '0.01', 'placeholder': '4.00'}),
             'skills': forms.SelectMultiple(attrs={'class': 'select2-enable '}),  # إذا كنت تستخدم مكتبة Select2
         }
-
 
         error_messages = {
             'phone_number': {
@@ -53,7 +78,6 @@ class StudentProfileForm(CoreModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         if self.instance and self.instance.pk:
             # --- منطق التخصصات (كودك الحالي) ---
             selected_major = self.instance.major
@@ -66,8 +90,6 @@ class StudentProfileForm(CoreModelForm):
                 self.fields['college'].queryset = College.objects.filter(university=university)
                 self.fields['major'].queryset = Major.objects.filter(college=college)
                 self.fields['college'].widget.attrs.pop('disabled', None)
-
-
         # إجبار المستخدم على اختيار التخصص في الواجهة
         self.fields['major'].required = True
         self.fields['major'].empty_label = _("Choose your academic major")
@@ -78,7 +100,6 @@ class StudentProfileForm(CoreModelForm):
             # 3. دمج الكلاسات وتحديث الحقل
             if field_name!='skills':
                 field.widget.attrs['class'] = f"{existing}  bg-gray-700  max-w-md".strip()
-
 
     def clean_phone_number(self):
         clean_data=super().clean()
@@ -93,7 +114,6 @@ class StudentProfileForm(CoreModelForm):
                 self.fields['phone_number'].error_messages['phone_length']
             )
         return phone
-
     def clean_picture(self):
         picture = self.cleaned_data.get('picture')
         if picture:
@@ -118,18 +138,26 @@ class StudentProfileForm(CoreModelForm):
         from datetime import date
         current_year = date.today().year
 
-        if year and year > current_year + 10:
-            raise forms.ValidationError(
-                self.fields['graduation_year'].error_messages['invalid_year'],
-                code='future_year'
-            )
+        if year:
+
+            if year > current_year:
+                raise forms.ValidationError(
+                    self.fields['graduation_year'].error_messages['max_value'],
+                    code='future_year'
+                )
+            elif year < current_year - 10:
+                raise forms.ValidationError(
+                    self.fields['graduation_year'].error_messages['min_value'],
+                    code='past_year'
+                )
+
         return year
 
     def clean_gpa(self):
         """التحقق من المعدل التراكمي"""
         gpa = self.cleaned_data.get('gpa')
         if gpa is not None:
-            if gpa < 0 or gpa > 5.00:
+            if gpa < 0 or gpa > 5.00 : # or gpa > 4.00 or  gpa > 100.0:
                 raise forms.ValidationError(
                     self.fields['gpa'].error_messages['out_of_range'],
                     code='invalid_gpa'

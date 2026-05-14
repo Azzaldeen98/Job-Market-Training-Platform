@@ -1,7 +1,11 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="min-h-[70vh] flex items-center justify-center px-4">
+<br>
+<br>
+<br>
+<br>
+<div class="min-h-[70vh] mt-5  flex items-center justify-center px-4">
     <div class="max-w-md w-full bg-surface p-8 rounded-3xl shadow-2xl border border-border text-center">
 
         <div class="mb-6 flex justify-center">
@@ -21,6 +25,10 @@
         </p>
 
         <div class="space-y-4">
+            <a href="{% url 'core:home' %}" class="block w-full py-3 px-4 bg-brand text-white rounded-xl font-medium hover:opacity-90 transition-all">
+                {% trans "Reload" %}
+            </a>
+
             <a href="mailto:support@yourdomain.com" class="block w-full py-3 px-4 bg-brand text-white rounded-xl font-medium hover:opacity-90 transition-all">
                 {% trans "Contact Support" %}
             </a>

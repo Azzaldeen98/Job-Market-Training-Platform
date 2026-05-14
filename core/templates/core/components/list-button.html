@@ -1,0 +1,12 @@
+<!-- name, email,user_id=None, image_url=None,redirect_link=None -->
+<a href="{{ link }}"
+   class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200
+   {% if request.resolver_match.url_name == url_name %}
+      bg-orange/10 text-orange
+   {% else %}
+      text-content-muted hover:bg-field-base hover:text-content
+   {% endif %}">
+    <i data-lucide="{{ icon }}" class="w-5 h-5"></i>
+    {{ label }}
+</a>
+

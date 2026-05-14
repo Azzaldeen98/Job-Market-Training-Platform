@@ -30,11 +30,15 @@
 }
 </style>
 {% block provider_content %}
+
+  {% back_button %}
 <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 
     <div class="bg-surface  text-content w-full  p-8 rounded-2xl transition-all duration-300
                  border border-transparent ">
-
+              <a href="{% url 'account_email' %}" >
+                            {% trans "Email" %}
+                     </a>
         <h2 class="text-3xl font-bold text-center mb-8 text-current">
             {% trans "Complete Profile" %}
         </h2>
@@ -46,14 +50,52 @@
                 {% if not field.is_hidden and field.name != 'skills' %}
 
                     <div class="flex flex-col gap-1 mx-3 mt-4" style="width:45%">
-                    <label class="text-sm font-medium opacity-80">
-                        {{ field.label }}
-                    </label>
 
-                    {# هنا سيظهر الحقل بكلاس input-field تلقائياً من البايثون #}
-                    {{ field }}
 
-                    {# أخطاء الحقول بتنسيق يتناسب مع الألوان #}
+                    {% if field.field.widget.input_type == 'file' or field.field.widget.input_type == 'image' %}
+
+                        {% if field.value and field.name == 'logo' %}
+                            <div class="mt-2">
+                                <img src="{{ field.value.url }}" class="w-16 h-16 rounded-full border-2 border-brand object-cover shadow-sm" alt="logo">
+                            </div>
+                        {% elif field.value and field.name == 'cover_image' %}
+                            <div class="mt-2 w-full h-40 rounded-xl overflow-hidden border">
+                                <img src="{{ field.value.url }}" alt="cover image" class="w-full h-full object-cover">
+                            </div>
+                        {% endif %}
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-medium opacity-80 flex items-center gap-2">
+                                <span class="p-2 bg-brand/10 text-brand rounded-lg">
+                                    <i class="ph ph-upload-simple"></i>
+                                </span>
+                                {{ field.label }}
+                            </label>
+
+                            <div class="relative group">
+
+                                {{ field }}
+
+                                {% if field.value %}
+                                    <div class="mt-2 text-xs text-brand flex items-center gap-1">
+                                        <i class="ph ph-check-circle"></i>
+                                        {% trans "File currently uploaded:" %} {{ field.value.name|truncatechars:20 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    {% else %}
+
+                        <label class="text-sm font-medium opacity-80">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                    {% endif %}
+
+
+
+
                     {% if field.errors %}
                         <p class="text-err text-xs mt-1">
                             {{ field.errors.0 }}
@@ -109,4 +151,140 @@
 </div>
 
 {% endblock %}
+{% back_button %}
 
+<!--<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">-->
+<!--    <div class="max-w-4xl mx-auto">-->
+<!--        &lt;!&ndash; الحاوية الرئيسية &ndash;&gt;-->
+<!--        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden transition-all duration-300">-->
+<!--            -->
+<!--            &lt;!&ndash; الرأس (Header) &ndash;&gt;-->
+<!--            <div class="relative bg-slate-50 px-8 py-10 border-b border-slate-100 text-center">-->
+<!--                &lt;!&ndash; أيقونة تعبيرية &ndash;&gt;-->
+<!--                <div class="inline-flex items-center justify-center w-16 h-16 bg-brand/10 rounded-2xl mb-4">-->
+<!--                    <i data-lucide="building-2" class="w-8 h-8 text-brand"></i>-->
+<!--                </div>-->
+<!--                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">-->
+<!--                    {% trans "Complete Profile" %}-->
+<!--                </h2>-->
+<!--                <p class="text-slate-500 mt-2 text-sm">{% trans "Provide your company details to start hiring talents" %}</p>-->
+<!--                -->
+<!--                &lt;!&ndash; زر البريد في الزاوية &ndash;&gt;-->
+<!--                <a href="{% url 'account_email' %}" class="absolute top-6 right-8 text-xs font-bold text-brand hover:underline flex items-center gap-1">-->
+<!--                    <i data-lucide="mail" class="w-3 h-3"></i>-->
+<!--                    {% trans "Email Settings" %}-->
+<!--                </a>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; النموذج (Form) &ndash;&gt;-->
+<!--            <form method="post" enctype="multipart/form-data" novalidate class="p-8 lg:p-12">-->
+<!--                {% csrf_token %}-->
+
+<!--                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">-->
+<!--                    {% for field in form %}-->
+<!--                        {% if not field.is_hidden %}-->
+<!--                            -->
+<!--                            &lt;!&ndash; تنسيق الحقول العادية والحقول العريضة مثل المهارات أو الوصف &ndash;&gt;-->
+<!--                            <div class="flex flex-col gap-2 {% if field.name == 'skills' or field.name == 'description' or field.name == 'address' %} md:col-span-2 {% endif %}">-->
+<!--                                -->
+<!--                                <label class="text-sm font-bold text-slate-700 flex items-center gap-2">-->
+<!--                                    {{ field.label }}-->
+<!--                                    {% if field.field.required %}-->
+<!--                                        <span class="text-err text-xs">*</span>-->
+<!--                                    {% endif %}-->
+<!--                                </label>-->
+
+<!--                                <div class="relative group">-->
+<!--                                    {# الحقل الأساسي #}-->
+<!--                                    <div class="focus-within:ring-2 focus-within:ring-brand/20 transition-all duration-200 rounded-xl">-->
+<!--                                        {{ field }}-->
+<!--                                    </div>-->
+
+<!--                                    {# أيقونات توضيحية بجانب الحقول (اختياري) #}-->
+<!--                                    {% if field.name == 'website' %}-->
+<!--                                        <i data-lucide="globe" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>-->
+<!--                                    {% endif %}-->
+<!--                                </div>-->
+
+<!--                                {# رسائل الخطأ #}-->
+<!--                                {% if field.errors %}-->
+<!--                                    <div class="flex items-center gap-1 mt-1 text-err animate-pulse">-->
+<!--                                        <i data-lucide="alert-circle" class="w-3 h-3"></i>-->
+<!--                                        <p class="text-[11px] font-medium">{{ field.errors.0 }}</p>-->
+<!--                                    </div>-->
+<!--                                {% endif %}-->
+
+<!--                                {# نص مساعد إذا وجد #}-->
+<!--                                {% if field.help_text %}-->
+<!--                                    <p class="text-[10px] text-slate-400 mt-1 italic">{{ field.help_text }}</p>-->
+<!--                                {% endif %}-->
+<!--                            </div>-->
+
+<!--                        {% else %}-->
+<!--                            {{ field }}-->
+<!--                        {% endif %}-->
+<!--                    {% endfor %}-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; قسم الأزرار &ndash;&gt;-->
+<!--                <div class="mt-12 pt-8 border-t border-slate-100 flex flex-col items-center">-->
+<!--                    <div class="w-full max-w-sm">-->
+<!--                        {% submit-button label=_("Save & Continue") icon="check-circle" bg_color="bg-brand" content_color="text-white" %}-->
+<!--                    </div>-->
+<!--                    <p class="text-[11px] text-slate-400 mt-4 uppercase tracking-widest font-semibold">-->
+<!--                        {% trans "All information is encrypted and secure" %}-->
+<!--                    </p>-->
+<!--                </div>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<style>-->
+<!--    /* تحسين شكل الحقول الافتراضية الممررة من Django */-->
+<!--    input:not([type="checkbox"]):not([type="radio"]), -->
+<!--    select, -->
+<!--    textarea {-->
+<!--        width: 100% !important;-->
+<!--        padding: 0.75rem 1rem !important;-->
+<!--        border-radius: 0.75rem !important;-->
+<!--        border: 1px solid #e2e8f0 !important; /* slate-200 */-->
+<!--        background-color: #f8fafc !important; /* slate-50 */-->
+<!--        transition: all 0.3s ease !important;-->
+<!--        outline: none !important;-->
+<!--        color: #1e293b !important; /* slate-800 */-->
+<!--    }-->
+
+<!--    input:focus, select:focus, textarea:focus {-->
+<!--        border-color: var(&#45;&#45;brand-color, #3b82f6) !important;-->
+<!--        background-color: #ffffff !important;-->
+<!--        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05) !important;-->
+<!--    }-->
+
+<!--    /* تحسين شكل TomSelect ليتناسب مع التصميم الجديد */-->
+<!--    .ts-control {-->
+<!--        border-radius: 0.75rem !important;-->
+<!--        padding: 0.6rem 1rem !important;-->
+<!--        background-color: #f8fafc !important;-->
+<!--        border: 1px solid #e2e8f0 !important;-->
+<!--    }-->
+<!--</style>-->
+
+<!--<script>-->
+<!--    document.addEventListener("DOMContentLoaded", function() {-->
+<!--        lucide.createIcons(); // تفعيل الأيقونات-->
+<!--        -->
+<!--        const skillsSelect = document.querySelector('.select2-enable');-->
+<!--        if (skillsSelect) {-->
+<!--            new TomSelect(skillsSelect, {-->
+<!--                plugins: ['remove_button'],-->
+<!--                maxItems: null,-->
+<!--                placeholder: "{% trans 'Search and add skills...' %}",-->
+<!--                onItemAdd: function() {-->
+<!--                    this.setTextboxValue('');-->
+<!--                    this.refreshOptions();-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->

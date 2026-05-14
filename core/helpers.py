@@ -24,6 +24,7 @@ def get_identities_apps():
 
     return identity_apps
 
+
 def get_app_name(role_code):
     identities_roles = getattr(settings, 'SITE_ROLES', [])
     if identities_roles:

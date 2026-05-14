@@ -35,8 +35,11 @@
 
 
 
+<br>
+<br>
+<br>
 <div class=" bg-base flex flex-column items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
-<!--    {% input-text label=_("Email") name="email" type="email" required=True error=""  placeholder=_("email address") %}-->
+
       <div class="bg-surface text-content login-container w-full max-w-md p-8 rounded-2xl shadow-xl transition-all duration-300
                  border border-transparent">
 
@@ -54,11 +57,10 @@
 
             {{ form.as_p }}
 
-<!--             {% input-checkbox label=_("Remember me") name="remember"  required=True checked=True %}-->
+
             {% submit-button label=_("Log in") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}
 
-<!--           {% submit-button label=_("Log in") icon="log-in" content_color="text-white" %}-->
-    <!--        <button type="submit" class="btn-login-submit bg-btn">{% trans "Enter Platform" %} </button>-->
+
         </form>
         <p style="text-align: center; margin-top: 20px;">
             {% trans "Don't have an account?" %}

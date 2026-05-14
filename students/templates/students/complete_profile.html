@@ -42,18 +42,52 @@
         <form method="post" enctype="multipart/form-data" novalidate class="space-y-6  ">
             {% csrf_token %}
         <div class="flex flex-wrap justify-content p-3">
+
             {% for field in form %}
+
                 {% if not field.is_hidden and field.name != 'skills' %}
 
                     <div class="flex flex-col gap-1 mx-3 mt-4" style="width:45%">
-                    <label class="text-sm font-medium opacity-80">
-                        {{ field.label }}
-                    </label>
 
-                    {# هنا سيظهر الحقل بكلاس input-field تلقائياً من البايثون #}
-                    {{ field }}
+                    {% if field.field.widget.input_type == 'file' or field.field.widget.input_type == 'image' %}
 
-                    {# أخطاء الحقول بتنسيق يتناسب مع الألوان #}
+                        {% if field.value and field.name == 'picture' %}
+                            <div class="mt-2">
+                                <img src="{{ field.value.url }}" class="w-16 h-16 rounded-full border-2 border-brand object-cover shadow-sm" alt="logo">
+                            </div>
+
+                        {% endif %}
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-medium opacity-80 flex items-center gap-2">
+                                <span class="p-2 bg-brand/10 text-brand rounded-lg">
+                                    <i class="ph ph-upload-simple"></i>
+                                </span>
+                                {{ field.label }}
+                            </label>
+
+                            <div class="relative group">
+
+                                {{ field }}
+
+                                {% if field.value %}
+                                    <div class="mt-2 text-xs text-brand flex items-center gap-1">
+                                        <i class="ph ph-check-circle"></i>
+                                        {% trans "File currently uploaded:" %} {{ field.value.name|truncatechars:20 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    {% else %}
+
+                        <label class="text-sm font-medium opacity-80">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                    {% endif %}
+
+
                     {% if field.errors %}
                         <p class="text-err text-xs mt-1">
                             {{ field.errors.0 }}
@@ -78,7 +112,7 @@
             {% endfor %}
         </div>
                 <div class="max-w-md mx-auto">
-              {% submit-button label=_("Save") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}
+                    {% submit-button label=_("Save") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}
                 </div>
 
         </form>

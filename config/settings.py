@@ -142,6 +142,8 @@ MIDDLEWARE = [
 
     'django_browser_reload.middleware.BrowserReloadMiddleware',
     "django_htmx.middleware.HtmxMiddleware",
+
+    'core.middleware.ProfileCompletionMiddleware',
 ]
 
 

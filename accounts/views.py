@@ -9,6 +9,67 @@ from .forms import CustomSignupForm
 from django.urls import reverse
 logger = logging.getLogger(__name__)
 
+
+
+
+@login_required
+def redirect_by_role(request):
+
+    dashboards = getattr(settings, 'ROLE_DASHBOARDS', {})
+    default_home = getattr(settings, 'DEFAULT_HOME_URL', '/')
+    identity = getattr(request.user, 'identity', None)
+    role_code = getattr(identity, 'code', None) if identity else None
+    target_url = dashboards.get(role_code)
+
+    return redirect(target_url if target_url else default_home)
+
+def error_404(request, exception):
+    return render(request, '404.html', status=404)
+
+def error_500(request):
+    return render(request, '500.html', status=500)
+def signup(request):
+    if request.method == 'POST':
+        form = CustomSignupForm(request.POST, request.FILES)
+        if form.is_valid():
+            # حفظ المستخدم عبر Allauth لضمان تشفير كلمة السر وإرسال الإيميل
+            user = form.save(request)
+
+            # هذا السطر مهم جداً! يخبر Allauth بإتمام العملية (بما في ذلك تسجيل الدخول)
+            if user.is_student:
+                success_url = reverse(Routes.STUDENT_COMPLETE_PROFILE)
+            elif user.is_training_entity:
+                success_url = reverse(Routes.TRAINING_ENTITY_COMPLETE_PROFILE)
+            else:
+                success_url = reverse(Routes.HOME)
+
+            return complete_signup(
+                request,
+                user,
+                email_verification=app_settings.EMAIL_VERIFICATION,
+                success_url=success_url,
+                signal_kwargs={}
+            )
+            # # منطق التوجيه الخاص بك
+            # if user.is_student:
+            #     return redirect(Routes.STUDENT_COMPLETE_PROFILE)
+            # elif user.is_training_entity:
+            #     return redirect(Routes.TRAINING_ENTITY_COMPLETE_PROFILE)
+            #
+            # return redirect(Routes.HOME)
+    else:
+        form = CustomSignupForm()
+    return render(request, 'account/signup.html', {'form': form})
+def waiting_approval_view(request):
+    # إذا قام الأدمن بتفعيله وهو لا يزال فاتحاً لهذه الصفحة، نقوم بتوجيهه للرئيسية فور تحديث الصفحة
+    #request.user.identity.requires_approval
+
+    # if request.user.is_authenticated and request.user.is_verified:
+    #     return redirect(Routes.HOME)
+
+    return render(request, 'account/waiting_approval.html')
+
+
 # @login_required
 # def redirect_by_role(request):
 #     """
@@ -45,35 +106,6 @@ logger = logging.getLogger(__name__)
 #     # 5. التوجيه للمسار الافتراضي إذا لم يوجد دور أو مسار مخصص
 #     return redirect(default_home)
 
-@login_required
-def redirect_by_role(request):
-    """
-    نقطة توزيع المستخدمين (Traffic Controller):
-    توجيه المستخدم بناءً على دوره (Role) المعرف في الإعدادات.
-    """
-    # 1. جلب الإعدادات (مع قيم افتراضية لمنع الأخطاء)
-    dashboards = getattr(settings, 'ROLE_DASHBOARDS', {})
-    default_home = getattr(settings, 'DEFAULT_HOME_URL', '/')
-
-    # 2. الحصول على كود الدور (بشكل آمن ومختصر)
-    # نتحقق من وجود identity أولاً ثم الكود
-    identity = getattr(request.user, 'identity', None)
-    role_code = getattr(identity, 'code', None) if identity else None
-
-    # 3. تحديد المسار المستهدف
-    target_url = dashboards.get(role_code)
-
-    # سجل التحقق (Debug)
-    print(f"DEBUG: User Role Code: {role_code} -> Target URL: {target_url}")
-
-    # 4. التوجيه (التوجه للمسار المخصص أو المسار الافتراضي)
-    return redirect(target_url if target_url else default_home)
-
-def error_404(request, exception):
-    return render(request, '404.html', status=404)
-
-def error_500(request):
-    return render(request, '500.html', status=500)
 
 
 
@@ -102,46 +134,7 @@ def error_500(request):
 
 
 
-def signup(request):
-    if request.method == 'POST':
-        form = CustomSignupForm(request.POST, request.FILES)
-        if form.is_valid():
-            # حفظ المستخدم عبر Allauth لضمان تشفير كلمة السر وإرسال الإيميل
-            user = form.save(request)
 
-            # هذا السطر مهم جداً! يخبر Allauth بإتمام العملية (بما في ذلك تسجيل الدخول)
-            if user.is_student:
-                success_url = reverse(Routes.STUDENT_COMPLETE_PROFILE)
-            elif user.is_training_entity:
-                success_url = reverse(Routes.TRAINING_COMPLETE_PROFILE)
-            else:
-                success_url = reverse(Routes.HOME)
-
-            return complete_signup(
-                request,
-                user,
-                email_verification=app_settings.EMAIL_VERIFICATION,
-                success_url=success_url,
-                signal_kwargs={}
-            )
-            # # منطق التوجيه الخاص بك
-            # if user.is_student:
-            #     return redirect(Routes.STUDENT_COMPLETE_PROFILE)
-            # elif user.is_training_entity:
-            #     return redirect(Routes.TRAINING_COMPLETE_PROFILE)
-            #
-            # return redirect(Routes.HOME)
-    else:
-        form = CustomSignupForm()
-    return render(request, 'account/signup.html', {'form': form})
-def waiting_approval_view(request):
-    # إذا قام الأدمن بتفعيله وهو لا يزال فاتحاً لهذه الصفحة، نقوم بتوجيهه للرئيسية فور تحديث الصفحة
-    #request.user.identity.requires_approval
-
-    if request.user.is_authenticated and request.user.is_verified:
-        return redirect(Routes.HOME)
-
-    return render(request, 'account/waiting_approval.html')
 
 # def search_users(request):
 #     query = request.GET.get('search', '')

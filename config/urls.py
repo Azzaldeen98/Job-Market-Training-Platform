@@ -6,12 +6,20 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from accounts.views import redirect_by_role # استيراد دالة التوجيه
+from django.utils.translation import gettext_lazy as _
+
+# --- تخصيص أسماء لوحة التحكم ---
+admin.site.site_header = _("Training platform management system")
+admin.site.site_title = _("Control panel")
+admin.site.index_title = _("Welcome to the control panel")
 
 urlpatterns = [
     # رابط تغيير اللغة
     path('i18n/', include('django.conf.urls.i18n')),
     path('admin/', admin.site.urls),
 
+
+# تغيير النص الترحيبي في الصفحة الرئيسية للأدمن
     #--------------------------------------------------
     # نظام المصادقة (Allauth)
     # path('accounts/account/', include('allauth.urls')),
@@ -35,6 +43,7 @@ urlpatterns = [
     #--------------------------------------------------
     path("__reload__/", include("django_browser_reload.urls")),   # أداة التحديث التلقائي للمتصفح أثناء التطوير
 ]
+
 
 # إعدادات الملفات الساكنة والوسائط في وضع التطوير
 if settings.DEBUG:

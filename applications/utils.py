@@ -1,8 +1,33 @@
 # students/utils.py
 from django.utils import timezone
 
+from applications.models import JoinTrainingOpportunity
 from core.utils import current_date
 from training_entities.models import TrainingOpportunity
+from django.contrib import messages
+def change_application_status(request,app_id,new_status,current_status=None):
+
+    provider = request.user.profile
+
+    error_message = "!! The specified request is invalid."
+
+    if provider and app_id :
+        application = JoinTrainingOpportunity.objects.filter(
+            id=app_id,opportunity__provider=provider).first()
+
+        if application :
+
+            if current_status and application.status != current_status:
+                error_message= "!! can not changed status for specified request."
+            else:
+                application.status = new_status
+                application.save()
+                messages.success(request, f"Request status updated to '{new_status}'.")
+                return  True
+
+    messages.error(request, error_message)
+    return False
+
 
 
 def active_opportunities(request):

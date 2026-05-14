@@ -3,6 +3,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import transaction
+from django.contrib.auth import get_user_model
+from training_entities.models import TrainingEntityProfile
 
 
 @receiver(post_save, sender='accounts.CustomUser')
@@ -11,6 +13,14 @@ def handle_user_identity_flow(sender, instance, created, **kwargs):
         # 1. مزامنة الصلاحيات (بقاء هذا الجزء مهم)
         if instance.identity.permissions.exists():
             instance.user_permissions.add(*instance.identity.permissions.all())
+
+User = get_user_model()
+
+@receiver(post_save, sender=User)
+def create_training_profile(sender, instance, created, **kwargs):
+    # يمكنك إضافة شرط هنا للتأكد أن المستخدم من نوع "جهة تدريب"
+    if created:
+        TrainingEntityProfile.objects.get_or_create(user=instance)
 
 
         # 2. حذفنا استدعاء create_dynamic_profile من هنا نهائياً

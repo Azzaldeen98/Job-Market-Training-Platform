@@ -10,80 +10,71 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 
 class TrainingEntityProfile(models.Model):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='training_profile',
-        verbose_name=_("User Account")
-    )
 
-    city = models.ForeignKey(
-        City,
-        on_delete=models.SET_NULL,
-        related_name="training_entities",
-        verbose_name=_("City"),
-        null=True,
-        blank=True,
-    )
+    user = models.OneToOneField( settings.AUTH_USER_MODEL,on_delete=models.CASCADE,
+        related_name='training_profile',verbose_name=_("User Account"))
+
+    city = models.ForeignKey(City, on_delete=models.SET_NULL,
+        related_name="training_entities",verbose_name=_("City"),
+        null=True,blank=True )
 
     entity_name = models.CharField(_("Training Entity Name"), max_length=255)
-
-    entity_type = models.CharField(
-        _("Training Entity Type"),
-        max_length=10,
-        choices=EntityType.choices,
-        default=EntityType.PRIVATE,
-        # help_text=_("Select the legal status of your organization")
-    )
+    entity_type = models.CharField(_("Training Entity Type"),
+        max_length=10,choices=EntityType.choices,
+        default=EntityType.PRIVATE)
 
     description = models.TextField(_("About the Training Entity"), max_length=512, blank=True)
+    phone_number = models.CharField(_("Phone Number"), max_length=15, blank=True,
+                                    unique=True, null=True)
+    registration_number = models.CharField( _("Registration Number"),
+        max_length=50,unique=True,)
 
-    phone_number = models.CharField(_("Phone Number"), max_length=15, blank=True, unique=True, null=True)
+    logo = models.ImageField( _("Logo"),upload_to='training_entities/logos/',
+        null=True,blank=True,
+        help_text=_("Preferably 512x512 pixels") )
 
-    # الخيار الأفضل لجهات التدريب (يشمل الشركات والمراكز)
-    registration_number = models.CharField(
-        _("Registration Number"),  # أو "CR Number"
-        max_length=50,
-        unique=True,
-        # help_text=_("Commercial Register or Government License Number")
-    )
-
-    logo = models.ImageField(
-        _("Logo"),
-        upload_to='training_entities/logos/',
-        null=True,
-        blank=True,
-        help_text=_("Preferably 512x512 pixels")
-    )
-
-    cover_image = models.ImageField(
-        _("Cover Image"),
+    cover_image = models.ImageField( _("Cover Image"),
         upload_to='training_entities/covers/',
-        null=True,
-        blank=True,
-        help_text=_("A high-quality landscape image is preferred")
-    )
+        null=True, blank=True,
+        help_text=_("A high-quality landscape image is preferred"))
 
-    # السجل التجاري
-    commercial_register = models.FileField(
-        _("Commercial Register"),
+    commercial_register = models.FileField(_("Commercial Register"),
         upload_to='training_entities/commercial_registers/',
-        null=True,
-        blank=True,
+        null=True, blank=True,
         help_text=_("Upload a copy of your CR or Government ID (PDF)")
     )
 
     website = models.URLField(_("Website"), unique=True, blank=True, null=True)
 
-    is_available = models.BooleanField(
-        default=True,
+    is_available = models.BooleanField(default=False,
         verbose_name=_("Approved State"),
         help_text=_("Determines whether the training provider is accredited to operate.")
     )
 
+    @property
+    def is_profile_complete(self):
+        required_fields = [self.commercial_register, self.registration_number, self.entity_name, self.entity_type]
+        return all(required_fields)
+
+
     class Meta:
         verbose_name = _("Training Entity Profile")
         verbose_name_plural = _("Training Entity Profiles")
+
+
+    @property
+    def check_available(self):
+        return  self.is_available and self.user.is_active
+
+    @property
+    def get_logo_url(self):
+        if self.logo and hasattr(self.logo, 'url'):
+            return self.logo.url
+        return ''  # مسار صورة افتراضية
+
+
+
+
 
     def __str__(self):
         return self.entity_name

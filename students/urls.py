@@ -9,6 +9,8 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('complete-profile/', views.student_complete_profile, name='complete_profile'),
     path('match-opportunities/', views.match_opportunities, name='match_opportunities'),
-    path('opportunity/<int:id>/', views.opportunity_detail, name='opportunity_detail'),
-    # path('opportunity/<int:opportunity_id>/join/', views.join_opportunity, name='join_opportunity'),
+    path('my-opportunities-apps/', views.my_opportunities_apps, name='my_opportunities_apps'),
+    path('opportunities/invites', views.opportunities_invitations, name='opportunities_invites'),
+    path('opportunity/<int:id>/detail/', views.opportunity_detail, name='opportunity_detail'),
+    path('opportunity/<int:opportunity_id>/join/', views.opportunity_apply, name='opportunity_apply'),
 ]

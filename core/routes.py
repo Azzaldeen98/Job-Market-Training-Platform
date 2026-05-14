@@ -21,6 +21,6 @@ class Routes:
     LOGOUT = 'account_logout'
 
     # Others
-    WAITING_APPROVAL = 'waiting_approval'
+    WAITING_APPROVAL = 'accounts:waiting_approval'
 
 

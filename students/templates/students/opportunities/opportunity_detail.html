@@ -6,113 +6,159 @@
 {% endblock %}
 
 {% block provider_content %}
-<div class="py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+<div class="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-8">
 
-    <div class="flex justify-between items-center mb-8">
+    <!-- 1. Navigation & Actions Bar -->
+    <div class="flex justify-between items-center">
         {% back_button %}
         <div class="flex gap-3">
-
-
-<!--         {% link-button  extra_classes="border border-brand/10 shadow-sm" url=opportunity.get_edit_url label=_("Edit")  icon='edit-3' %}-->
-
+            <button class="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-brand transition-all">
+                <i data-lucide="share-2" class="w-5 h-5"></i>
+            </button>
         </div>
     </div>
 
-    <div class="bg-surface border border-stroke-soft rounded-3xl p-8 shadow-sm">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-stroke-soft pb-6">
-            <div>
-                <h1 class="text-3xl font-bold text-content-bold mb-2">{{ opportunity.title }}</h1>
-                <div class="flex items-center gap-4 text-content opacity-70">
-                    <span class="flex items-center gap-1">
-                        <i data-lucide="building-2" class="w-4 h-4"></i>
-                        {{ opportunity.provider }}
-                    </span>
-                    <span class="flex items-center my-5 gap-1">
-                        <i data-lucide="map-pin" class="w-4 h-4"></i>
-                        {{ opportunity.city|default:_("Remote") }}
-                    </span>
-                </div>
+    <!-- 2. Header Card: Identity & Status -->
+    <div class="bg-white rounded-[2.5rem] p-8 md:p-10 shadow-sm border border-slate-100 relative overflow-hidden">
+        <!-- Matching Badge (Top Right) -->
+        <div class="absolute top-0 right-0 mt-8 mr-8">
+            <div class="flex flex-col items-center p-4 bg-orange-50 rounded-3xl border border-orange-100 shadow-inner">
+                <span class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1">{% trans 'Match' %}</span>
+                <span class="text-2xl font-black text-orange-600">{{ matching_result }}%</span>
             </div>
-             <div class="">
-                    <b> {% trans 'Matching Result' %}</b>
-                    :<span class="bg-orange/100 mx-2 text-light px-4 py-2 rounded-full text-sm font-bold">
-                            {{ matching_result }}%
-                    </span>
-             </div>
-            <div class="bg-brand/10 text-brand px-4 py-2 rounded-full text-sm font-bold">
-                {{ opportunity.get_status_display }}
-            </div>
-
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="flex flex-col md:flex-row gap-8 items-start md:items-center">
+            <!-- Brand Icon -->
+            <div class="w-20 h-20 bg-brand/5 rounded-3xl flex items-center justify-center shadow-inner">
+                <i data-lucide="briefcase" class="w-10 h-10 text-brand"></i>
+            </div>
 
-            <div class="space-y-6">
-                <h3 class="text-lg font-bold flex items-center gap-2 border-b border-stroke-soft pb-2">
-                    <i data-lucide="calendar" class="w-5 h-5 text-brand"></i>
-                    {% trans "Timeline" %}
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                    <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{{ opportunity.title }}</h1>
+                    <span class="px-4 py-1.5 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-full border border-emerald-100">
+                        {{ opportunity.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-6 text-slate-500 font-medium">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="building-2" class="w-4 h-4 text-brand"></i>
+                        {{ opportunity.provider }}
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-brand"></i>
+                        {{ opportunity.city|default:_("Remote Area") }}
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="calendar-days" class="w-4 h-4 text-brand"></i>
+                        {% trans "Posted" %} {{ opportunity.created_at|timesince }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Core Information Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Left: Requirements & Timeline -->
+        <div class="lg:col-span-2 space-y-8">
+
+            <!-- Description Card -->
+            <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
+                <h3 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-brand rounded-full"></span>
+                    {% trans "About the Opportunity" %}
                 </h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "Start Date" %}</label>
-                        <p class="font-medium">{{ opportunity.start_date }}</p>
-                    </div>
-                    <div>
-                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "End Date" %}</label>
-                        <p class="font-medium">{{ opportunity.end_date }}</p>
-                    </div>
-                    <div class="text-err">
-                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "Application Deadline" %}</label>
-                        <p class="font-bold">{{ opportunity.deadline }}</p>
-                    </div>
+                <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed text-lg">
+                    {{ opportunity.description|linebreaks }}
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <h3 class="text-lg font-bold flex items-center gap-2 border-b border-stroke-soft pb-2">
-                    <i data-lucide="graduation-cap" class="w-5 h-5 text-brand"></i>
-                    {% trans "Academic Requirements" %}
+            <!-- Skills Cloud -->
+            <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
+                <h3 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-brand rounded-full"></span>
+                    {% trans "Required Expertise" %}
                 </h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "Target Major" %}</label>
-                        <p class="font-medium">{{ opportunity.major.name }}</p>
-                    </div>
-                    <div>
-                        <label class="text-xs uppercase tracking-wider opacity-50">{% trans "Min GPA" %}</label>
-                        <p class="font-medium text-brand text-xl">{{ opportunity.min_gpa }} / {{ opportunity.gpa_scale }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-6">
-                <h3 class="text-lg font-bold flex items-center gap-2 border-b border-stroke-soft pb-2">
-                    <i data-lucide="award" class="w-5 h-5 text-brand"></i>
-                    {% trans "Required Skills" %}
-                </h3>
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-3">
                     {% for skill in opportunity.required_skills.all %}
-                        <span class="bg-base border border-stroke-soft px-3 py-1 rounded-lg text-sm italic">
+                        <span class="px-5 py-2.5 bg-slate-50 text-slate-700 text-sm font-bold rounded-2xl border border-slate-100 hover:border-brand/20 hover:bg-brand/5 transition-all">
                             #{{ skill.name }}
                         </span>
-                    {% empty %}
-                        <p class="text-sm opacity-50 italic">{% trans "No specific skills listed" %}</p>
                     {% endfor %}
                 </div>
             </div>
         </div>
 
-        <div class="mt-12 p-6 bg-base rounded-2xl border border-stroke-soft">
-            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                <i data-lucide="align-left" class="w-5 h-5 text-brand"></i>
-                {% trans "Description & Responsibilities" %}
-            </h3>
-            <div class="prose prose-sm max-w-none text-content leading-relaxed">
-                {{ opportunity.description|linebreaks }}
+        <!-- Right: Fast Details Sidebar -->
+        <div class="space-y-6">
+            <!-- Timeline Sidebar -->
+            <div class=" rounded-[2.5rem] p-8 text-content shadow-xl shadow-slate-200">
+                <h3 class="text-lg font-black mb-6 flex items-center gap-2">
+                    <i data-lucide="clock" class="w-5 h-5 text-brand"></i>
+                    {% trans "Timeline" %}
+                </h3>
+                <div class="space-y-6">
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                        <p class="text-[10px] uppercase font-black text-brand tracking-widest mb-1">{% trans "Deadline" %}</p>
+                        <p class="text-lg font-bold text-red-400">{{ opportunity.deadline }}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[10px] uppercase font-black text-content/40 tracking-widest mb-1">{% trans "Starts" %}</p>
+                            <p class="text-sm font-bold">{{ opportunity.start_date }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] uppercase font-black text-content/40 tracking-widest mb-1">{% trans "Ends" %}</p>
+                            <p class="text-sm font-bold">{{ opportunity.end_date }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Sidebar -->
+            <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+                <h3 class="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+                    <i data-lucide="graduation-cap" class="w-5 h-5 text-brand"></i>
+                    {% trans "Requirements" %}
+                </h3>
+                <div class="space-y-6">
+                    <div>
+                        <p class="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1">{% trans "Target Major" %}</p>
+                        <p class="font-bold text-slate-800">{{ opportunity.major.name }}</p>
+                    </div>
+                    <div class="p-4 bg-brand/5 rounded-2xl border border-brand/10 text-center">
+                        <p class="text-[10px] uppercase font-black text-brand tracking-widest mb-1">{% trans "Min GPA Required" %}</p>
+                        <p class="text-3xl font-black text-brand">{{ opportunity.min_gpa }} <span class="text-sm text-brand/50">/ {{ opportunity.gpa_scale }}</span></p>
+                    </div>
+                </div>
             </div>
         </div>
-        {% url 'applications:join_opportunity' opportunity.id as apply_url %}
-        {% link-button  extra_classes="app-btn-primary  mt-3" url=apply_url  label=_("Apply Now")  icon='apply' %}
+    </div>
+
+    <!-- 4. Final Action Button (Sticky-ready) -->
+    <div class="bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] border border-slate-200 shadow-2xl flex items-center justify-center">
+        <div class="w-full max-w-md">
+            {% if has_applied %}
+                <div class="flex flex-col gap-4">
+                    <div class="text-center font-black text-emerald-600 bg-emerald-50 py-3 rounded-2xl flex items-center justify-center gap-2">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        {% trans 'You have already applied' %}
+                    </div>
+                    {% url 'applications:cancel_app_opportunity' opportunity.id as cancel_url %}
+                    {% link-button extra_classes="w-full py-4 text-red-500 font-bold hover:bg-red-50 transition-all rounded-2xl text-center" url=cancel_url label=_("Cancel Application") icon='x-circle' %}
+                </div>
+            {% else %}
+                {% url 'applications:join_opportunity' opportunity.id as apply_url %}
+                <a href="{{ apply_url }}" class="flex items-center justify-center gap-3 w-full py-4 bg-brand text-white font-black text-lg rounded-2xl shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                    {% trans "Apply Now" %}
+                </a>
+            {% endif %}
+        </div>
     </div>
 </div>
 
