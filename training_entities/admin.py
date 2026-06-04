@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-
+from django.db import models
 from core.admin import BaseModelAdmin
 from training_entities.models import TrainingEntityProfile, Industry, TrainingOpportunity
 
@@ -12,7 +12,6 @@ class TrainingEntityProfileAdmin(BaseModelAdmin):
     tailwind_fields = []
 
     list_display = (
-
         'view_logo',
         'user',
         'entity_name',
@@ -23,6 +22,7 @@ class TrainingEntityProfileAdmin(BaseModelAdmin):
         'view_cr_document',
         'is_available',
     )
+
     list_filter = ('entity_type', 'is_available', 'city')
     search_fields = ('entity_name','entity_type','phone_number', 'registration_number', 'city__name',)
     # fields is hidden
@@ -48,6 +48,7 @@ class TrainingEntityProfileAdmin(BaseModelAdmin):
         return _("No Document")
 
     view_cr_document.short_description = _("CR Document")
+
 @admin.register(Industry)
 class IndustryAdmin(BaseModelAdmin):
     tailwind_fields = []

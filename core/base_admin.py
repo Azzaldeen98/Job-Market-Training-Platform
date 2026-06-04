@@ -9,14 +9,12 @@ from django.utils.translation import gettext_lazy as _
 class GlobalAdminStyle(admin.ModelAdmin):
     class Media:
         css = {
-            'all': ('css/admin_styles.css',) # تأكد من صحة المسار داخل مجلد static
+            'all': ('css/admin_styles.css')
         }
 
 class BaseModelAdmin(admin.ModelAdmin):
 
     tailwind_fields = []
-
-    # base_css = "w-full bg-base text-content border border-stroke-soft px-4 py-2 mt-1 rounded-lg focus:ring-2 transition duration-200 outline-none shadow-sm"
     base_css = "d-flex w-full bg-base text-content border border-stroke-soft px-4 py-2 mt-1 rounded-lg focus:ring-2 transition duration-200 outline-none shadow-sm"
     formfield_overrides = {
 
@@ -46,7 +44,6 @@ class BaseModelAdmin(admin.ModelAdmin):
     }
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         from django.utils.safestring import mark_safe
-        # تنسيق CSS لإصلاح محاذاة الأيقونات بجانب الحقل
         custom_style = mark_safe("""
             <style>
                  
@@ -71,33 +68,20 @@ class BaseModelAdmin(admin.ModelAdmin):
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         field = super().formfield_for_dbfield(db_field, request, **kwargs)
-
-        # التحقق إذا كان اسم الحقل مرسل ضمن القائمة
         if db_field.name in self.tailwind_fields:
-            # كلاسات التنسيق الأساسية (بدون w-full لتجنب مشكلة الأزرار)
             custom_class = "flex-1 bg-base text-content border border-stroke-soft px-4 py-2 mt-1 rounded-lg focus:ring-2 transition duration-200 outline-none shadow-sm"
-
-            # إذا كان الحقل عبارة عن قائمة منسدلة (Enum أو ForeignKey)
             if db_field.choices or isinstance(db_field, models.ForeignKey):
                 custom_class += " cursor-pointer appearance-none bg-[url('data:image/svg+xml;...')] bg-no-repeat bg-right"
-
-            # تطبيق الكلاسات على الـ Widget
             field.widget.attrs.update({'class': custom_class})
 
         return field
 
-
-    # def changelist_view(self, request, extra_context=None):
-    #     # تعطيل الحقن البرمجي مؤقتاً للتأكد من زوال الخطأ
-    #     return super().changelist_view(request, extra_context=extra_context)
     def changelist_view(self, request, extra_context=None):
+
         app_label = self.model._meta.app_label
         model_name = self.model._meta.model_name
         add_url = reverse(f'admin:{app_label}_{model_name}_add')
         btn_text = f"{_('Add')} {self.model._meta.verbose_name}"
-
-        # حقن كود JS يضيف الزر في الـ DOM مباشرة
-        # هذا الكود يبحث عن مكان البحث ويضع الزر بجانبه
         script = format_html('''
             <script>
                 document.addEventListener("DOMContentLoaded", function() {{
@@ -119,14 +103,10 @@ class BaseModelAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context=extra_context)
 
 class BaseTabularInline(admin.TabularInline):
-    # كلاس أب لتنسيق الجداول التابعة (Inlines)
+
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         field = super().formfield_for_dbfield(db_field, request, **kwargs)
-
-        # كلاس التنسيق الخاص بك (نفس الموجود في الأب)
         custom_class = "w-full bg-base text-content border border-stroke-soft px-4 py-2 mt-1 rounded-lg shadow-sm focus:ring-2 outline-none"
-
-        # تطبيق التنسيق على حقول النصوص والقوائم المنسدلة
         if isinstance(db_field, (models.CharField, models.ForeignKey)):
             field.widget.attrs.update({'class': custom_class})
 

@@ -12,6 +12,7 @@ class RegionInline(BaseTabularInline):
     fields = ('name', 'code')
     can_delete = True
     show_change_link = True
+
 class CityInline(BaseTabularInline):
     model = City
     extra = 1
