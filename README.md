@@ -121,7 +121,7 @@ Get-ChildItem -Path . -Include *.pyc -Recurse | Remove-Item -Force
 ### Githup push commands
 ```commandline
 git add .
-git commit -m /"Add:complete_profile , Academic apps, Location manager /" 
+git commit -m "Last Copy " 
 git push -u origin main
 ```
 
