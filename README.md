@@ -1,3 +1,6 @@
+
+
+
 ### 1. إنشاء البيئة الوهمية وتفعيلها
 ```bash
     python -m venv venv
@@ -48,11 +51,11 @@ python manage.py migrate
 ```bash
 python manage.py createsuperuser
 ```
-### 5. 🌍 نظام تعدد اللغات (Internationalization)
+### 5. 🌍 نظام تعدد اللغات (Internationalization) 
 
 الاستخراج: جمع النصوص الجديدة من القوالب:
 
-```Bash
+```
 python manage.py makemessages -l ar
 ````
 التفعيل: تحويل الترجمات إلى صيغة ثنائية سريعة:
