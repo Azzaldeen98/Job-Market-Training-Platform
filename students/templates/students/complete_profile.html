@@ -1,197 +1,355 @@
 {% extends 'students/base.html' %}
 
+
 {% block title %}
     {% trans "Complete Profile" %}
 {% endblock %}
 
-
-<style>
-   /* جعل حاوية الإدخال مرنة وتسمح بنزول العناصر لسطر جديد */
-.ts-control {
-    @apply flex flex-wrap gap-2 border-stroke-soft bg-base rounded-lg !important;
-    padding: 12px !important;
-}
-
-/* تمييز مربع البحث ليظهر في سطر مستقل أو بشكل واضح */
-.ts-control > input {
-    @apply w-full mb-2 border-b border-stroke-soft pb-2 !important;
-    display: block !important;
-}
-
-/* تنسيق الوسوم (التي ستظهر الآن تحت المربع بسبب العرض الكامل للمدخل) */
-.ts-control .item {
-    @apply bg-brand text-white px-3 py-1.5 rounded-full flex items-center text-sm font-medium !important;
-    margin: 0 !important;
-}
-
-/* إخفاء السهم الصغير لتبدو كمربع بحث خالص */
-.ts-wrapper.single .ts-control::after, .ts-wrapper.multi .ts-control::after {
-    display: none !important;
-}
-</style>
 {% block provider_content %}
-<div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 
-    <div class="bg-surface  text-content w-full  p-8 rounded-2xl transition-all duration-300
-                 border border-transparent ">
+
+<div class="flex items-center overflow-x-hidde justify-center py-12 px-4 sm:px-2 lg:px-8">
+    <div class="bg-surface text-content w-full p-2 rounded-2xl transition-all duration-300 border border-transparent">
 
         <h2 class="text-3xl font-bold text-center mb-8 text-current">
             {% trans "Complete Profile" %}
         </h2>
 
-        <form method="post" enctype="multipart/form-data" novalidate class="space-y-6  ">
-            {% csrf_token %}
-        <div class="flex flex-wrap justify-content p-3">
+        <form method="post" enctype="multipart/form-data" novalidate class="space-y-6">
+    {% csrf_token %}
 
-            {% for field in form %}
-
-                {% if not field.is_hidden and field.name != 'skills' %}
-
-                    <div class="flex flex-col gap-1 mx-3 mt-4" style="width:45%">
-
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-3">
+        {% for field in form %}
+            {% if field.name == 'skills' %}
+                <div class="bg-base p-5 flex flex-col gap-1 w-full md:col-span-2">
+                    <label class="text-sm font-medium opacity-80">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <p class="text-err text-xs mt-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="flex flex-col gap-1">
                     {% if field.field.widget.input_type == 'file' or field.field.widget.input_type == 'image' %}
-
-                        {% if field.value and field.name == 'picture' %}
-                            <div class="mt-2">
-                                <img src="{{ field.value.url }}" class="w-16 h-16 rounded-full border-2 border-brand object-cover shadow-sm" alt="logo">
-                            </div>
-
-                        {% endif %}
-
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm font-medium opacity-80 flex items-center gap-2">
-                                <span class="p-2 bg-brand/10 text-brand rounded-lg">
-                                    <i class="ph ph-upload-simple"></i>
-                                </span>
-                                {{ field.label }}
-                            </label>
-
-                            <div class="relative group">
-
-                                {{ field }}
-
-                                {% if field.value %}
-                                    <div class="mt-2 text-xs text-brand flex items-center gap-1">
-                                        <i class="ph ph-check-circle"></i>
-                                        {% trans "File currently uploaded:" %} {{ field.value.name|truncatechars:20 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                    {% else %}
-
-                        <label class="text-sm font-medium opacity-80">
+                        <label class="text-sm font-medium opacity-80 flex items-center gap-2">
+                            <span class="p-2 bg-brand/10 text-brand rounded-lg"><i class="ph ph-upload-simple"></i></span>
                             {{ field.label }}
                         </label>
                         {{ field }}
+                    {% else %}
+                        <label class="text-sm font-medium opacity-80">{{ field.label }}</label>
+                        {{ field }}
                     {% endif %}
-
 
                     {% if field.errors %}
-                        <p class="text-err text-xs mt-1">
-                            {{ field.errors.0 }}
-                        </p>
+                        <p class="text-err text-xs mt-1">{{ field.errors.0 }}</p>
                     {% endif %}
                 </div>
+            {% endif %}
+        {% endfor %}
+    </div>
 
-                {% else %}
-                <div class=" bg-base p-5 flex flex-col gap-1 w-full mx-3 my-5" >
+    <div class="max-w-md mx-auto pt-6">
+        {% submit-button label=_("Save") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}
+    </div>
+</form>
 
-                    <label class="text-sm font-medium opacity-80">
-                        {{ field.label }}
-                    </label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <p class="text-err text-xs mt-1">
-                            {{ field.errors.0 }}
-                        </p>
-                    {% endif %}
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-                <div class="max-w-md mx-auto">
-                    {% submit-button label=_("Save") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}
-                </div>
-
-        </form>
-
-<script>
-
-document.addEventListener("DOMContentLoaded", function() {
-
-    // --- 1. تهيئة TomSelect للمهارات ---
-    const skillsElement = document.querySelector('.select2-enable');
-    if (skillsElement) {
-        new TomSelect(skillsElement, {
-            plugins: ['remove_button'],
-            maxItems: null,
-            valueField: 'id',
-            labelField: 'title',
-            searchField: 'title',
-            placeholder: "Search for a skill and add it...",
-            hidePlaceholder: true,
-            onItemAdd: function() {
-                this.setTextboxValue('');
-                this.refreshOptions();
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // --- 1. تهيئة TomSelect للمهارات ---
+            const skillsElement = document.querySelector('.select2-enable');
+            if (skillsElement) {
+                new TomSelect(skillsElement, {
+                    plugins: ['remove_button'],
+                    maxItems: null,
+                    valueField: 'id',
+                    labelField: 'title',
+                    searchField: 'title',
+                    placeholder: "Search for a skill and add it...",
+                    hidePlaceholder: true,
+                    onItemAdd: function() {
+                        this.setTextboxValue('');
+                        this.refreshOptions();
+                    }
+                });
             }
-        });
-    }
 
-    // --- 2. منطق اختيار الجامعة والكلية والتخصص ---
-    const uniSelect = document.getElementById('id_university');
-    const collegeSelect = document.getElementById('id_college');
-    const majorSelect = document.getElementById('id_major');
+            // --- 2. حقن البيانات القادمة من السيرفر كـ JSON مباشرة ---
+            // استخدام الوسم |safe لمنع الـ HTML escaping لنصوص الـ JSON
+            const allColleges = {{ colleges_json|safe }};
+            const allMajors = {{ majors_json|safe }};
 
-    // تفعيل الحقول إذا كانت تحتوي على قيم (في حالة التعديل)
-    if (uniSelect && uniSelect.value) {
-        collegeSelect?.removeAttribute('disabled');
-        majorSelect?.removeAttribute('disabled');
-    }
+            const uniSelect = document.getElementById('id_university');
+            const collegeSelect = document.getElementById('id_college');
+            const majorSelect = document.getElementById('id_major');
 
-    // عند تغيير الجامعة
-    uniSelect?.addEventListener('change', function() {
-        const universityId = this.value;
-        if (universityId) {
-            fetch(`/training_entities/ajax/load-colleges/?university_id=${universityId}`)
-                .then(response => response.json())
-                .then(data => {
-                    // تصفير الخيارات القديمة
-                    collegeSelect.innerHTML = '<option value="">{% trans "Select College" %}</option>';
-                    majorSelect.innerHTML = '<option value="">{% trans "Select Major" %}</option>';
+            // إذا كانت هناك قيم مسبقة (في حالة تعديل البروفايل) تفعيل الخانات
+            if (uniSelect && uniSelect.value) {
+                collegeSelect?.removeAttribute('disabled');
+                majorSelect?.removeAttribute('disabled');
+            }
 
-                    data.forEach(item => {
+            // --- 3. الفلترة المحلية عند تغيير الجامعة ---
+            uniSelect?.addEventListener('change', function() {
+                const universityId = parseInt(this.value);
+
+                // تصفير القوائم القديمة
+                collegeSelect.innerHTML = '<option value="">{% trans "Select College" %}</option>';
+                majorSelect.innerHTML = '<option value="">{% trans "Select Major" %}</option>';
+
+                if (universityId) {
+                    // فلترة الكليات التي تنتمي للجامعة المحددة محلياً
+                    const filteredColleges = allColleges.filter(c => c.university_id === universityId);
+
+                    filteredColleges.forEach(item => {
                         collegeSelect.add(new Option(item.name, item.id));
                     });
 
                     collegeSelect.removeAttribute('disabled');
                     majorSelect.setAttribute('disabled', 'disabled');
-                })
-                .catch(error => console.error('Error fetching colleges:', error));
-        }
-    });
+                } else {
+                    collegeSelect.setAttribute('disabled', 'disabled');
+                    majorSelect.setAttribute('disabled', 'disabled');
+                }
+            });
 
-    // عند تغيير الكلية
-    collegeSelect?.addEventListener('change', function() {
-        const collegeId = this.value;
-        if (collegeId) {
-            fetch(`/training_entities/ajax/load-majors/?college_id=${collegeId}`)
-                .then(response => response.json())
-                .then(data => {
-                    majorSelect.innerHTML = '<option value="">{% trans "Select Major" %}</option>';
-                    data.forEach(item => {
+            // --- 4. الفلترة المحلية عند تغيير الكلية ---
+            collegeSelect?.addEventListener('change', function() {
+                const collegeId = parseInt(this.value);
+
+                majorSelect.innerHTML = '<option value="">{% trans "Select Major" %}</option>';
+
+                if (collegeId) {
+                    // فلترة التخصصات التي تنتمي للكلية المحددة محلياً
+                    const filteredMajors = allMajors.filter(m => m.college_id === collegeId);
+
+                    filteredMajors.forEach(item => {
                         majorSelect.add(new Option(item.name, item.id));
                     });
+
                     majorSelect.removeAttribute('disabled');
-                })
-                .catch(error => console.error('Error fetching majors:', error));
-        }
-    });
-});
-</script>
+                } else {
+                    majorSelect.setAttribute('disabled', 'disabled');
+                }
+            });
+        });
+        </script>
+
     </div>
 </div>
-
 {% endblock %}
 
+
+<!--{% extends 'students/base.html' %}-->
+
+
+<!--{% block title %}-->
+<!--    {% trans "Complete Profile" %}-->
+<!--{% endblock %}-->
+
+<!--{% block provider_content %}-->
+<!--<style>-->
+<!--.ts-control {-->
+<!--    @apply flex flex-wrap gap-2 border-stroke-soft bg-base rounded-lg !important;-->
+<!--    padding: 12px !important;-->
+<!--}-->
+<!--.ts-control > input {-->
+<!--    @apply w-full mb-2 border-b border-stroke-soft pb-2 !important;-->
+<!--    display: block !important;-->
+<!--}-->
+<!--.ts-control .item {-->
+<!--    @apply bg-brand text-white px-3 py-1.5 rounded-full flex items-center text-sm font-medium !important;-->
+<!--    margin: 0 !important;-->
+<!--}-->
+<!--.ts-wrapper.single .ts-control::after, .ts-wrapper.multi .ts-control::after {-->
+<!--    display: none !important;-->
+<!--}-->
+<!--</style>-->
+
+<!--<div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">-->
+<!--    <div class="bg-surface text-content w-full p-8 rounded-2xl transition-all duration-300 border border-transparent">-->
+
+<!--        <h2 class="text-3xl font-bold text-center mb-8 text-current">-->
+<!--            {% trans "Complete Profile" %}-->
+<!--        </h2>-->
+<!--        <form method="post" enctype="multipart/form-data" novalidate class="space-y-6">-->
+<!--            {% csrf_token %}-->
+
+<!--            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-3">-->
+<!--                {% for field in form %}-->
+<!--                    {% if field.name == 'skills' %}-->
+<!--                        <div class="bg-base p-5 flex flex-col gap-1 w-full md:col-span-2">-->
+<!--                            <label class="text-sm font-medium opacity-80">{{ field.label }}</label>-->
+<!--                            {{ field }}-->
+<!--                            {% if field.errors %}-->
+<!--                                <p class="text-err text-xs mt-1">{{ field.errors.0 }}</p>-->
+<!--                            {% endif %}-->
+<!--                        </div>-->
+<!--                    {% else %}-->
+<!--                        <div class="flex flex-col gap-1">-->
+<!--                            {% if field.field.widget.input_type == 'file' or field.field.widget.input_type == 'image' %}-->
+<!--                                <label class="text-sm font-medium opacity-80 flex items-center gap-2">-->
+<!--                                    <span class="p-2 bg-brand/10 text-brand rounded-lg"><i class="ph ph-upload-simple"></i></span>-->
+<!--                                    {{ field.label }}-->
+<!--                                </label>-->
+<!--                                {{ field }}-->
+<!--                            {% else %}-->
+<!--                                <label class="text-sm font-medium opacity-80">{{ field.label }}</label>-->
+<!--                                {{ field }}-->
+<!--                            {% endif %}-->
+
+<!--                            {% if field.errors %}-->
+<!--                                <p class="text-err text-xs mt-1">{{ field.errors.0 }}</p>-->
+<!--                            {% endif %}-->
+<!--                        </div>-->
+<!--                    {% endif %}-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+
+<!--            <div class="max-w-md mx-auto pt-6">-->
+<!--                {% submit-button label=_("Save") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}-->
+<!--            </div>-->
+<!--        </form>-->
+<!--&lt;!&ndash;        <form method="post" enctype="multipart/form-data" novalidate class="space-y-6">&ndash;&gt;-->
+<!--&lt;!&ndash;            {% csrf_token %}&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="flex flex-wrap justify-content p-3">&ndash;&gt;-->
+<!--&lt;!&ndash;                {% for field in form %}&ndash;&gt;-->
+<!--&lt;!&ndash;                    {% if not field.is_hidden and field.name != 'skills' %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="flex flex-col gap-1 mx-3 mt-4" style="width:45%">&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% if field.field.widget.input_type == 'file' or field.field.widget.input_type == 'image' %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                {% if field.value and field.name == 'picture' %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <div class="mt-2">&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <img src="{{ field.value.url }}" class="w-16 h-16 rounded-full border-2 border-brand object-cover shadow-sm" alt="logo">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                {% endif %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                <div class="flex flex-col gap-2">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <label class="text-sm font-medium opacity-80 flex items-center gap-2">&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <span class="p-2 bg-brand/10 text-brand rounded-lg">&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <i class="ph ph-upload-simple"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </span>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        {{ field.label }}&ndash;&gt;-->
+<!--&lt;!&ndash;                                    </label>&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <div class="relative group">&ndash;&gt;-->
+<!--&lt;!&ndash;                                        {{ field }}&ndash;&gt;-->
+<!--&lt;!&ndash;                                        {% if field.value %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <div class="mt-2 text-xs text-brand flex items-center gap-1">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                <i class="ph ph-check-circle"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;                                                {% trans "File currently uploaded:" %} {{ field.value.name|truncatechars:20 }}&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        {% endif %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% else %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                <label class="text-sm font-medium opacity-80">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    {{ field.label }}&ndash;&gt;-->
+<!--&lt;!&ndash;                                </label>&ndash;&gt;-->
+<!--&lt;!&ndash;                                {{ field }}&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% endif %}&ndash;&gt;-->
+
+<!--&lt;!&ndash;                            {% if field.errors %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                <p class="text-err text-xs mt-1">{{ field.errors.0 }}</p>&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% endif %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    {% else %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="bg-base p-5 flex flex-col gap-1 w-full mx-3 my-5">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <label class="text-sm font-medium opacity-80">&ndash;&gt;-->
+<!--&lt;!&ndash;                                {{ field.label }}&ndash;&gt;-->
+<!--&lt;!&ndash;                            </label>&ndash;&gt;-->
+<!--&lt;!&ndash;                            {{ field }}&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% if field.errors %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                <p class="text-err text-xs mt-1">{{ field.errors.0 }}</p>&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% endif %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    {% endif %}&ndash;&gt;-->
+<!--&lt;!&ndash;                {% endfor %}&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;            <div class="max-w-md mx-auto">&ndash;&gt;-->
+<!--&lt;!&ndash;                {% submit-button label=_("Save") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </form>&ndash;&gt;-->
+
+<!--        <script>-->
+<!--        document.addEventListener("DOMContentLoaded", function() {-->
+<!--            // -&#45;&#45; 1. تهيئة TomSelect للمهارات -&#45;&#45;-->
+<!--            const skillsElement = document.querySelector('.select2-enable');-->
+<!--            if (skillsElement) {-->
+<!--                new TomSelect(skillsElement, {-->
+<!--                    plugins: ['remove_button'],-->
+<!--                    maxItems: null,-->
+<!--                    valueField: 'id',-->
+<!--                    labelField: 'title',-->
+<!--                    searchField: 'title',-->
+<!--                    placeholder: "Search for a skill and add it...",-->
+<!--                    hidePlaceholder: true,-->
+<!--                    onItemAdd: function() {-->
+<!--                        this.setTextboxValue('');-->
+<!--                        this.refreshOptions();-->
+<!--                    }-->
+<!--                });-->
+<!--            }-->
+
+<!--            // -&#45;&#45; 2. حقن البيانات القادمة من السيرفر كـ JSON مباشرة -&#45;&#45;-->
+<!--            // استخدام الوسم |safe لمنع الـ HTML escaping لنصوص الـ JSON-->
+<!--            const allColleges = {{ colleges_json|safe }};-->
+<!--            const allMajors = {{ majors_json|safe }};-->
+
+<!--            const uniSelect = document.getElementById('id_university');-->
+<!--            const collegeSelect = document.getElementById('id_college');-->
+<!--            const majorSelect = document.getElementById('id_major');-->
+
+<!--            // إذا كانت هناك قيم مسبقة (في حالة تعديل البروفايل) تفعيل الخانات-->
+<!--            if (uniSelect && uniSelect.value) {-->
+<!--                collegeSelect?.removeAttribute('disabled');-->
+<!--                majorSelect?.removeAttribute('disabled');-->
+<!--            }-->
+
+<!--            // -&#45;&#45; 3. الفلترة المحلية عند تغيير الجامعة -&#45;&#45;-->
+<!--            uniSelect?.addEventListener('change', function() {-->
+<!--                const universityId = parseInt(this.value);-->
+
+<!--                // تصفير القوائم القديمة-->
+<!--                collegeSelect.innerHTML = '<option value="">{% trans "Select College" %}</option>';-->
+<!--                majorSelect.innerHTML = '<option value="">{% trans "Select Major" %}</option>';-->
+
+<!--                if (universityId) {-->
+<!--                    // فلترة الكليات التي تنتمي للجامعة المحددة محلياً-->
+<!--                    const filteredColleges = allColleges.filter(c => c.university_id === universityId);-->
+
+<!--                    filteredColleges.forEach(item => {-->
+<!--                        collegeSelect.add(new Option(item.name, item.id));-->
+<!--                    });-->
+
+<!--                    collegeSelect.removeAttribute('disabled');-->
+<!--                    majorSelect.setAttribute('disabled', 'disabled');-->
+<!--                } else {-->
+<!--                    collegeSelect.setAttribute('disabled', 'disabled');-->
+<!--                    majorSelect.setAttribute('disabled', 'disabled');-->
+<!--                }-->
+<!--            });-->
+
+<!--            // -&#45;&#45; 4. الفلترة المحلية عند تغيير الكلية -&#45;&#45;-->
+<!--            collegeSelect?.addEventListener('change', function() {-->
+<!--                const collegeId = parseInt(this.value);-->
+
+<!--                majorSelect.innerHTML = '<option value="">{% trans "Select Major" %}</option>';-->
+
+<!--                if (collegeId) {-->
+<!--                    // فلترة التخصصات التي تنتمي للكلية المحددة محلياً-->
+<!--                    const filteredMajors = allMajors.filter(m => m.college_id === collegeId);-->
+
+<!--                    filteredMajors.forEach(item => {-->
+<!--                        majorSelect.add(new Option(item.name, item.id));-->
+<!--                    });-->
+
+<!--                    majorSelect.removeAttribute('disabled');-->
+<!--                } else {-->
+<!--                    majorSelect.setAttribute('disabled', 'disabled');-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+<!--        </script>-->
+
+<!--    </div>-->
+<!--</div>-->
+<!--{% endblock %}-->

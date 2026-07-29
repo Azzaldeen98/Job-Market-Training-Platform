@@ -6,6 +6,7 @@ from core.routes import Routes
 
 
 class ProfileCompletionMiddleware:
+
     def __init__(self, get_response):
         self.get_response = get_response
 

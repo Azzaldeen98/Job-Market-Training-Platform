@@ -6,6 +6,8 @@ from .models import Country, Region, City
 
 
 
+
+
 class RegionInline(BaseTabularInline):
     model = Region
     extra = 1

@@ -1,5 +1,7 @@
 
 from django.contrib.auth.admin import UserAdmin
+
+from core.base_admin import BaseModelAdmin
 from .models import CustomUser
 from django.contrib import admin
 from unfold.admin import ModelAdmin
@@ -15,13 +17,13 @@ from django.utils.translation import gettext_lazy as _
 
 
 
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin,BaseModelAdmin):
     model = CustomUser
 
     # 1. تخصيص الحقول في صفحة التعديل
     fieldsets = UserAdmin.fieldsets + (
         (_('Additional Settings'), {
-            'fields': ('is_dark_mode', 'language_preference', 'phone_number', 'picture', 'is_verified')
+            'fields': ('is_dark_mode', 'language_preference', 'is_verified')
         }),
     )
 

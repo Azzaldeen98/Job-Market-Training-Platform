@@ -1,10 +1,10 @@
 
 {% load i18n static %}
 
-<nav class="fixed mt-0 w-full z-50 transition-all duration-300 bg-surface/80 backdrop-blur-md border-b border-stroke-soft shadow-sm" id="navbar">
+<nav class="fixed top-0 w-full z-50 transition-all duration-300 bg-surface/80 backdrop-blur-md border-b border-stroke-soft shadow-sm" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20">
-
+            <!-- الشعار -->
             <div class="flex items-center gap-8">
                 <a href="{% url 'core:home' %}" class="flex items-center gap-3 group">
                     <div class="w-10 h-10 bg-gradient-to-tr from-brand to-brand/60 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform">
@@ -13,99 +13,189 @@
                     <span class="text-2xl font-black text-content tracking-tight">Skill<span class="text-brand">Match</span></span>
                 </a>
 
+                <!-- روابط سطح المكتب -->
                 <div class="hidden md:flex items-center gap-6">
-
                     {% if not user.is_authenticated or user.is_student %}
-                             <a href="{% url 'core:home' %}" class="active text-content-muted hover:text-brand font-bold transition-all relative group">
-                                {% trans "Home" %}
-                                <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
-                            </a>
-                            <a href="{% url 'core:opportunities' %}" class="text-content-muted hover:text-brand font-bold transition-all relative group">
-                                    {% trans "Opportunities" %}
-                                    <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
-                            </a>
-                           <a href="{% url 'core:training_entities' %}" class="text-content-muted hover:text-brand font-bold transition-all relative group">
-                                {% trans "Training  Entities" %}
-                                <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
-                            </a>
-                     {% endif %}
-
-                    {% if user.is_authenticated %}
-                        {% if user.is_identity and user.get_dashboard_url %}
+                        <a href="{% url 'core:home' %}" class="text-content-muted hover:text-brand font-bold transition-all relative group">
+                            {% trans "Home" %}
+                            <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
+                        </a>
+                        <a href="{% url 'core:opportunities' %}" class="text-content-muted hover:text-brand font-bold transition-all relative group">
+                            {% trans "Opportunities" %}
+                            <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
+                        </a>
+                        <a href="{% url 'core:training_entities' %}" class="text-content-muted hover:text-brand font-bold transition-all relative group">
+                            {% trans "Training Entities" %}
+                            <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
+                        </a>
+                    {% endif %}
+                    {% if user.is_authenticated and user.is_identity and user.get_dashboard_url %}
                         <a href="{{ user.get_dashboard_url }}" class="text-content-muted hover:text-brand font-bold transition-all relative group">
                             {% trans "Dashboard" %}
                             <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
                         </a>
-                        {% endif %}
                     {% endif %}
                 </div>
             </div>
 
+            <!-- أزرار الإجراءات -->
             <div class="flex items-center gap-4">
-
-                <div class="language-switcher hidden sm:block">
-<!--                    <form action="{% url 'set_language' %}" method="post">-->
-<!--                        {% csrf_token %}-->
-<!--                        <input name="next" type="hidden" value="{{ request.get_full_path }}">-->
-<!--                        <select name="language" onchange="this.form.submit()"-->
-<!--                                class="bg-field-base border border-stroke-soft text-content text-xs font-bold rounded-xl focus:ring-brand focus:border-brand block p-2 cursor-pointer outline-none">-->
-<!--                            {% get_current_language as LANGUAGE_CODE %}-->
-<!--                            {% get_available_languages as LANGUAGES %}-->
-<!--                            {% for lang in LANGUAGES %}-->
-<!--                                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>-->
-<!--                                    {{ lang.1|upper }}-->
-<!--                                </option>-->
-<!--                            {% endfor %}-->
-<!--                        </select>-->
-<!--                    </form>-->
-                </div>
-
-<!--                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-field-base text-content-muted hover:text-brand hover:bg-brand/10 transition-colors border border-stroke-soft">-->
-<!--                    <span class="block dark:hidden">☀️</span>-->
-<!--                    <span class="hidden dark:block">🌙</span>-->
-<!--                </button>-->
-
                 {% if user.is_authenticated %}
-                    <div class="flex items-center gap-3 pr-4 border-r border-stroke-soft">
-                        <div class="hidden sm:block text-left">
+                    <div class="hidden sm:flex items-center gap-3 pr-4 border-r border-stroke-soft">
+                        <div class="text-right">
                             <p class="text-xs font-black text-content">{{ user.username }}</p>
                             <p class="text-[10px] text-green-600 font-bold uppercase">Online</p>
                         </div>
-                        <form action="{% url 'accounts:logout' %}" method="post" class="inline">
-                            {% csrf_token %}
-                            <button type="submit" class="p-2.5 rounded-xl bg-error/10 text-error hover:bg-error hover:text-white transition-all border border-error/20">
-                                <i data-lucide="log-out" class="w-5 h-5"></i>
-                            </button>
-                        </form>
                     </div>
+                    <form action="{% url 'accounts:logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="p-2.5 rounded-xl bg-error/10 text-error hover:bg-error hover:text-white transition-all border border-error/20">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                        </button>
+                    </form>
                 {% else %}
-                    <div class="flex items-center gap-2">
-                        <a href="{% url 'account_login' %}" class="hidden sm:block text-content-muted hover:text-brand font-bold px-4 py-2 transition-colors">
-                            {% trans "Login" %}
-                        </a>
-                        <a href="{% url 'account_signup' %}" class="bg-brand text-white px-6 py-2.5 rounded-xl font-bold hover:bg-brand-dark transition-all shadow-lg shadow-brand/20">
-                            {% trans "Register Now" %}
-                        </a>
-                    </div>
+                    <a href="{% url 'account_login' %}" class="hidden sm:block text-content-muted hover:text-brand font-bold px-4 py-2">{% trans "Login" %}</a>
+                    <a href="{% url 'account_signup' %}" class="bg-brand text-white px-6 py-2.5 rounded-xl font-bold hover:bg-brand-dark transition-all">{% trans "Register Now" %}</a>
                 {% endif %}
 
-                <button class="md:hidden p-2 text-content" id="mobileMenuBtn">
+                <!-- زر القائمة للجوال -->
+                <button   class="md:hidden p-2 text-content" id="mobileMenuBtn">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="hidden md:hidden bg-surface border-t border-stroke-soft px-4 py-6 space-y-4 shadow-xl" id="mobileMenu">
-        <a href="{% url 'core:home' %}" class="block py-2 text-content font-bold border-b border-stroke-soft/50">{% trans "Home" %}</a>
+    <!-- القائمة المنسدلة للجوال -->
+    <div class="hidden md:hidden bg-surface border-t border-stroke-soft px-4 py-6 space-y-2" id="mobileMenu">
+        <a href="{% url 'core:home' %}" class="block py-3 text-content font-bold border-b border-stroke-soft/20">{% trans "Home" %}</a>
+        <a href="{% url 'core:opportunities' %}" class="block py-3 text-content font-bold border-b border-stroke-soft/20">{% trans "Opportunities" %}</a>
+        <a href="{% url 'core:training_entities' %}" class="block py-3 text-content font-bold border-b border-stroke-soft/20">{% trans "Training Entities" %}</a>
         {% if user.is_authenticated and user.get_dashboard_url %}
-            <a href="{{ user.get_dashboard_url }}" class="block py-2 text-content font-bold border-b border-stroke-soft/50">{% trans "Dashboard" %}</a>
+            <a href="{{ user.get_dashboard_url }}" class="block py-3 text-content font-bold border-b border-stroke-soft/20">{% trans "Dashboard" %}</a>
         {% endif %}
-        <div class="pt-2">
-            <p class="text-[10px] font-black text-content-muted uppercase mb-2">Language</p>
-            </div>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'account_login' %}" class="block py-3 text-content font-bold border-b border-stroke-soft/20">{% trans "Login" %}</a>
+        {% endif %}
     </div>
+    <script>
+        const btn = document.getElementById('mobileMenuBtn');
+        const menu = document.getElementById('mobileMenu');
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
 </nav>
+
+
+
+
+<!--<nav class="fixed mt-0 w-full z-50 transition-all duration-300 bg-surface/80 backdrop-blur-md border-b border-stroke-soft shadow-sm" id="navbar">-->
+<!--    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">-->
+<!--        <div class="flex justify-between items-center h-20">-->
+
+<!--            <div class="flex items-center gap-8">-->
+<!--                <a href="{% url 'core:home' %}" class="flex items-center gap-3 group">-->
+<!--                    <div class="w-10 h-10 bg-gradient-to-tr from-brand to-brand/60 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform">-->
+<!--                        <i data-lucide="briefcase" class="w-6 h-6"></i>-->
+<!--                    </div>-->
+<!--                    <span class="text-2xl font-black text-content tracking-tight">Skill<span class="text-brand">Match</span></span>-->
+<!--                </a>-->
+
+<!--                <div class="hidden md:flex items-center gap-6">-->
+
+<!--                    {% if not user.is_authenticated or user.is_student %}-->
+<!--                             <a href="{% url 'core:home' %}" class="active text-content-muted hover:text-brand font-bold transition-all relative group">-->
+<!--                                {% trans "Home" %}-->
+<!--                                <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>-->
+<!--                            </a>-->
+<!--                            <a href="{% url 'core:opportunities' %}" class="text-content-muted hover:text-brand font-bold transition-all relative group">-->
+<!--                                    {% trans "Opportunities" %}-->
+<!--                                    <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>-->
+<!--                            </a>-->
+<!--                           <a href="{% url 'core:training_entities' %}" class="text-content-muted hover:text-brand font-bold transition-all relative group">-->
+<!--                                {% trans "Training  Entities" %}-->
+<!--                                <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>-->
+<!--                            </a>-->
+<!--                     {% endif %}-->
+
+<!--                    {% if user.is_authenticated %}-->
+<!--                        {% if user.is_identity and user.get_dashboard_url %}-->
+<!--                        <a href="{{ user.get_dashboard_url }}" class="text-content-muted hover:text-brand font-bold transition-all relative group">-->
+<!--                            {% trans "Dashboard" %}-->
+<!--                            <span class="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>-->
+<!--                        </a>-->
+<!--                        {% endif %}-->
+<!--                    {% endif %}-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="flex items-center gap-4">-->
+
+<!--                <div class="language-switcher hidden sm:block">-->
+<!--&lt;!&ndash;                    <form action="{% url 'set_language' %}" method="post">&ndash;&gt;-->
+<!--&lt;!&ndash;                        {% csrf_token %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        <input name="next" type="hidden" value="{{ request.get_full_path }}">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <select name="language" onchange="this.form.submit()"&ndash;&gt;-->
+<!--&lt;!&ndash;                                class="bg-field-base border border-stroke-soft text-content text-xs font-bold rounded-xl focus:ring-brand focus:border-brand block p-2 cursor-pointer outline-none">&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% get_current_language as LANGUAGE_CODE %}&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% get_available_languages as LANGUAGES %}&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% for lang in LANGUAGES %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>&ndash;&gt;-->
+<!--&lt;!&ndash;                                    {{ lang.1|upper }}&ndash;&gt;-->
+<!--&lt;!&ndash;                                </option>&ndash;&gt;-->
+<!--&lt;!&ndash;                            {% endfor %}&ndash;&gt;-->
+<!--&lt;!&ndash;                        </select>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </form>&ndash;&gt;-->
+<!--                </div>-->
+
+<!--&lt;!&ndash;                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-field-base text-content-muted hover:text-brand hover:bg-brand/10 transition-colors border border-stroke-soft">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span class="block dark:hidden">☀️</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span class="hidden dark:block">🌙</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                </button>&ndash;&gt;-->
+
+<!--                {% if user.is_authenticated %}-->
+<!--                    <div class="flex items-center gap-3 pr-4 border-r border-stroke-soft">-->
+<!--                        <div class="hidden sm:block text-left">-->
+<!--                            <p class="text-xs font-black text-content">{{ user.username }}</p>-->
+<!--                            <p class="text-[10px] text-green-600 font-bold uppercase">Online</p>-->
+<!--                        </div>-->
+<!--                        <form action="{% url 'accounts:logout' %}" method="post" class="inline">-->
+<!--                            {% csrf_token %}-->
+<!--                            <button type="submit" class="p-2.5 rounded-xl bg-error/10 text-error hover:bg-error hover:text-white transition-all border border-error/20">-->
+<!--                                <i data-lucide="log-out" class="w-5 h-5"></i>-->
+<!--                            </button>-->
+<!--                        </form>-->
+<!--                    </div>-->
+<!--                {% else %}-->
+<!--                    <div class="flex items-center gap-2">-->
+<!--                        <a href="{% url 'account_login' %}" class="hidden sm:block text-content-muted hover:text-brand font-bold px-4 py-2 transition-colors">-->
+<!--                            {% trans "Login" %}-->
+<!--                        </a>-->
+<!--                        <a href="{% url 'account_signup' %}" class="bg-brand text-white px-6 py-2.5 rounded-xl font-bold hover:bg-brand-dark transition-all shadow-lg shadow-brand/20">-->
+<!--                            {% trans "Register Now" %}-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                {% endif %}-->
+
+<!--                <button class="md:hidden p-2 text-content" id="mobileMenuBtn">-->
+<!--                    <i data-lucide="menu" class="w-6 h-6"></i>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="hidden md:hidden bg-surface border-t border-stroke-soft px-4 py-6 space-y-4 shadow-xl" id="mobileMenu">-->
+<!--        <a href="{% url 'core:home' %}" class="block py-2 text-content font-bold border-b border-stroke-soft/50">{% trans "Home" %}</a>-->
+<!--        {% if user.is_authenticated and user.get_dashboard_url %}-->
+<!--            <a href="{{ user.get_dashboard_url }}" class="block py-2 text-content font-bold border-b border-stroke-soft/50">{% trans "Dashboard" %}</a>-->
+<!--        {% endif %}-->
+<!--        <div class="pt-2">-->
+<!--            <p class="text-[10px] font-black text-content-muted uppercase mb-2">Language</p>-->
+<!--            </div>-->
+<!--    </div>-->
+<!--</nav>-->
+
 <!--<nav class=" border-b border-gray-200   dark:border-slate-800 transition-colors duration-300">-->
 <!--    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">-->
 <!--        <div class="flex justify-between h-16 items-center">-->

@@ -15,7 +15,9 @@ from django.contrib.auth import get_user_model
 from core.models import City
 from accounts.models import Role
 from training_entities.models import TrainingEntityProfile
-
+from django.db.models.signals import post_save
+# تأكد من استيراد الإشارة من ملف الـ signals الخاص بك
+from accounts.signals import create_training_profile
 
 
 User = get_user_model()
@@ -77,48 +79,90 @@ def seed_training_entities():
     ]
 
     print("🚀 Starting User Accounts & Training Profiles seeding...")
-
     for item in entities_data:
-        # 1. إنشاء أو جلب المستخدم (User Auth)
-        # نربط المستخدم بالـ identity لضمان عمل الـ Signal الخاص بالصلاحيات
-        user, u_created = User.objects.get_or_create(
-            username=item['username'],
-            defaults={
-                'email': item['email'],
-                'password': make_password(item['password']),
-                'identity': identity_obj,
-                'is_active': True
-            }
-        )
+        # إيقاف الـ Signal مؤقتاً لكل عملية إدخال
+        post_save.disconnect(create_training_profile, sender=User)
 
-        if u_created:
-            print(f"👤 User Created: {item['username']}")
-        else:
-            # إذا كان المستخدم موجوداً، نحدث الهوية للتأكد
-            user.identity = identity_obj
-            user.save()
-            print(f"👤 User Found: {item['username']}")
+        try:
+            # 1. إنشاء أو تحديث المستخدم (update_or_create أكثر أماناً من get_or_create)
+            user, u_created = User.objects.update_or_create(
+                username=item['username'],
+                defaults={
+                    'email': item['email'],
+                    'password': make_password(item['password']),
+                    'identity': identity_obj,
+                    'is_active': True
+                }
+            )
 
-        # 2. جلب المدينة
-        city_obj = City.objects.filter(name__icontains=item['city']).first()
-        if not city_obj:
-            print(f"⚠️ City '{item['city']}' not found. Using None for {item['entity_name']}.")
+            # 2. جلب المدينة
+            city_obj = City.objects.filter(name__icontains=item['city']).first()
+            if not city_obj:
+                print(f"⚠️ City '{item['city']}' not found for {item['entity_name']}.")
 
+            # 3. إنشاء أو تحديث البروفايل مع الحذر من حقل registration_number
+            profile, p_created = TrainingEntityProfile.objects.update_or_create(
+                user=user,
+                defaults={
+                    'entity_name': item['entity_name'],
+                    'city': city_obj,
+                    'entity_type': item['type'],
+                    'registration_number': item['reg_num'],  # هنا قد يحدث الـ IntegrityError
+                    'description': item['desc'],
+                    'is_available': True
+                }
+            )
 
-        profile, p_created = TrainingEntityProfile.objects.update_or_create(
-            user=user,
-            defaults={
-                'entity_name': item['entity_name'],
-                'city': city_obj,
-                'entity_type': item['type'],
-                'registration_number': item['reg_num'],
-                'description': item['desc'],
-                'is_available': True
-            }
-        )
+            print(f"✅ Success: {item['entity_name']}")
 
-        status = "Created" if p_created else "Updated"
-        print(f"🏢 Profile {status}: {item['entity_name']}")
+        except Exception as e:
+            # في حال حدوث أي خطأ، سنطبع الخطأ ونكمل العمل بدلاً من توقف السكربت
+            print(f"❌ Error processing {item['username']}: {str(e)}")
+
+        finally:
+            # إعادة تفعيل الـ Signal دائماً
+            post_save.connect(create_training_profile, sender=User)
+    # for item in entities_data:
+    #     # 1. إنشاء أو جلب المستخدم (User Auth)
+    #     # نربط المستخدم بالـ identity لضمان عمل الـ Signal الخاص بالصلاحيات
+    #     user, u_created = User.objects.get_or_create(
+    #         username=item['username'],
+    #         defaults={
+    #             'email': item['email'],
+    #             'password': make_password(item['password']),
+    #             'identity': identity_obj,
+    #             'is_active': True
+    #         }
+    #     )
+    #
+    #     if u_created:
+    #         print(f"👤 User Created: {item['username']}")
+    #     else:
+    #         # إذا كان المستخدم موجوداً، نحدث الهوية للتأكد
+    #         user.identity = identity_obj
+    #         user.save()
+    #         print(f"👤 User Found: {item['username']}")
+    #
+    #     # 2. جلب المدينة
+    #     city_obj = City.objects.filter(name__icontains=item['city']).first()
+    #     if not city_obj:
+    #         print(f"⚠️ City '{item['city']}' not found. Using None for {item['entity_name']}.")
+    #
+    #
+    #     profile, p_created = TrainingEntityProfile.objects.update_or_create(
+    #         user=user,
+    #         defaults={
+    #             'entity_name': item['entity_name'],
+    #             'city': city_obj,
+    #             'entity_type': item['type'],
+    #             'registration_number': item['reg_num'],
+    #             'description': item['desc'],
+    #             'is_available': True
+    #         }
+    #     )
+    #
+    #     status = "Created" if p_created else "Updated"
+    #     print(f"🏢 Profile {status}: {item['entity_name']}")
 
     print("✅ All Training Entities and Accounts are ready!")
 

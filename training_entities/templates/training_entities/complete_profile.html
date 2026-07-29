@@ -1,157 +1,230 @@
+
 {% extends 'training_entities/base.html' %}
 
-{% block title %}
-    {% trans "Complete Profile" %}
-{% endblock %}
+{% block title %}{% trans "Complete Profile" %}{% endblock %}
 
-
-<style>
-   /* جعل حاوية الإدخال مرنة وتسمح بنزول العناصر لسطر جديد */
-.ts-control {
-    @apply flex flex-wrap gap-2 border-stroke-soft bg-base rounded-lg !important;
-    padding: 12px !important;
-}
-
-/* تمييز مربع البحث ليظهر في سطر مستقل أو بشكل واضح */
-.ts-control > input {
-    @apply w-full mb-2 border-b border-stroke-soft pb-2 !important;
-    display: block !important;
-}
-
-/* تنسيق الوسوم (التي ستظهر الآن تحت المربع بسبب العرض الكامل للمدخل) */
-.ts-control .item {
-    @apply bg-brand text-white px-3 py-1.5 rounded-full flex items-center text-sm font-medium !important;
-    margin: 0 !important;
-}
-
-/* إخفاء السهم الصغير لتبدو كمربع بحث خالص */
-.ts-wrapper.single .ts-control::after, .ts-wrapper.multi .ts-control::after {
-    display: none !important;
-}
-</style>
 {% block provider_content %}
+<div class="py-6 px-4 sm:px-6 lg:px-8">
+    <div class="bg-surface text-content w-full max-w-4xl mx-auto p-6 md:p-8 rounded-2xl border border-stroke-soft">
 
-  {% back_button %}
-<div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-
-    <div class="bg-surface  text-content w-full  p-8 rounded-2xl transition-all duration-300
-                 border border-transparent ">
-              <a href="{% url 'account_email' %}" >
-                            {% trans "Email" %}
-                     </a>
-        <h2 class="text-3xl font-bold text-center mb-8 text-current">
-            {% trans "Complete Profile" %}
-        </h2>
-
-        <form method="post" enctype="multipart/form-data" novalidate class="space-y-6  ">
-            {% csrf_token %}
-        <div class="flex flex-wrap justify-content p-3">
-            {% for field in form %}
-                {% if not field.is_hidden and field.name != 'skills' %}
-
-                    <div class="flex flex-col gap-1 mx-3 mt-4" style="width:45%">
-
-
-                    {% if field.field.widget.input_type == 'file' or field.field.widget.input_type == 'image' %}
-
-                        {% if field.value and field.name == 'logo' %}
-                            <div class="mt-2">
-                                <img src="{{ field.value.url }}" class="w-16 h-16 rounded-full border-2 border-brand object-cover shadow-sm" alt="logo">
-                            </div>
-                        {% elif field.value and field.name == 'cover_image' %}
-                            <div class="mt-2 w-full h-40 rounded-xl overflow-hidden border">
-                                <img src="{{ field.value.url }}" alt="cover image" class="w-full h-full object-cover">
-                            </div>
-                        {% endif %}
-
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm font-medium opacity-80 flex items-center gap-2">
-                                <span class="p-2 bg-brand/10 text-brand rounded-lg">
-                                    <i class="ph ph-upload-simple"></i>
-                                </span>
-                                {{ field.label }}
-                            </label>
-
-                            <div class="relative group">
-
-                                {{ field }}
-
-                                {% if field.value %}
-                                    <div class="mt-2 text-xs text-brand flex items-center gap-1">
-                                        <i class="ph ph-check-circle"></i>
-                                        {% trans "File currently uploaded:" %} {{ field.value.name|truncatechars:20 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                    {% else %}
-
-                        <label class="text-sm font-medium opacity-80">
-                            {{ field.label }}
-                        </label>
-                        {{ field }}
-                    {% endif %}
-
-
-
-
-                    {% if field.errors %}
-                        <p class="text-err text-xs mt-1">
-                            {{ field.errors.0 }}
-                        </p>
-                    {% endif %}
-                </div>
-
-                {% else %}
-                <div class="flex flex-col gap-1 w-full mx-3 mt-4" >
-                    <label class="text-sm font-medium opacity-80">
-                        {{ field.label }}
-                    </label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <p class="text-err text-xs mt-1">
-                            {{ field.errors.0 }}
-                        </p>
-                    {% endif %}
-                </div>
-                {% endif %}
-            {% endfor %}
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-current">{% trans "Complete Profile" %}</h2>
+            <a href="{% url 'account_email' %}" class="text-sm text-brand hover:underline">{% trans "Email Settings" %}</a>
         </div>
-                <div class="max-w-md mx-auto">
-              {% submit-button label=_("Save") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}
-                </div>
 
+        <form method="post" enctype="multipart/form-data" novalidate class="space-y-6">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for field in form %}
+                    {% if field.name == 'skills' %}
+                        <div class="md:col-span-2 flex flex-col gap-2">
+                            <label class="text-sm font-medium opacity-80">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    {% else %}
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-medium opacity-80">{{ field.label }}</label>
+
+                            {% if field.field.widget.input_type == 'file' or field.field.widget.input_type == 'image' %}
+                                <div class="flex flex-col gap-2">
+                                    {{ field }}
+                                    {% if field.value %}
+                                        <p class="text-xs text-brand">{% trans "Uploaded:" %} {{ field.value.name|truncatechars:15 }}</p>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+
+                            {% if field.errors %}
+                                <p class="text-err text-xs">{{ field.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="pt-6 flex justify-center">
+                {% submit-button label=_("Save") icon="check-circle" bg_color="bg-brand" content_color="btn-text" %}
+            </div>
         </form>
+    </div>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // تهيئة TomSelect
         const skillsSelect = document.querySelector('.select2-enable');
-
         if (skillsSelect) {
             new TomSelect(skillsSelect, {
                 plugins: ['remove_button'],
                 maxItems: null,
-                valueField: 'id',
-                labelField: 'title',
-                searchField: 'title',
-                placeholder: "ابحث عن مهارة وأضفها...",
-                // هذا الجزء هو السر: منع ظهور العناصر داخل المربع وإضافتها بالأسفل
-                hidePlaceholder: true,
+                placeholder: "{% trans 'Search and add skills...' %}",
                 onItemAdd: function() {
-                    this.setTextboxValue(''); // مسح مربع البحث بعد الإضافة
+                    this.setTextboxValue('');
                     this.refreshOptions();
                 }
             });
         }
     });
-
 </script>
-    </div>
-</div>
-
 {% endblock %}
-{% back_button %}
+
+<!--{% extends 'training_entities/base.html' %}-->
+
+<!--{% block title %}-->
+<!--    {% trans "Complete Profile" %}-->
+<!--{% endblock %}-->
+
+
+<!--<style>-->
+<!--   /* جعل حاوية الإدخال مرنة وتسمح بنزول العناصر لسطر جديد */-->
+<!--.ts-control {-->
+<!--    @apply flex flex-wrap gap-2 border-stroke-soft bg-base rounded-lg !important;-->
+<!--    padding: 12px !important;-->
+<!--}-->
+
+<!--/* تمييز مربع البحث ليظهر في سطر مستقل أو بشكل واضح */-->
+<!--.ts-control > input {-->
+<!--    @apply w-full mb-2 border-b border-stroke-soft pb-2 !important;-->
+<!--    display: block !important;-->
+<!--}-->
+
+<!--/* تنسيق الوسوم (التي ستظهر الآن تحت المربع بسبب العرض الكامل للمدخل) */-->
+<!--.ts-control .item {-->
+<!--    @apply bg-brand text-white px-3 py-1.5 rounded-full flex items-center text-sm font-medium !important;-->
+<!--    margin: 0 !important;-->
+<!--}-->
+
+<!--/* إخفاء السهم الصغير لتبدو كمربع بحث خالص */-->
+<!--.ts-wrapper.single .ts-control::after, .ts-wrapper.multi .ts-control::after {-->
+<!--    display: none !important;-->
+<!--}-->
+<!--</style>-->
+<!--{% block provider_content %}-->
+
+<!--  {% back_button %}-->
+<!--<div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">-->
+
+<!--    <div class="bg-surface  text-content w-full  p-8 rounded-2xl transition-all duration-300-->
+<!--                 border border-transparent ">-->
+<!--              <a href="{% url 'account_email' %}" >-->
+<!--                            {% trans "Email" %}-->
+<!--                     </a>-->
+<!--        <h2 class="text-3xl font-bold text-center mb-8 text-current">-->
+<!--            {% trans "Complete Profile" %}-->
+<!--        </h2>-->
+
+<!--        <form method="post" enctype="multipart/form-data" novalidate class="space-y-6  ">-->
+<!--            {% csrf_token %}-->
+<!--        <div class="flex flex-wrap justify-content p-3">-->
+<!--            {% for field in form %}-->
+<!--                {% if not field.is_hidden and field.name != 'skills' %}-->
+
+<!--                    <div class="flex flex-col gap-1 mx-3 mt-4" style="width:45%">-->
+
+
+<!--                    {% if field.field.widget.input_type == 'file' or field.field.widget.input_type == 'image' %}-->
+
+<!--                        {% if field.value and field.name == 'logo' %}-->
+<!--                            <div class="mt-2">-->
+<!--                                <img src="{{ field.value.url }}" class="w-16 h-16 rounded-full border-2 border-brand object-cover shadow-sm" alt="logo">-->
+<!--                            </div>-->
+<!--                        {% elif field.value and field.name == 'cover_image' %}-->
+<!--                            <div class="mt-2 w-full h-40 rounded-xl overflow-hidden border">-->
+<!--                                <img src="{{ field.value.url }}" alt="cover image" class="w-full h-full object-cover">-->
+<!--                            </div>-->
+<!--                        {% endif %}-->
+
+<!--                        <div class="flex flex-col gap-2">-->
+<!--                            <label class="text-sm font-medium opacity-80 flex items-center gap-2">-->
+<!--                                <span class="p-2 bg-brand/10 text-brand rounded-lg">-->
+<!--                                    <i class="ph ph-upload-simple"></i>-->
+<!--                                </span>-->
+<!--                                {{ field.label }}-->
+<!--                            </label>-->
+
+<!--                            <div class="relative group">-->
+
+<!--                                {{ field }}-->
+
+<!--                                {% if field.value %}-->
+<!--                                    <div class="mt-2 text-xs text-brand flex items-center gap-1">-->
+<!--                                        <i class="ph ph-check-circle"></i>-->
+<!--                                        {% trans "File currently uploaded:" %} {{ field.value.name|truncatechars:20 }}-->
+<!--                                    </div>-->
+<!--                                {% endif %}-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+<!--                    {% else %}-->
+
+<!--                        <label class="text-sm font-medium opacity-80">-->
+<!--                            {{ field.label }}-->
+<!--                        </label>-->
+<!--                        {{ field }}-->
+<!--                    {% endif %}-->
+
+
+
+
+<!--                    {% if field.errors %}-->
+<!--                        <p class="text-err text-xs mt-1">-->
+<!--                            {{ field.errors.0 }}-->
+<!--                        </p>-->
+<!--                    {% endif %}-->
+<!--                </div>-->
+
+<!--                {% else %}-->
+<!--                <div class="flex flex-col gap-1 w-full mx-3 mt-4" >-->
+<!--                    <label class="text-sm font-medium opacity-80">-->
+<!--                        {{ field.label }}-->
+<!--                    </label>-->
+<!--                    {{ field }}-->
+<!--                    {% if field.errors %}-->
+<!--                        <p class="text-err text-xs mt-1">-->
+<!--                            {{ field.errors.0 }}-->
+<!--                        </p>-->
+<!--                    {% endif %}-->
+<!--                </div>-->
+<!--                {% endif %}-->
+<!--            {% endfor %}-->
+<!--        </div>-->
+<!--                <div class="max-w-md mx-auto">-->
+<!--              {% submit-button label=_("Save") icon="log-in" bg_color="bg-brand" content_color="btn-text" %}-->
+<!--                </div>-->
+
+<!--        </form>-->
+
+<!--<script>-->
+<!--    document.addEventListener("DOMContentLoaded", function() {-->
+<!--        const skillsSelect = document.querySelector('.select2-enable');-->
+
+<!--        if (skillsSelect) {-->
+<!--            new TomSelect(skillsSelect, {-->
+<!--                plugins: ['remove_button'],-->
+<!--                maxItems: null,-->
+<!--                valueField: 'id',-->
+<!--                labelField: 'title',-->
+<!--                searchField: 'title',-->
+<!--                placeholder: "ابحث عن مهارة وأضفها...",-->
+<!--                // هذا الجزء هو السر: منع ظهور العناصر داخل المربع وإضافتها بالأسفل-->
+<!--                hidePlaceholder: true,-->
+<!--                onItemAdd: function() {-->
+<!--                    this.setTextboxValue(''); // مسح مربع البحث بعد الإضافة-->
+<!--                    this.refreshOptions();-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
+<!--    });-->
+
+<!--</script>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--{% endblock %}-->
+<!--{% back_button %}-->
 
 <!--<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">-->
 <!--    <div class="max-w-4xl mx-auto">-->

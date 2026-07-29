@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
@@ -11,9 +13,24 @@ from students.forms import StudentProfileForm
 from students.models import StudentProfile
 from students.utils import student_match_opportunities
 from training_entities.models import TrainingOpportunity
-
+from academy.models import College, Major
+import json
+from django.http import JsonResponse
 # Create your views here.
 app_name="students"
+
+
+# def load_colleges(request):
+#     print("UUUUUUU:::")
+#     university_id = request.GET.get('university_id')
+#     colleges = College.objects.filter(university_id=university_id).values('id', 'name')
+#     return JsonResponse(list(colleges), safe=False)
+#
+# def load_majors(request):
+#     print("MMMMMMMM:::")
+#     college_id = request.GET.get('college_id')
+#     majors = Major.objects.filter(college_id=college_id).values('id', 'name')
+#     return JsonResponse(list(majors), safe=False)
 
 @login_required
 @student_required
@@ -96,7 +113,17 @@ def student_complete_profile(request):
     else:
         form = StudentProfileForm(instance=profile)
 
-    return render(request, f'{app_name}/complete_profile.html', {'form': form})\
+    colleges_queryset = College.objects.values('id', 'name', 'university_id')
+    all_colleges_json = json.dumps(list(colleges_queryset))
+
+    # 2. تحويل التخصصات إلى قائمة قواميس تحتوي على المعرف، الاسم، ومعرف الكلية المرتبطة بها
+    majors_queryset = Major.objects.values('id', 'name', 'college_id')
+    all_majors_json = json.dumps(list(majors_queryset))
+
+    return render(request, f'{app_name}/complete_profile.html', {
+        'form': form,
+        'colleges_json':all_colleges_json,
+        'majors_json':all_majors_json })
 
 @login_required
 @student_required

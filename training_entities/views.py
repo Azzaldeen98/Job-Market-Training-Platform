@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
-from academy.models import College, Major
+from academy.models import College, Major ,University
 from applications.models import JoinTrainingOpportunity
 from applications.utils import change_application_status
 from core.routes import Routes
@@ -14,10 +14,14 @@ from training_entities.decorators import training_entity_required
 from training_entities.forms import TrainingEntityProfileForm, TrainingOpportunityForm
 from training_entities.models import TrainingEntityProfile
 from .models import TrainingOpportunity
-
+import uuid
 app_name="training_entities"
 
-
+def load_universities(request):
+    # city_id = request.GET.get('city')
+    universities = University.objects.all().order_by('name')
+    # return render(request, 'academy/partials/university_options.html', {'universities': universities})
+    return JsonResponse(list(universities), safe=False)
 def load_colleges(request):
     university_id = request.GET.get('university_id')
     colleges = College.objects.filter(university_id=university_id).values('id', 'name')
@@ -90,17 +94,21 @@ def dashboard(request):
 @login_required
 @training_entity_required
 def training_entity_complete_profile(request):
-
     # if not request.user.is_training_entity:
     #     return redirect(Routes.HOME)
 
-    profile, created = TrainingEntityProfile.objects.get_or_create(user=request.user)
+    # توليد رقم عشوائي مؤقت يُستخدم فقط في حال الإنشاء (Create)
+    temp_reg_number = f"TEMP-{uuid.uuid4().hex[:8].upper()}"
+
+    profile, created = TrainingEntityProfile.objects.get_or_create(
+        user=request.user,
+        defaults={'registration_number': temp_reg_number}
+    )
 
     if request.method == "POST":
         form = TrainingEntityProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            # التوجه لصفحة النجاح بعد الحفظ
             return redirect(Routes.TRAINING_ENTITY_DASHBOARD)
     else:
         form = TrainingEntityProfileForm(instance=profile)
@@ -270,40 +278,109 @@ def training_opportunity(request, id=None):
     context = {
         'form': form,
         'is_edit': bool(id),
-        'opportunity': opportunity
+        'opportunity': f
     }
     return render(request, f'{app_name}/opportunities/opportunity_form.html', context)
 
 @login_required
 @training_entity_required
 def check_match(request, opportunity_id):
-
     opportunity = get_object_or_404(TrainingOpportunity, id=opportunity_id)
-    query = Q(major=opportunity.major) if opportunity.major else Q()
-    if opportunity.min_gpa is not None:
-        query |= Q(gpa__gte=opportunity.min_gpa)
-    potential_students = StudentProfile.objects.filter(query).distinct() if query else StudentProfile.objects.none()
+
+    # تحويل حالة أحرف تخصص الفرصة إن وجد لتسهيل الفحص
+    opp_major_str = str(opportunity.major.name).strip().lower() if opportunity.major and hasattr(opportunity.major,
+                                                                                                 'name') else ""
+    if not opp_major_str and opportunity.major:
+        opp_major_str = str(opportunity.major).strip().lower()
+
+    # 1. بناء استعلام ذكي لجلب الطلاب بناءً على التخصص فقط كمرحلة أولى
+    if opportunity.major and opp_major_str != "all":
+        # جلب الطلاب من نفس التخصص المطلوب صراحة
+        student_query = Q(major=opportunity.major)
+    else:
+        # إذا كانت الفرصة لجميع التخصصات (All) أو حقل التخصص فارغ، نجلب جميع الطلاب النشطين
+        student_query = Q()
+
+    # جلب الطلاب مع تحسين الأداء (Optimization) لتفادي استعلامات قاعدة البيانات المتكررة
+    potential_students = StudentProfile.objects.filter(student_query).select_related('major').prefetch_related(
+        'skills').distinct()
+
     results = []
     for student in potential_students:
+
+        # 2. التحقق من حالة التقديم السابقة إن وجدت
         application = JoinTrainingOpportunity.objects.filter(student=student, opportunity=opportunity).first()
-        std_opp_status = None
-        if application:
-            std_opp_status = application.status
-        # if application and application.status  and  not is_opportunity_active  :
-        match_percent = calculate_match_score(student,opportunity)
+        std_opp_status = application.status if application else None
+
+        # 3. الفحص الأكاديمي العادل والذكي للمعدل بعد توحيد الميزان مئوياً (0% - 100%)
+        try:
+            if opportunity.min_gpa is not None and student.gpa is not None:
+                std_scale = float(getattr(student, 'gpa_scale', None) or (5.0 if float(student.gpa) <= 5.0 else 100.0))
+                opp_scale = float(
+                    getattr(opportunity, 'gpa_scale', None) or (5.0 if float(opportunity.min_gpa) <= 5.0 else 100.0))
+
+                # حماية وتأمين أنظمة مقياس الـ 4.0
+                if float(student.gpa) <= 4.0 and getattr(student, 'gpa_scale', None) is None: std_scale = 4.0
+                if float(opportunity.min_gpa) <= 4.0 and getattr(opportunity, 'gpa_scale',
+                                                                 None) is None: opp_scale = 4.0
+
+                student_percentage = (float(student.gpa) / std_scale) * 100.0
+                opportunity_percentage = (float(opportunity.min_gpa) / opp_scale) * 100.0
+
+                # إذا كان معدل الطالب مئوياً أقل من الحد الأدنى للشركة، يتم استبعاده فوراً لحفظ الشروط الأكاديمية
+                if student_percentage < opportunity_percentage:
+                    continue
+        except (ValueError, TypeError, ZeroDivisionError):
+            pass
+
+        # 4. استدعاء الدالة الذكية لحساب سكور المطابقة الفعلي (المهارات + التخصص + حوافز المعدل)
+        match_percent = calculate_match_score(student, opportunity)
+
+        # 5. الفلترة على الحد الأدنى لنسبة المطابقة للعرض الفعلي (أكبر من 30%)
         if match_percent and match_percent > 30:
             results.append({
                 'student': student,
                 'status': std_opp_status,
                 'score': round(match_percent, 1)
             })
-    # Sort results safely
+
+    # ترتيب النتائج من الطالب الأعلى تطابقاً وسكوراً للأقل
     results.sort(key=lambda x: x['score'], reverse=True)
-    return render(request, f'training_entities/opportunities/matched_students.html', {
+
+    return render(request, 'training_entities/opportunities/matched_students.html', {
         'opportunity': opportunity,
         'results': results,
         'count': len(results)
     })
+# def check_match(request, opportunity_id):
+#
+#     opportunity = get_object_or_404(TrainingOpportunity, id=opportunity_id)
+#     query = Q(major=opportunity.major) if opportunity.major else Q()
+#     if opportunity.min_gpa is not None:
+#         query |= Q(gpa__gte=opportunity.min_gpa)
+#     potential_students = StudentProfile.objects.filter(query).distinct() if query else StudentProfile.objects.none()
+#     results = []
+#     for student in potential_students:
+#         application = JoinTrainingOpportunity.objects.filter(student=student, opportunity=opportunity).first()
+#         std_opp_status = None
+#         if application:
+#             std_opp_status = application.status
+#         # if application and application.status  and  not is_opportunity_active  :
+#         match_percent = calculate_match_score(student,opportunity)
+#
+#         if match_percent and match_percent > 30:
+#             results.append({
+#                 'student': student,
+#                 'status': std_opp_status,
+#                 'score': round(match_percent, 1)
+#             })
+#     # Sort results safely
+#     results.sort(key=lambda x: x['score'], reverse=True)
+#     return render(request, f'training_entities/opportunities/matched_students.html', {
+#         'opportunity': opportunity,
+#         'results': results,
+#         'count': len(results)
+#     })
 
 
 

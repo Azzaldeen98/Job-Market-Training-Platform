@@ -45,7 +45,7 @@ msgstr "رقم الهاتف"
 
 #: .\accounts\models.py:25
 msgid "profile picture"
-msgstr ""
+msgstr "صورة الملف الشخصي"
 
 #: .\accounts\models.py:28
 msgid "bio"

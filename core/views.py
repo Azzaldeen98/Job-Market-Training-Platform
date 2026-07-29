@@ -4,6 +4,8 @@
 from django.shortcuts import render,get_object_or_404,redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+
+from academy.models import College,Major
 from accounts.models import CustomUser
 from applications.models import JoinTrainingOpportunity
 from students.models import StudentProfile
@@ -15,7 +17,19 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 from .routes import Routes
 from .utils import calculate_match_score, current_date
+# views.py
+from django.http import JsonResponse
 
+
+# def get_colleges(request):
+#     university_id = request.GET.get('university_id')
+#     colleges = College.objects.filter(university_id=university_id).values('id', 'name')
+#     return JsonResponse(list(colleges), safe=False)
+#
+# def get_majors(request):
+#     college_id = request.GET.get('college_id')
+#     majors = Major.objects.filter(college_id=college_id).values('id', 'name')
+#     return JsonResponse(list(majors), safe=False)
 
 def home(request):
     most_active_entities = TrainingEntityProfile.objects.filter(is_available=True,user__is_active=True).annotate(

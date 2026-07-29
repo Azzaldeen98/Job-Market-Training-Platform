@@ -37,8 +37,8 @@
                 {% submit-button label=is_edit|yesno:_("Update,Save") icon="save" bg_color="bg-brand" content_color="btn-text" %}
             </div>
         </form>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
 
     // --- 1. تهيئة TomSelect للمهارات ---
     const skillsElement = document.querySelector('.select2-enable');
@@ -108,72 +108,10 @@
         }
     });
 });
-        </script>
+</script>
+
     </div>
 </div>
 
-<script>
 
-
-
-/*
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. منطق اختيار الجامعة والكلية والتخصص
-    const uniSelect = document.getElementById('id_university');
-    const collegeSelect = document.getElementById('id_college');
-    const majorSelect = document.getElementById('id_major');
-
-    // إذا كنا في وضع التعديل، نحتاج للتأكد من حالة الحقول
-    if (uniSelect && uniSelect.value) {
-        collegeSelect.removeAttribute('disabled');
-        majorSelect.removeAttribute('disabled');
-    }
-
-    uniSelect?.addEventListener('change', function() {
-        let universityId = this.value;
-        if (universityId) {
-            fetch(`/training_entities/ajax/load-colleges/?university_id=${universityId}`)
-                .then(response => response.json())
-                .then(data => {
-                    collegeSelect.innerHTML = '<option value="">{% trans "Select College" %}</option>';
-                    data.forEach(item => {
-                        collegeSelect.add(new Option(item.name, item.id));
-                    });
-                    collegeSelect.removeAttribute('disabled');
-                    majorSelect.setAttribute('disabled', 'disabled');
-                });
-        }
-    });
-
-    collegeSelect?.addEventListener('change', function() {
-        let collegeId = this.value;
-        if (collegeId) {
-            fetch(`/training_entities/ajax/load-majors/?college_id=${collegeId}`)
-                .then(response => response.json())
-                .then(data => {
-                    majorSelect.innerHTML = '';
-                    data.forEach(item => {
-                        majorSelect.add(new Option(item.name, item.id));
-                    });
-                    majorSelect.removeAttribute('disabled');
-                });
-        }
-    });
-
-    // 2. تفعيل TomSelect للمهارات
-    const skillsSelect = document.querySelector('.select2-enable');
-    if (skillsSelect) {
-        new TomSelect(skillsSelect, {
-            plugins: ['remove_button'],
-            maxItems: null,
-            placeholder: "{% trans 'Search and add skills...' %}",
-            onItemAdd: function() {
-                this.setTextboxValue('');
-                this.refreshOptions();
-            }
-        });
-    }
-});
-*/
-</script>
 {% endblock %}

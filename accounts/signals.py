@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.db import transaction
 from django.contrib.auth import get_user_model
 from training_entities.models import TrainingEntityProfile
-
+from django.db import IntegrityError
 
 @receiver(post_save, sender='accounts.CustomUser')
 def handle_user_identity_flow(sender, instance, created, **kwargs):
@@ -16,15 +16,20 @@ def handle_user_identity_flow(sender, instance, created, **kwargs):
 
 User = get_user_model()
 
+
+
 @receiver(post_save, sender=User)
 def create_training_profile(sender, instance, created, **kwargs):
-    # يمكنك إضافة شرط هنا للتأكد أن المستخدم من نوع "جهة تدريب"
     if created:
-        TrainingEntityProfile.objects.get_or_create(user=instance)
+        try:
+            # نستخدم update_or_create أو get_or_create مع معالجة الأخطاء
+            TrainingEntityProfile.objects.get_or_create(
+                user=instance,
+                defaults={}
+            )
+        except IntegrityError:
+            pass
 
-
-        # 2. حذفنا استدعاء create_dynamic_profile من هنا نهائياً
-# ملاحظة: نستخدم 'accounts.CustomUser' كنص بدلاً من استيراد الموديل مباشرة
 # لتجنب الـ Circular Import Error
 # @receiver(post_save, sender='accounts.CustomUser')
 # def handle_user_identity_flow(sender, instance, created, **kwargs):

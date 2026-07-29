@@ -8,6 +8,7 @@ from core.forms import CoreModelForm
 from core.validators import PhoneValidator
 from students.models import StudentProfile
 from django.utils.translation import gettext_lazy as _
+from decimal import Decimal, InvalidOperation
 
 class StudentProfileForm(CoreModelForm):
 
@@ -20,7 +21,25 @@ class StudentProfileForm(CoreModelForm):
     
     gpa = forms.CharField(required=True)
 
-
+    # university = forms.ModelChoiceField(
+    #     queryset=University.objects.all(),
+    #     required=False,
+    #     widget=forms.Select(attrs={'id': 'id_university'})
+    # )
+    #
+    # # نجعل الكليات والتخصصات تبدأ بـ none() كأفضل ممارسة أمنية وتوافقية مع الجافا سكريبت
+    # college = forms.ModelChoiceField(
+    #     queryset=College.objects.none(),
+    #     required=False,
+    #     widget=forms.Select(attrs={'id': 'id_college', 'disabled': 'disabled'})
+    # )
+    #
+    # major = forms.ModelChoiceField(
+    #     queryset=Major.objects.none(),
+    #     required=True,  # إجبار المستخدم على اختيار التخصص
+    #     empty_label=_("Choose your academic major"),
+    #     widget=forms.Select(attrs={'id': 'id_major', 'disabled': 'disabled'})
+    # )
     university = forms.ModelChoiceField(queryset=University.objects.all(), required=True,
                                         widget=forms.Select(attrs={'id': 'id_university'}))
     college = forms.ModelChoiceField(queryset=College.objects.all(), required=True,
@@ -90,9 +109,19 @@ class StudentProfileForm(CoreModelForm):
                 self.fields['college'].queryset = College.objects.filter(university=university)
                 self.fields['major'].queryset = Major.objects.filter(college=college)
                 self.fields['college'].widget.attrs.pop('disabled', None)
-        # إجبار المستخدم على اختيار التخصص في الواجهة
-        self.fields['major'].required = True
-        self.fields['major'].empty_label = _("Choose your academic major")
+        #     selected_major = self.instance.major
+        #     if selected_major:
+        #         college = selected_major.college
+        #         university = college.university
+        #         self.initial['university'] = university
+        #         self.initial['college'] = college
+        #         self.initial['major'] = selected_major
+        #         self.fields['college'].queryset = College.objects.filter(university=university)
+        #         self.fields['major'].queryset = Major.objects.filter(college=college)
+        #         self.fields['college'].widget.attrs.pop('disabled', None)
+        # # إجبار المستخدم على اختيار التخصص في الواجهة
+        # self.fields['major'].required = True
+        # self.fields['major'].empty_label = _("Choose your academic major")
 
         for field_name, field in self.fields.items():
             # 1. الحفاظ على أي كلاسات تمت إضافتها يدوياً في الـ widgets
@@ -153,16 +182,48 @@ class StudentProfileForm(CoreModelForm):
 
         return year
 
+
+
     def clean_gpa(self):
-        """التحقق من المعدل التراكمي"""
-        gpa = self.cleaned_data.get('gpa')
-        if gpa is not None:
-            if gpa < 0 or gpa > 5.00 : # or gpa > 4.00 or  gpa > 100.0:
+        """التحقق من المعدل التراكمي وتنسيقه ديناميكياً بناءً على المقياس المختار"""
+        gpa_val = self.cleaned_data.get('gpa')
+        gpa_scale = 4 #self.cleaned_data.get('gpa_scale')  # جلب المقياس المختار (4 أو 5)
+
+        # إذا كانت القيمة فارغة، نمررها كـ None بسلام
+        if gpa_val in (None, ""):
+            return None
+
+        try:
+            # استخدام Decimal بدلاً من float لضمان دقة الحسابات المالية والأكاديمية في قاعدة البيانات
+            gpa = Decimal(str(gpa_val))
+
+            # تحديد الحد الأقصى ديناميكياً (إذا لم يختر المقياس بعد، نضع 5 كقيمة افتراضية آمنة)
+            max_scale = Decimal('5.00') if gpa_scale == '5' or gpa_scale == 5 else Decimal('4.00')
+
+            # التحقق من النطاق الديناميكي
+            if gpa < Decimal('0.00') or gpa > max_scale:
+                # تخصيص رسالة الخطأ لتظهر النطاق الصحيح للمستخدم (مثلاً: يجب أن يكون بين 0 و 4.00)
                 raise forms.ValidationError(
-                    self.fields['gpa'].error_messages['out_of_range'],
-                    code='invalid_gpa'
+                    _("المعدل المدخل غير صحيح، يجب أن يكون بين 0 و %(max_scale)s بناءً على مقياس نظامك."),
+                    params={'max_scale': max_scale},
+                    code='out_of_range'
                 )
-        return gpa
+
+            # تقريب الرقم إلى خانتين عشريتين وإرجاعه كـ Decimal متوافق تماماً مع الموديل
+            return round(gpa, 2)
+
+        except (ValueError, TypeError, InvalidOperation):
+            raise forms.ValidationError(_("الرجاء إدخال قيمة رقمية صالحة للمعدل التراكمي."))
+    # def clean_gpa(self):
+    #     """التحقق من المعدل التراكمي"""
+    #     gpa = self.cleaned_data.get('gpa')
+    #     if gpa is not None:
+    #         if gpa < 0 or gpa > 5.00 : # or gpa > 4.00 or  gpa > 100.0:
+    #             raise forms.ValidationError(
+    #                 self.fields['gpa'].error_messages['out_of_range'],
+    #                 code='invalid_gpa'
+    #             )
+    #     return gpa
 
     def clean_cv_file(self):
         """التحقق من صيغة ملف السيرة الذاتية وحجمه"""

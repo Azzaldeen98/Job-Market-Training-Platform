@@ -77,5 +77,5 @@ def seed_saudi_geo_data():
     print("✅ تم تحديث بيانات المناطق والمدن بنجاح!")
 
 
-if __name__ == '__main__':
-    seed_saudi_geo_data()
+# if __name__ == '__main__':
+#     seed_saudi_geo_data()

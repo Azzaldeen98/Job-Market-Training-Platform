@@ -11,6 +11,7 @@ urlpatterns = [
 
 
     # Loading Data
+    path('ajax/load-universities/', views.load_universities, name='ajax_load_universities'),
     path('ajax/load-colleges/', views.load_colleges, name='ajax_load_colleges'),
     path('ajax/load-majors/', views.load_majors, name='ajax_load_majors'),
 

@@ -82,7 +82,8 @@ class TrainingOpportunityAdmin(BaseModelAdmin):
                      )
     # exclude = ['icon']
     list_filter = ('status','field','major__college__university','city')
-    search_fields = ('title','field','major','city','capacity')
+    search_fields = ['title']
+
     def university(self, obj):
         if obj.major and obj.major.college and obj.major.college.university:
             return obj.major.college.university

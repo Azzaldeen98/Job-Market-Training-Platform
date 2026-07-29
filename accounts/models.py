@@ -22,6 +22,8 @@ class Role(BaseRole):
 
     def __str__(self):
         return self.name
+from django.contrib.auth.models import BaseUserManager
+from django.utils.translation import gettext_lazy as _
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -37,7 +39,6 @@ class CustomUserManager(BaseUserManager):
 
             # الآن نطبق منطق الأتمتة بأمان
             if role_obj and role_obj.requires_approval:
-                # extra_fields['is_active'] = False
                 extra_fields.setdefault('is_verified', False)
             else:
                 extra_fields.setdefault('is_verified', True)
@@ -47,9 +48,7 @@ class CustomUserManager(BaseUserManager):
         else:
             # حالة افتراضية إذا لم يتم تمرير هوية (مثل الأدمن)
             extra_fields.setdefault('is_active', True)
-            extra_fields.setdefault('is_verified', False)
-
-
+            extra_fields.setdefault('is_verified', True)
 
         if not email:
             raise ValueError(_('The Email must be set'))
@@ -57,9 +56,73 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
 
+    def create_superuser(self, email, password=None, **extra_fields):
+        """
+        إنشاء حساب مسؤول (Superuser)
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_verified', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        # استخدام الأسماء الصريحة للمعاملات تلافياً للخلط بين email و password
+        return self.create_user(email=email, password=password, **extra_fields)
+# class CustomUserManager(BaseUserManager):
+#     def create_user(self, email, password=None, **extra_fields):
+#         identity_data = extra_fields.get('identity')
+#
+#         # التحقق من نوع البيانات الواصلة (هل هي كائن أم رقم معرف؟)
+#         if identity_data:
+#             if isinstance(identity_data, Role):
+#                 role_obj = identity_data
+#             else:
+#                 # إذا كان ID، نقوم بجلب الكائن من قاعدة البيانات
+#                 role_obj = Role.objects.filter(id=identity_data).first()
+#
+#             # الآن نطبق منطق الأتمتة بأمان
+#             if role_obj and role_obj.requires_approval:
+#                 # extra_fields['is_active'] = False
+#                 extra_fields.setdefault('is_verified', False)
+#             else:
+#                 extra_fields.setdefault('is_verified', True)
+#
+#             extra_fields['is_active'] = True
+#
+#         else:
+#             # حالة افتراضية إذا لم يتم تمرير هوية (مثل الأدمن)
+#             extra_fields.setdefault('is_active', True)
+#             extra_fields.setdefault('is_verified', False)
+#
+#
+#
+#         if not email:
+#             raise ValueError(_('The Email must be set'))
+#
+#         email = self.normalize_email(email)
+#         user = self.model(email=email, **extra_fields)
+#         user.set_password(password)
+#         user.save()
+#         return user
+#
+#     def create_superuser(self, email, username, password=None, **extra_fields):
+#         extra_fields.setdefault('is_staff', True)
+#         extra_fields.setdefault('is_superuser', True)
+#         extra_fields.setdefault('is_active', True)
+#
+#         if extra_fields.get('is_staff') is not True:
+#             raise ValueError('Superuser must have is_staff=True.')
+#         if extra_fields.get('is_superuser') is not True:
+#             raise ValueError('Superuser must have is_superuser=True.')
+#
+#         return self.create_user(email, username, password, **extra_fields)
 
 class CustomUser(BaseCustomUser):
 

@@ -1,0 +1,13 @@
+from pip._internal.cli.cmdoptions import python
+
+import seed_region
+import seed_skills
+import seed_training_entities
+import seed_universities
+import seed_training_opportunities
+
+seed_region.seed_saudi_geo_data()
+seed_universities.seed_academic_data()
+seed_skills.seed_skills()
+seed_training_opportunities.seed_training_opportunities()
+seed_training_entities.seed_training_entities()
