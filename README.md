@@ -140,29 +140,44 @@ python manage.py runserver
 
 
 
+[//]: # ()
+[//]: # (### Generated Apps)
 
-### Generated Apps
-```bash
-python manage.py startapp  app_name
-```
+[//]: # (```bash)
 
-### Clear Cash
-```bash
-Get-ChildItem -Path . -Include *.pyc -Recurse | Remove-Item -Force
-```
+[//]: # (python manage.py startapp  app_name)
 
-### Githup push commands
-```commandline
-git add .
-git commit -m "Last Copy " 
-c
-```
+[//]: # (```)
 
+[//]: # ()
+[//]: # (### Clear Cash)
 
+[//]: # (```bash)
 
+[//]: # (Get-ChildItem -Path . -Include *.pyc -Recurse | Remove-Item -Force)
 
+[//]: # (```)
 
+[//]: # ()
+[//]: # (### Githup push commands)
+
+[//]: # (```commandline)
+
+[//]: # (git add .)
+
+[//]: # (git commit -m "Last Copy " )
+
+[//]: # (c)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # ()
+[//]: # ()
+[//]: # ()
+[//]: # ()
 [//]: # (pip freeze > requirements.txt #  إستعراض جميع المكتبات المثبتة حالياً مع أرقام إصداراتها الدقيقة وتحويلها الى ملف نصي  يجب تنفيذه بعد كل مكتبه يتم تثبيتها)
+
 [//]: # (Example:)
 
 [//]: # ()
@@ -200,3 +215,4 @@ c
 [//]: # (   )
 [//]: # (])
 
+[//]: # ()
