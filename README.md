@@ -155,63 +155,48 @@ Get-ChildItem -Path . -Include *.pyc -Recurse | Remove-Item -Force
 ```commandline
 git add .
 git commit -m "Last Copy " 
-git push -u origin main
+c
 ```
 
 
 
 
 
-pip freeze > requirements.txt #  إستعراض جميع المكتبات المثبتة حالياً مع أرقام إصداراتها الدقيقة وتحويلها الى ملف نصي  يجب تنفيذه بعد كل مكتبه يتم تثبيتها
-Example:
+[//]: # (pip freeze > requirements.txt #  إستعراض جميع المكتبات المثبتة حالياً مع أرقام إصداراتها الدقيقة وتحويلها الى ملف نصي  يجب تنفيذه بعد كل مكتبه يتم تثبيتها)
+[//]: # (Example:)
 
-SITE_ROLES = [
+[//]: # ()
+[//]: # (SITE_ROLES = [)
 
-    {
-        'code': 'user',
-        'name': 'user',
-        'is_identity': True,      # هل له بروفايل وهوية مستقلة؟
-        'requires_approval': False, # هل يحتاج تفعيل من الإدارة؟
-        'view_in_register': True,  # هل يظهر في خيارات التسجيل؟
-    },
-    {
-        'code': 'emp__',
-        'name': 'emp__',
-        'is_identity': True,      # هل له بروفايل وهوية مستقلة؟
-        'requires_approval': True, # هل يحتاج تفعيل من الإدارة؟
-        'view_in_register': True,  # هل يظهر في خيارات التسجيل؟
-    },
-   
-]
+[//]: # ()
+[//]: # (    {)
 
+[//]: # (        'code': 'user',)
 
+[//]: # (        'name': 'user',)
 
-### لعرض  الموقع على المتصفح قم بالنقر الرابط التالي   
-- **[Website](http://127.0.0.1:8000)**
+[//]: # (        'is_identity': True,      # هل له بروفايل وهوية مستقلة؟)
 
-### لعرض لوحة التحكم الآدمن قم بالنقر الرابط التالي    
-- **[Admin Dashboard](http://127.0.0.1:8000/admin)**
+[//]: # (        'requires_approval': False, # هل يحتاج تفعيل من الإدارة؟)
 
+[//]: # (        'view_in_register': True,  # هل يظهر في خيارات التسجيل؟)
 
+[//]: # (    },)
 
-### حساب  شركة (Company) 
-Email: 
-```bash 
-careers@aramco.com
-```
-Password:
-```bash 
-Test@123
-```
+[//]: # (    {)
 
+[//]: # (        'code': 'emp__',)
 
+[//]: # (        'name': 'emp__',)
 
-### حساب  مستخدم عادي (Student) 
-Email: 
-```bash 
-user@gmail.com
-```
-Password:
-```bash 
-Test@123
-```
+[//]: # (        'is_identity': True,      # هل له بروفايل وهوية مستقلة؟)
+
+[//]: # (        'requires_approval': True, # هل يحتاج تفعيل من الإدارة؟)
+
+[//]: # (        'view_in_register': True,  # هل يظهر في خيارات التسجيل؟)
+
+[//]: # (    },)
+
+[//]: # (   )
+[//]: # (])
+
