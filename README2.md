@@ -167,7 +167,7 @@ python manage.py runserver
 
 [//]: # (git commit -m "Last Copy " )
 
-[//]: # (c)
+[//]: # (git push -u origin main )
 
 [//]: # (```)
 
