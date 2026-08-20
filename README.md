@@ -280,6 +280,6 @@ This project is for academic and training purposes.
 ### Azzaldeen Al-Qashaei
 
 [![GitHub](https://img.shields.io/badge/GitHub-azzaldeen--tech-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/azzaldeen-tech)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-azzaldeen__eng-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/azzaldeen-al-qashaei-0a6928206)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-azzaldeen_al_qashaei-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/azzaldeen-al-qashaei-0a6928206)
 
 </div>
